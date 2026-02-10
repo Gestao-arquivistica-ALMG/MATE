@@ -3360,11 +3360,11 @@ SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZ
 # >>> quando a entrada foi DATA, você já tem aba_yyyymmdd (dia útil de trabalho)
 diario_key = aba_yyyymmdd if aba_yyyymmdd else yyyymmdd
 
-    ret = upsert_tab_diario(
-        spreadsheet_url_or_id=SPREADSHEET,
-        diario_key=diario_key,
-        itens=itens,
-    )
+ret = upsert_tab_diario(
+    spreadsheet_url_or_id=SPREADSHEET,
+    diario_key=diario_key,
+    itens=itens,
+)
 
 url, aba = ret if ret is not None else (None, aba)
 
