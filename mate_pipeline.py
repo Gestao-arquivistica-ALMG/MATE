@@ -285,13 +285,26 @@ def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
     return fallback
 
 
+from functools import lru_cache
+import unicodedata
+
 @lru_cache(maxsize=20000)
 def compact_key(s: str) -> str:
+    """
+    Normaliza strings para comparação:
+    - uppercase
+    - remove acentos
+    - remove caracteres não alfanuméricos
+    """
+    if not s:
+        return ""
+
     u = s.upper()
     u = unicodedata.normalize("NFD", u)
-    u = "".join(ch for ch in u if unicodedata.category(ch) != "Mn")
-    return re.sub(r"[^0-9A-Z]", "", u)
+    u = "".join(c for c in u if unicodedata.category(c) != "Mn")
+    u = "".join(c for c in u if c.isalnum())
 
+    return u
 
 # ---- TOP detection (robusta) ----
 RE_HEADER_LIXO = re.compile(
