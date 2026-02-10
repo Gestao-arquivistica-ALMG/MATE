@@ -4,23 +4,15 @@
 
 import os
 import re
-import csv
-import hashlib
-import urllib.request
-from pathlib import Path
+import unicodedata
 from datetime import datetime, timedelta, date
 from zoneinfo import ZoneInfo
 from functools import lru_cache
-import unicodedata
 
 from pypdf import PdfReader
 
 URL_BASE = "https://diariolegislativo.almg.gov.br"
 TZ_BR = ZoneInfo("America/Sao_Paulo")
-
-# cache de PDFs (restaurado)
-CACHE_DIR = "/content/pdfs_cache"
-os.makedirs(CACHE_DIR, exist_ok=True)
 
 # ---- Colab? ----
 try:
@@ -42,9 +34,9 @@ def _intervalo_datas(inicio: date, fim: date) -> set[date]:
     return out
 
 
-# --- 2025 ---
 NAO_EXPEDIENTE_2025: set[date] = {
-    date(2025, 1, 1), date(2025, 3, 3), date(2025, 3, 4), date(2025, 3, 5),
+    date(2025, 1, 1),
+    date(2025, 3, 3), date(2025, 3, 4), date(2025, 3, 5),
     date(2025, 4, 17), date(2025, 4, 18), date(2025, 4, 21),
     date(2025, 5, 1), date(2025, 5, 2),
     date(2025, 6, 19), date(2025, 6, 20),
@@ -55,7 +47,6 @@ NAO_EXPEDIENTE_2025: set[date] = {
     date(2025, 12, 8), date(2025, 12, 24), date(2025, 12, 25), date(2025, 12, 26), date(2025, 12, 31),
 }
 
-# --- 2026 ---
 NAO_EXPEDIENTE_2026: set[date] = {
     date(2026, 1, 1), date(2026, 2, 17), date(2026, 6, 4),
     date(2026, 9, 7), date(2026, 10, 12),
@@ -75,11 +66,9 @@ NAO_EXPEDIENTE_POR_ANO = {
 
 def proximo_dia_util(yyyymmdd: str) -> str:
     d = datetime.strptime(yyyymmdd, "%Y%m%d").date()
-    nao_expediente = NAO_EXPEDIENTE_POR_ANO.get(d.year, set())
-
-    while d.weekday() >= 5 or d in nao_expediente:
+    nao = NAO_EXPEDIENTE_POR_ANO.get(d.year, set())
+    while d.weekday() >= 5 or d in nao:
         d += timedelta(days=1)
-
     return d.strftime("%Y%m%d")
 
 
@@ -123,49 +112,32 @@ def normalizar_data(entrada: str) -> str:
     raise ValueError("Data inválida.")
 
 
-# --- RESTAURADO ---
-def montar_url_diario(data_in: str) -> str:
-    yyyymmdd = normalizar_data(data_in)
-    return f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
-
-
-# --- RESTAURADO ---
-def _parece_pdf(caminho: str) -> bool:
-    try:
-        with open(caminho, "rb") as f:
-            return f.read(5) == b"%PDF-"
-    except Exception:
-        return False
-
-
 def baixar_pdf_por_url(url: str) -> str | None:
     import requests
-
     local = "/content/tmp_diario.pdf"
     try:
         r = requests.get(url, timeout=30)
         r.raise_for_status()
         with open(local, "wb") as f:
             f.write(r.content)
-        if not _parece_pdf(local):
-            return None
+        with open(local, "rb") as f:
+            if f.read(5) != b"%PDF-":
+                return None
         return local
     except Exception:
         return None
 
 
 # ================================================================================================
-# BLOCO DE ENTRADA (split)
+# BLOCO DE ENTRADA
 # ================================================================================================
 
 entrada = input("Data/URL/caminho: ").strip()
 
-pdf_path = None
-aba_yyyymmdd = None
-aba = None
+pdf_path: str | None = None
+aba_yyyymmdd: str | None = None
+aba: str | None = None
 
-# política de aba (usada depois no Sheets)
-# ASK | OVERWRITE | NEW
 ABA_POLICY = "ASK"
 
 if not entrada:
@@ -188,7 +160,7 @@ else:
     yyyymmdd = normalizar_data(entrada)
     aba_yyyymmdd = proximo_dia_util(yyyymmdd)
     aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
-    url = montar_url_diario(entrada)
+    url = f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
     pdf_path = baixar_pdf_por_url(url)
     if not pdf_path:
         raise SystemExit("DL inexistente.")
@@ -196,7 +168,6 @@ else:
 if not pdf_path or not os.path.exists(pdf_path):
     raise FileNotFoundError("PDF não encontrado.")
 
-# ABA FINAL — SEMPRE DEFINIDA
 if not aba:
     aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
 
@@ -204,10 +175,132 @@ print("Aba FINAL (Sheets):", aba)
 print("Política de aba:", ABA_POLICY)
 
 # ================================================================================================
-# A PARTIR DAQUI: parser / OUTs / intervalos (INALTERADO)
+# DEFS UTILITÁRIAS GLOBAIS (USADAS DEPOIS)
 # ================================================================================================
-# ⚠️ mesmo que NÃO haja OUTs, o pipeline segue e a aba será criada
-# ⚠️ conflitos de aba serão tratados conforme ABA_POLICY
+
+RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
+
+RE_HEADER_LIXO = re.compile(
+    r"(DI[ÁA]RIO\s+DO\s+LEGISLATIVO|www\.almg\.gov\.br|"
+    r"segunda-feira|terça-feira|quarta-feira|quinta-feira|sexta-feira|"
+    r"s[áa]bado|domingo)",
+    re.IGNORECASE
+)
+
+
+def limpa_linha(s: str) -> str:
+    s = s.replace("\u00a0", " ")
+    return re.sub(r"[ \t]+", " ", s).strip()
+
+
+def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
+    for ln in linhas[:220]:
+        m = RE_PAG.search(ln)
+        if m:
+            return int(m.group(1))
+    return fallback
+
+
+@lru_cache(maxsize=20000)
+def compact_key(s: str) -> str:
+    u = s.upper()
+    u = unicodedata.normalize("NFD", u)
+    u = "".join(c for c in u if unicodedata.category(c) != "Mn")
+    return "".join(c for c in u if c.isalnum())
+
+
+def _linha_relevante(s: str) -> bool:
+    s = limpa_linha(s)
+    if not s:
+        return False
+    if RE_HEADER_LIXO.search(s):
+        return False
+    if re.fullmatch(r"[-–—_•\.\s]+", s):
+        return False
+    return True
+
+
+def is_top_event(line_idx: int, linhas: list[str]) -> bool:
+    for prev in linhas[:line_idx]:
+        if _linha_relevante(prev):
+            return False
+    return True
+
+
+def win_keys(linhas: list[str], i: int, w: int) -> str:
+    parts = []
+    for k in range(w):
+        j = i + k
+        if j < len(linhas):
+            parts.append(compact_key(linhas[j]))
+    return "".join(parts)
+
+
+def win_any_in(linhas: list[str], i: int, keys: set[str]) -> bool:
+    return any(
+        win_keys(linhas, i, w) in keys
+        for w in (1, 2, 3)
+    )
+
+
+def _checkbox_req(sheet_id: int, col_idx_0based: int, row_1based: int, default_checked: bool = False):
+    val = {"boolValue": True} if default_checked else {"boolValue": False}
+
+    return [
+        {
+            "setDataValidation": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": row_1based - 1,
+                    "endRowIndex": row_1based,
+                    "startColumnIndex": col_idx_0based,
+                    "endColumnIndex": col_idx_0based + 1,
+                },
+                "rule": {
+                    "condition": {"type": "BOOLEAN"},
+                    "strict": True,
+                    "showCustomUi": True,
+                },
+            }
+        },
+        {
+            "updateCells": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": row_1based - 1,
+                    "endRowIndex": row_1based,
+                    "startColumnIndex": col_idx_0based,
+                    "endColumnIndex": col_idx_0based + 1,
+                },
+                "rows": [{"values": [{"userEnteredValue": val}]}],
+                "fields": "userEnteredValue",
+            }
+        },
+    ]
+
+
+def _cf_fontsize_req(sheet_id: int, col0: int, row1: int, font_size: int, formula: str, index: int = 0):
+    return {
+        "addConditionalFormatRule": {
+            "rule": {
+                "ranges": [{
+                    "sheetId": sheet_id,
+                    "startRowIndex": row1 - 1,
+                    "endRowIndex": row1,
+                    "startColumnIndex": col0,
+                    "endColumnIndex": col0 + 1,
+                }],
+                "booleanRule": {
+                    "condition": {
+                        "type": "CUSTOM_FORMULA",
+                        "values": [{"userEnteredValue": formula}],
+                    },
+                    "format": {"textFormat": {"fontSize": font_size}},
+                },
+            },
+            "index": index,
+        }
+    }
 
 # PARTE 1B ===========================================================================================================================================================================================
 # ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
