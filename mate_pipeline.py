@@ -3,8 +3,16 @@
 # ================================================================================================
 
 import os
+import re
+import unicodedata
+from functools import lru_cache
 from datetime import datetime, timedelta, date
 from zoneinfo import ZoneInfo
+
+try:
+    from pypdf import PdfReader
+except Exception as e:
+    raise ImportError("Dependência 'pypdf' não encontrada. Instale com: pip install pypdf") from e
 
 URL_BASE = "https://diariolegislativo.almg.gov.br"
 TZ_BR = ZoneInfo("America/Sao_Paulo")
@@ -174,7 +182,7 @@ def normalizar_data(entrada: str) -> str:
 
 
 def baixar_pdf_por_url(url: str) -> str | None:
-    import requests
+    import requests  # mantém local como você tinha
 
     local = "/content/tmp_diario.pdf"
     try:
@@ -267,8 +275,9 @@ else:
 
 print("Aba FINAL (Sheets):", aba)
 
-# ================================================================================================
-# ---- 3) Extração e detecção de títulos ----
+
+# PARTE 1B ========================================================================================
+# Utilitários de texto + cache + regex (tudo que o parsing usa)
 # ================================================================================================
 
 def limpa_linha(s: str) -> str:
@@ -276,20 +285,6 @@ def limpa_linha(s: str) -> str:
     s = re.sub(r"[ \t]+", " ", s).strip()
     return s
 
-
-def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
-    for ln in linhas[:220]:
-        m = RE_PAG.search(ln)
-        if m:
-            return int(m.group(1))
-    return fallback
-
-# PARTE 1B ========================================================================================
-# Normalização e cache de chaves (uso interno)
-# ================================================================================================
-
-from functools import lru_cache
-import unicodedata
 
 @lru_cache(maxsize=20000)
 def compact_key(s: str) -> str:
@@ -306,14 +301,8 @@ def compact_key(s: str) -> str:
     u = unicodedata.normalize("NFD", u)
     u = "".join(c for c in u if unicodedata.category(c) != "Mn")
     u = "".join(c for c in u if c.isalnum())
-
     return u
 
-# PARTE 1C ========================================================================================
-# Regex base e padrões de limpeza
-# ================================================================================================
-
-import re
 
 # Página (ex: "PÁGINA 12", "Pagina 3")
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
@@ -329,6 +318,15 @@ RE_HEADER_LIXO = re.compile(
 
 # Linhas vazias ou só pontuação
 RE_LINHA_VAZIA = re.compile(r"^[\W_]*$")
+
+
+def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
+    for ln in linhas[:220]:
+        m = RE_PAG.search(ln)
+        if m:
+            return int(m.group(1))
+    return fallback
+
 
 def _linha_relevante(s: str) -> bool:
     s = limpa_linha(s)
@@ -365,11 +363,11 @@ def win_any_in(linhas: list[str], i: int, keys: set[str]) -> bool:
     return (k1 in keys) or (k2 in keys) or (k3 in keys)
 
 
+# PARTE 2 =========================================================================================
+# Extração e detecção de títulos
+# ================================================================================================
+
 def _checkbox_req(sheet_id: int, col_idx_0based: int, row_1based: int, default_checked: bool = False):
-    """
-    Cria checkbox (data validation BOOLEAN) e define o valor padrão (TRUE/FALSE).
-    Retorna uma lista de requests para batch_update.
-    """
     val = {"boolValue": True} if default_checked else {"boolValue": False}
 
     dv = {
@@ -407,10 +405,6 @@ def _checkbox_req(sheet_id: int, col_idx_0based: int, row_1based: int, default_c
 
 
 def _cf_fontsize_req(sheet_id: int, col0: int, row1: int, font_size: int, formula: str, index: int = 0):
-    """
-    Conditional formatting: aplica tamanho de fonte quando fórmula custom for TRUE.
-    Exemplo: =OR($C9="DIÁRIO DO LEGISLATIVO"; $C9="REUNIÕES DE PLENÁRIO")
-    """
     return {
         "addConditionalFormatRule": {
             "rule": {
@@ -537,7 +531,6 @@ for i, page in enumerate(reader.pages):
         if c in CUT_KEYS:
             ordem += 1
             eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-            # encerra contextos
             in_tramitacao = False
             sub_tramitacao = None
             apresentacao_ativa = False
@@ -605,7 +598,6 @@ for i, page in enumerate(reader.pages):
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
             viu_corresp_cab = False
-            # encerra contextos gerais
             in_tramitacao = False
             sub_tramitacao = None
             apresentacao_ativa = False
@@ -616,7 +608,6 @@ for i, page in enumerate(reader.pages):
         # APRESENTAÇÃO -> subdivisão material (PL vs REQ)
         # ---------------------------
         if apresentacao_ativa:
-            # gatilho PL
             if (
                 k1.startswith(C_PROJETO_DE_LEI) or k1.startswith(C_PROJETOS_DE_LEI) or
                 k2.startswith(C_PROJETO_DE_LEI) or k2.startswith(C_PROJETOS_DE_LEI) or
@@ -628,7 +619,6 @@ for i, page in enumerate(reader.pages):
                     sub_apresentacao = "PL"
                 continue
 
-            # gatilho REQ
             if (k1.startswith(C_REQUERIMENTOS) or k2.startswith(C_REQUERIMENTOS) or k3.startswith(C_REQUERIMENTOS)):
                 if sub_apresentacao != "REQ":
                     ordem += 1
@@ -640,7 +630,6 @@ for i, page in enumerate(reader.pages):
         # OUTs diretos (fora de APRESENTAÇÃO)
         # ---------------------------
 
-        # OFÍCIOS (comum)
         if c == C_OFICIOS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "OFÍCIOS", True, top_flag))
@@ -651,7 +640,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # LEIS PROMULGADAS (linha exatamente LEI/LEIS)
         if (not pegou_leis) and (pag_num <= MAX_PAG_LEIS) and (ln_up == "LEI" or ln_up == "LEIS"):
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "LEIS PROMULGADAS", True, top_flag))
@@ -663,7 +651,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # MANIFESTAÇÕES
         if c in MANIF_KEYS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "MANIFESTAÇÕES", True, top_flag))
@@ -674,7 +661,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # REQUERIMENTOS APROVADOS
         if c in REQ_APROV_KEYS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "REQUERIMENTOS APROVADOS", True, top_flag))
@@ -685,7 +671,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # PROPOSIÇÕES DE LEI
         if c == C_PROPOSICOES_DE_LEI:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "PROPOSIÇÕES DE LEI", True, top_flag))
@@ -696,7 +681,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # RESOLUÇÃO
         if c == C_RESOLUCAO:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "RESOLUÇÃO", True, top_flag))
@@ -707,7 +691,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # ERRATAS
         if c in ERRATA_KEYS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "ERRATAS", True, top_flag))
@@ -718,7 +701,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # EMENDAS OU SUBSTITUTIVOS PUBLICADOS
         if c in EMENDAS_KEYS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "EMENDAS OU SUBSTITUTIVOS PUBLICADOS", True, top_flag))
@@ -729,7 +711,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # ACORDO DE LÍDERES
         if c == C_ACORDO_LIDERES:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "ACORDO DE LÍDERES", True, top_flag))
@@ -740,7 +721,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # COMUNICAÇÃO DA PRESIDÊNCIA (com prefixo se dentro de TRAMITAÇÃO)
         if c == C_COMUNIC_PRESIDENCIA:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", prefix_tramitacao("COMUNICAÇÃO DA PRESIDÊNCIA", in_tramitacao), True, top_flag))
@@ -751,7 +731,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # LEITURA DE COMUNICAÇÕES
         if c == C_LEITURA_COMUNICACOES:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "LEITURA DE COMUNICAÇÕES", True, top_flag))
@@ -762,7 +741,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # DESPACHO DE REQUERIMENTOS
         if c == C_DESPACHO_REQUERIMENTOS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "DESPACHO DE REQUERIMENTOS", True, top_flag))
@@ -773,7 +751,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # DECISÃO DA PRESIDÊNCIA
         if c == C_DECISAO_PRESIDENCIA:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "DECISÃO DA PRESIDÊNCIA", True, top_flag))
@@ -784,7 +761,6 @@ for i, page in enumerate(reader.pages):
             viu_corresp_cab = False
             continue
 
-        # PROPOSIÇÕES NÃO RECEBIDAS
         if c == C_PROPOSICOES_NAO_RECEBIDAS:
             ordem += 1
             eventos.append((pag_num, ordem, "OUT", "PROPOSIÇÕES NÃO RECEBIDAS", True, top_flag))
@@ -796,10 +772,12 @@ for i, page in enumerate(reader.pages):
             continue
 
 
-# ---- ordena eventos ----
+# PARTE 3 =========================================================================================
+# Pós-processamento dos eventos
+# ================================================================================================
+
 eventos.sort(key=lambda x: (x[0], x[1]))
 
-# ---- 3.x) pós-processamento: OUTs duplicados na mesma página ----
 KEEP_DUP_OUT = {
     "DECISÃO DA PRESIDÊNCIA",
 }
@@ -827,7 +805,11 @@ eventos = _eventos_filtrados
 
 print("EVENTOS:", len(eventos))
 
-# ---- 4) intervalos ----
+
+# PARTE 4 =========================================================================================
+# Intervalos (pag_ini → pag_fim) + debug
+# ================================================================================================
+
 total_pag_fisica = len(reader.pages)
 itens = []
 
@@ -856,10 +838,7 @@ for idx, e in enumerate(eventos):
 
     intervalo = f"{pag_ini} - {pag_fim}" if pag_ini != pag_fim else f"{pag_ini}"
 
-    # labels em que repetição na mesma página é "marcador + título real" ? manter só o ÚLTIMO
     DEDUP_ULTIMO_NA_PAG = {"MANIFESTAÇÕES"}
-
-    # labels em que repetição na mesma página é conteúdo distinto ? NÃO deduplica
     NAO_DEDUPLICAR = {"DECISÃO DA PRESIDÊNCIA"}
 
     if label_out in DEDUP_ULTIMO_NA_PAG and label_out not in NAO_DEDUPLICAR:
