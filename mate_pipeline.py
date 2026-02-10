@@ -814,6 +814,32 @@ def upsert_tab_diario(
         }]
     })
 
+def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list[dict]:
+    out = []
+    for r in reqs:
+        key = next(iter(r.keys()), "")
+        if key in ("mergeCells", "unmergeCells"):
+            rr = r[key].get("range", {})
+            sr = rr.get("startRowIndex")
+            er = rr.get("endRowIndex")
+            sc = rr.get("startColumnIndex")
+            ec = rr.get("endColumnIndex")
+
+            # range incompleto => remove
+            if None in (sr, er, sc, ec):
+                continue
+
+            # range inválido => remove
+            if er <= sr or ec <= sc:
+                continue
+
+            # fora do grid => remove
+            if er > max_rows or ec > max_cols:
+                continue
+
+        out.append(r)
+    return out
+
     # ====================================================================================================================================================================================================
     # ============================================================================================ REQUESTS ==============================================================================================
     # ====================================================================================================================================================================================================
