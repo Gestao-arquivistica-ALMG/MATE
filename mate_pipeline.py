@@ -3360,6 +3360,10 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
         # força criação/layout mínimo (evita retorno None)
         _with_backoff(sh.batch_update, body={"requests": []})
 
+    # === EXECUTA REQUESTS (LAYOUT) ===
+    if reqs:
+        with_backoff(sh.batch_update, body={"requests": reqs})
+
     return sh.url, ws.title
 
 SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
