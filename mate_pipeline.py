@@ -20,12 +20,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from functools import lru_cache
 
-# ---- 0) Dependências (pypdf) ----
-try:
-    from pypdf import PdfReader
-except Exception:
-    !pip -q install pypdf
-    from pypdf import PdfReader
+from pypdf import PdfReader
 
 # ---- 1) Regex base ----
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
