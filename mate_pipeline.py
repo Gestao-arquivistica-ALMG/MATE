@@ -16,7 +16,7 @@ import hashlib
 import urllib.request
 import unicodedata
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from zoneinfo import ZoneInfo
 from functools import lru_cache
 
@@ -29,23 +29,11 @@ URL_BASE = "https://diariolegislativo.almg.gov.br"
 CACHE_DIR = "/content/pdfs_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-# ================================================================================================
-# ---- 2) Entrada: DATA (DDMMYYYY) -> URL do Diário (ou URL/caminho direto) ----
-# ================================================================================================
-
-try:
-    from google.colab import files
-    _COLAB = True
-except Exception:
-    _COLAB = False
-
 TZ_BR = ZoneInfo("America/Sao_Paulo")
 
-
-# --------------------------------------------------------------------------------
-# NÃO-EXPEDIENTE (FERIADOS + RECESSOS) — usado para calcular a ABA (dia útil de trabalho)
-# --------------------------------------------------------------------------------
-from datetime import date
+# ================================================================================================
+# NÃO-EXPEDIENTE
+# ================================================================================================
 
 def _intervalo_datas(inicio: date, fim: date) -> set[date]:
     out = set()
@@ -56,77 +44,28 @@ def _intervalo_datas(inicio: date, fim: date) -> set[date]:
     return out
 
 
-# --- 2025 (conforme lista oficial "FERIADOS E RECESSOS DE 2025" enviada) ---
 NAO_EXPEDIENTE_2025 = {
-    date(2025, 1, 1),   # Confraternização Universal
-
-    # Março
-    date(2025, 3, 3),   # Recesso
-    date(2025, 3, 4),   # Carnaval
-    date(2025, 3, 5),   # Recesso – Cinzas
-
-    # Abril
-    date(2025, 4, 17),  # Recesso
-    date(2025, 4, 18),  # Paixão de Cristo
-    date(2025, 4, 21),  # Tiradentes
-
-    # Maio
-    date(2025, 5, 1),   # Dia do Trabalho
-    date(2025, 5, 2),   # Recesso
-
-    # Junho
-    date(2025, 6, 19),  # Corpus Christi
-    date(2025, 6, 20),  # Recesso
-
-    # Agosto
-    date(2025, 8, 15),  # Assunção de Nossa Senhora
-
-    # Setembro
-    date(2025, 9, 7),   # Independência do Brasil
-
-    # Outubro
-    date(2025, 10, 12), # Nossa Senhora Aparecida
-    date(2025, 10, 27), # Dia do Servidor Público
-
-    # Novembro
-    date(2025, 11, 2),  # Finados
-    date(2025, 11, 15), # Proclamação da República
-    date(2025, 11, 20), # Dia Nacional de Zumbi e da Consciência Negra
-    date(2025, 11, 21), # Recesso
-
-    # Dezembro
-    date(2025, 12, 8),  # Nossa Senhora da Conceição
-    date(2025, 12, 24), # Recesso
-    date(2025, 12, 25), # Natal
-    date(2025, 12, 26), # Recesso
-    date(2025, 12, 31), # Recesso
+    date(2025, 1, 1),
+    date(2025, 3, 3), date(2025, 3, 4), date(2025, 3, 5),
+    date(2025, 4, 17), date(2025, 4, 18), date(2025, 4, 21),
+    date(2025, 5, 1), date(2025, 5, 2),
+    date(2025, 6, 19), date(2025, 6, 20),
+    date(2025, 8, 15),
+    date(2025, 9, 7),
+    date(2025, 10, 12), date(2025, 10, 27),
+    date(2025, 11, 2), date(2025, 11, 15), date(2025, 11, 20), date(2025, 11, 21),
+    date(2025, 12, 8), date(2025, 12, 24), date(2025, 12, 25),
+    date(2025, 12, 26), date(2025, 12, 31),
 }
 
-
-# --- 2026 (conforme calendário enviado; feriados + recessos tratados como não-expediente) ---
-NAO_EXPEDIENTE_2026 = set()
-
-# FERIADOS (círculo)
-NAO_EXPEDIENTE_2026 |= {
-    date(2026, 1, 1),
-    date(2026, 2, 17),
-    date(2026, 6, 4),
-    date(2026, 9, 7),
-    date(2026, 10, 12),
-    date(2026, 11, 2),
-    date(2026, 11, 15),
-    date(2026, 11, 20),
+NAO_EXPEDIENTE_2026 = {
+    date(2026, 1, 1), date(2026, 2, 17), date(2026, 2, 18),
+    date(2026, 4, 2), date(2026, 4, 3),
+    date(2026, 6, 4), date(2026, 6, 5),
+    date(2026, 9, 7), date(2026, 10, 12),
+    date(2026, 11, 2), date(2026, 11, 15), date(2026, 11, 20),
     date(2026, 12, 25),
-}
-
-# RECESSOS (retângulo)
-NAO_EXPEDIENTE_2026 |= {
-    date(2026, 2, 18),
-    date(2026, 4, 2),
-    date(2026, 4, 3),
-    date(2026, 6, 5),
-}
-NAO_EXPEDIENTE_2026 |= _intervalo_datas(date(2026, 12, 7), date(2026, 12, 31))
+} | _intervalo_datas(date(2026, 12, 7), date(2026, 12, 31))
 
 
 NAO_EXPEDIENTE_POR_ANO = {
@@ -136,18 +75,10 @@ NAO_EXPEDIENTE_POR_ANO = {
 
 
 def proximo_dia_util(yyyymmdd: str) -> str:
-    """
-    Regra da ABA (trabalho):
-    - Se a data do Diário cair em sábado/domingo/feriado/recesso: avança até o próximo dia útil.
-    - Se cair em dia útil: retorna a mesma data.
-    """
     d = datetime.strptime(yyyymmdd, "%Y%m%d").date()
     nao_expediente = NAO_EXPEDIENTE_POR_ANO.get(d.year, set())
 
-    def eh_util(x: date) -> bool:
-        return (x.weekday() < 5) and (x not in nao_expediente)  # Mon=0..Fri=4
-
-    while not eh_util(d):
+    while d.weekday() >= 5 or d in nao_expediente:
         d += timedelta(days=1)
 
     return d.strftime("%Y%m%d")
@@ -158,93 +89,51 @@ def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
 
 
 def normalizar_data(entrada: str) -> str:
-    s_raw = "" if entrada is None else str(entrada)
-    s = s_raw.strip()
-    s_lower = s.lower()
+    s = (entrada or "").strip().lower()
 
-    # --- PALAVRAS-CHAVE ---
-    if s_lower in ("hoje", "ontem", "anteontem"):
+    if s in ("hoje", "ontem", "anteontem"):
         base = datetime.now(TZ_BR)
-        if s_lower == "ontem":
+        if s == "ontem":
             base -= timedelta(days=1)
-        elif s_lower == "anteontem":
+        elif s == "anteontem":
             base -= timedelta(days=2)
         return base.strftime("%Y%m%d")
 
-    # --- DIAS DA SEMANA (última ocorrência passada) ---
     weekday_map = {
         "terça": 1, "terca": 1,
-        "quarta": 2,
-        "quinta": 3,
-        "sexta": 4,
+        "quarta": 2, "quinta": 3, "sexta": 4,
         "sábado": 5, "sabado": 5,
     }
 
-    if s_lower in weekday_map:
-        target = weekday_map[s_lower]  # Mon=0 ... Sun=6
+    if s in weekday_map:
         today = datetime.now(TZ_BR)
-        days_back = (today.weekday() - target) % 7
-        if days_back == 0:
-            days_back = 7  # garante "passado"
-        return (today - timedelta(days=days_back)).strftime("%Y%m%d")
+        delta = (today.weekday() - weekday_map[s]) % 7 or 7
+        return (today - timedelta(days=delta)).strftime("%Y%m%d")
 
     digits = "".join(ch for ch in s if ch.isdigit())
 
     if len(digits) == 4:
-        # ddmm -> ano atual
-        dd = digits[0:2]
-        mm = digits[2:4]
-        yyyy = datetime.now(TZ_BR).year
-        yyyymmdd = f"{yyyy:04d}{mm}{dd}"
-
+        yyyymmdd = f"{datetime.now(TZ_BR).year:04d}{digits[2:4]}{digits[0:2]}"
     elif len(digits) == 6:
-        # ddmmyy -> assume 20yy
-        dd = digits[0:2]
-        mm = digits[2:4]
-        yy = int(digits[4:6])
-        yyyy = 2000 + yy
-        yyyymmdd = f"{yyyy:04d}{mm}{dd}"
-
+        yyyymmdd = f"20{digits[4:6]}{digits[2:4]}{digits[0:2]}"
     elif len(digits) == 8:
-        # pode ser yyyymmdd OU ddmmyyyy
         if digits.startswith(("19", "20")):
-            try:
-                datetime.strptime(digits, "%Y%m%d")
-                return digits  # é yyyymmdd válido
-            except ValueError:
-                pass  # cai para ddmmyyyy
-
-        dd = digits[0:2]
-        mm = digits[2:4]
-        yyyy = digits[4:8]
-        yyyymmdd = f"{yyyy}{mm}{dd}"
-
+            datetime.strptime(digits, "%Y%m%d")
+            return digits
+        yyyymmdd = f"{digits[4:8]}{digits[2:4]}{digits[0:2]}"
     else:
-        raise ValueError(
-            "Data inválida. Use hoje, ontem, anteontem, "
-            "ddmm, ddmmyy, ddmmyyyy, dd/mm/yy, dd/mm/yyyy ou yyyymmdd."
-        )
+        raise ValueError("Data inválida.")
 
     datetime.strptime(yyyymmdd, "%Y%m%d")
     return yyyymmdd
 
 
-def montar_url_diario(data_in: str) -> str:
-    yyyymmdd = normalizar_data(data_in)
-    yyyy = yyyymmdd[:4]
-    return f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"
+def montar_url_diario(entrada: str) -> str:
+    yyyymmdd = normalizar_data(entrada)
+    return f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
 
 
-def _parece_pdf(caminho: str) -> bool:
-    try:
-        with open(caminho, "rb") as f:
-            head = f.read(5)
-        return head == b"%PDF-"
-    except Exception:
-        return False
-
-
-def baixar_pdf_por_url(url: str) -> str | None:
+def baixar_pdf_por_url(url: str, result: dict) -> str | None:
     import requests
 
     local = "/content/tmp_diario.pdf"
@@ -256,77 +145,19 @@ def baixar_pdf_por_url(url: str) -> str | None:
         with open(local, "wb") as f:
             f.write(r.content)
 
-        # verifica assinatura PDF
         with open(local, "rb") as f:
-            head = f.read(5)
-
-        if head != b"%PDF-":
-            print("?? DL não existe para a data informada (conteúdo não é PDF).")
-            print("URL:", url)
-            print("Head:", head)
-            return None
+            if f.read(5) != b"%PDF-":
+                result["warnings"].append("Conteúdo retornado não é PDF.")
+                result["warnings"].append(f"URL: {url}")
+                return None
 
         return local
 
     except Exception as e:
-        print("?? Erro ao baixar o Diário.")
-        print("URL:", url)
-        print("Erro:", e)
+        result["errors"].append("Erro ao baixar o Diário.")
+        result["errors"].append(f"URL: {url}")
+        result["errors"].append(str(e))
         return None
-
-
-print("Digite a data do Diário em DDMMYYYY (ex: 06012026).")
-print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
-print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
-
-entrada = input("Data/URL/caminho: ").strip()
-
-pdf_path = None  # sempre inicializa
-aba_yyyymmdd = None  # data da ABA (trabalho), quando a entrada for DATA
-aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
-
-if not entrada:
-    if not _COLAB:
-        raise SystemExit("Entrada vazia fora do Colab. Informe data, URL ou caminho.")
-    up = files.upload()
-    if not up:
-        raise SystemExit("Nenhum arquivo enviado.")
-    pdf_path = next(iter(up.keys()))
-    print(f"Upload OK: {pdf_path}")
-
-elif entrada.lower().startswith(("http://", "https://")):
-    pdf_path = baixar_pdf_por_url(entrada)
-    if not pdf_path:
-        raise SystemExit("DL não existe (URL não retornou PDF).")
-
-elif "/" in entrada or "\\" in entrada or entrada.lower().startswith("/content"):
-    pdf_path = entrada
-    if not os.path.exists(pdf_path):
-        raise SystemExit(f"Arquivo local não encontrado: {pdf_path}")
-
-else:
-    # Entrada é DATA (ou palavra-chave / dia da semana)
-    yyyymmdd = normalizar_data(entrada)          # data do Diário (PDF)
-    aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data de TRABALHO (ABA)
-
-    yyyy = yyyymmdd[:4]
-    url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"   # monta URL sem re-normalizar
-
-    print(f"URL montada: {url}")
-    print(f"Aba (trabalho) yyyymmdd: {aba_yyyymmdd}")
-
-    pdf_path = baixar_pdf_por_url(url)
-    if not pdf_path:
-        raise SystemExit("DL não existe para a data informada.")
-
-# ? TRATAMENTO DEFINITIVO DE DL INEXISTENTE
-if pdf_path is None:
-    print("? Diário inexistente para a data informada. Execução encerrada.")
-    raise SystemExit
-
-pdf_path = str(pdf_path)
-if not os.path.exists(pdf_path):
-    raise FileNotFoundError(f"PDF não encontrado após processamento: {pdf_path}")
 
 # --------------------------------------------------------------------------------
 # ABA FINAL (Sheets): usa sempre a ABA de trabalho quando houver DATA; senão cai em HOJE
