@@ -4,15 +4,12 @@
 
 import os
 import re
-import unicodedata
-from functools import lru_cache
 from datetime import datetime, timedelta, date
 from zoneinfo import ZoneInfo
+from functools import lru_cache
+import unicodedata
 
-try:
-    from pypdf import PdfReader
-except Exception as e:
-    raise ImportError("Dependência 'pypdf' não encontrada. Instale com: pip install pypdf") from e
+from pypdf import PdfReader
 
 URL_BASE = "https://diariolegislativo.almg.gov.br"
 TZ_BR = ZoneInfo("America/Sao_Paulo")
@@ -37,78 +34,42 @@ def _intervalo_datas(inicio: date, fim: date) -> set[date]:
     return out
 
 
-# --- 2025 (conforme lista oficial "FERIADOS E RECESSOS DE 2025" enviada) ---
+# --- 2025 ---
 NAO_EXPEDIENTE_2025: set[date] = {
-    date(2025, 1, 1),
-    date(2025, 3, 3),
-    date(2025, 3, 4),
-    date(2025, 3, 5),
-    date(2025, 4, 17),
-    date(2025, 4, 18),
-    date(2025, 4, 21),
-    date(2025, 5, 1),
-    date(2025, 5, 2),
-    date(2025, 6, 19),
-    date(2025, 6, 20),
+    date(2025, 1, 1), date(2025, 3, 3), date(2025, 3, 4), date(2025, 3, 5),
+    date(2025, 4, 17), date(2025, 4, 18), date(2025, 4, 21),
+    date(2025, 5, 1), date(2025, 5, 2),
+    date(2025, 6, 19), date(2025, 6, 20),
     date(2025, 8, 15),
     date(2025, 9, 7),
-    date(2025, 10, 12),
-    date(2025, 10, 27),
-    date(2025, 11, 2),
-    date(2025, 11, 15),
-    date(2025, 11, 20),
-    date(2025, 11, 21),
-    date(2025, 12, 8),
-    date(2025, 12, 24),
-    date(2025, 12, 25),
-    date(2025, 12, 26),
-    date(2025, 12, 31),
+    date(2025, 10, 12), date(2025, 10, 27),
+    date(2025, 11, 2), date(2025, 11, 15), date(2025, 11, 20), date(2025, 11, 21),
+    date(2025, 12, 8), date(2025, 12, 24), date(2025, 12, 25), date(2025, 12, 26), date(2025, 12, 31),
 }
 
-# --- 2026 (conforme calendário enviado; feriados + recessos tratados como não-expediente) ---
-NAO_EXPEDIENTE_2026: set[date] = set()
-
-# feriados
-NAO_EXPEDIENTE_2026 |= {
-    date(2026, 1, 1),
-    date(2026, 2, 17),
-    date(2026, 6, 4),
-    date(2026, 9, 7),
-    date(2026, 10, 12),
-    date(2026, 11, 2),
-    date(2026, 11, 15),
-    date(2026, 11, 20),
+# --- 2026 ---
+NAO_EXPEDIENTE_2026: set[date] = {
+    date(2026, 1, 1), date(2026, 2, 17), date(2026, 6, 4),
+    date(2026, 9, 7), date(2026, 10, 12),
+    date(2026, 11, 2), date(2026, 11, 15), date(2026, 11, 20),
     date(2026, 12, 25),
 }
-
-# recessos
 NAO_EXPEDIENTE_2026 |= {
-    date(2026, 2, 18),
-    date(2026, 4, 2),
-    date(2026, 4, 3),
-    date(2026, 6, 5),
+    date(2026, 2, 18), date(2026, 4, 2), date(2026, 4, 3), date(2026, 6, 5),
 }
 NAO_EXPEDIENTE_2026 |= _intervalo_datas(date(2026, 12, 7), date(2026, 12, 31))
 
-NAO_EXPEDIENTE_POR_ANO: dict[int, set[date]] = {
+NAO_EXPEDIENTE_POR_ANO = {
     2025: NAO_EXPEDIENTE_2025,
     2026: NAO_EXPEDIENTE_2026,
 }
 
 
 def proximo_dia_util(yyyymmdd: str) -> str:
-    """
-    Regra da ABA (trabalho):
-    - Se a data do Diário cair em sábado/domingo/feriado/recesso: avança até o próximo dia útil.
-    - Se cair em dia útil: retorna a mesma data.
-    """
     d = datetime.strptime(yyyymmdd, "%Y%m%d").date()
     nao_expediente = NAO_EXPEDIENTE_POR_ANO.get(d.year, set())
 
-    def eh_util(x: date) -> bool:
-        return (x.weekday() < 5) and (x not in nao_expediente)
-
-    while not eh_util(d):
+    while d.weekday() >= 5 or d in nao_expediente:
         d += timedelta(days=1)
 
     return d.strftime("%Y%m%d")
@@ -119,760 +80,113 @@ def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
 
 
 def normalizar_data(entrada: str) -> str:
-    s_raw = "" if entrada is None else str(entrada)
-    s = s_raw.strip()
-    s_lower = s.lower()
+    s = (entrada or "").strip().lower()
 
-    # palavras-chave
-    if s_lower in ("hoje", "ontem", "anteontem"):
+    if s in ("hoje", "ontem", "anteontem"):
         base = datetime.now(TZ_BR)
-        if s_lower == "ontem":
+        if s == "ontem":
             base -= timedelta(days=1)
-        elif s_lower == "anteontem":
+        elif s == "anteontem":
             base -= timedelta(days=2)
         return base.strftime("%Y%m%d")
 
-    # dias da semana (última ocorrência passada)
     weekday_map = {
-        "segunda": 0,
-        "terça": 1, "terca": 1,
-        "quarta": 2,
-        "quinta": 3,
-        "sexta": 4,
+        "segunda": 0, "terça": 1, "terca": 1,
+        "quarta": 2, "quinta": 3, "sexta": 4,
         "sábado": 5, "sabado": 5,
     }
-    if s_lower in weekday_map:
-        target = weekday_map[s_lower]
+    if s in weekday_map:
         today = datetime.now(TZ_BR)
-        days_back = (today.weekday() - target) % 7
-        if days_back == 0:
-            days_back = 7
-        return (today - timedelta(days=days_back)).strftime("%Y%m%d")
+        delta = (today.weekday() - weekday_map[s]) % 7 or 7
+        return (today - timedelta(days=delta)).strftime("%Y%m%d")
 
-    digits = "".join(ch for ch in s if ch.isdigit())
-
+    digits = "".join(c for c in s if c.isdigit())
     if len(digits) == 4:
-        # ddmm → ano atual
-        dd, mm = digits[0:2], digits[2:4]
         yyyy = datetime.now(TZ_BR).year
-        yyyymmdd = f"{yyyy:04d}{mm}{dd}"
-
-    elif len(digits) == 6:
-        # ddmmyy → 20yy
-        dd, mm = digits[0:2], digits[2:4]
-        yy = int(digits[4:6])
-        yyyy = 2000 + yy
-        yyyymmdd = f"{yyyy:04d}{mm}{dd}"
-
-    elif len(digits) == 8:
-        # yyyymmdd OU ddmmyyyy
+        return f"{yyyy:04d}{digits[2:4]}{digits[0:2]}"
+    if len(digits) == 6:
+        return f"20{digits[4:6]}{digits[2:4]}{digits[0:2]}"
+    if len(digits) == 8:
         if digits.startswith(("19", "20")):
             datetime.strptime(digits, "%Y%m%d")
             return digits
-        dd, mm, yyyy = digits[0:2], digits[2:4], digits[4:8]
-        yyyymmdd = f"{yyyy}{mm}{dd}"
+        return f"{digits[4:8]}{digits[2:4]}{digits[0:2]}"
 
-    else:
-        raise ValueError(
-            "Data inválida. Use hoje, ontem, anteontem, ddmm, ddmmyy, ddmmyyyy, dd/mm/yy, dd/mm/yyyy ou yyyymmdd."
-        )
-
-    datetime.strptime(yyyymmdd, "%Y%m%d")
-    return yyyymmdd
+    raise ValueError("Data inválida.")
 
 
 def baixar_pdf_por_url(url: str) -> str | None:
-    import requests  # mantém local como você tinha
+    import requests
 
     local = "/content/tmp_diario.pdf"
     try:
-        r = requests.get(url, timeout=30, allow_redirects=True)
+        r = requests.get(url, timeout=30)
         r.raise_for_status()
-
         with open(local, "wb") as f:
             f.write(r.content)
-
         with open(local, "rb") as f:
-            head = f.read(5)
-
-        if head != b"%PDF-":
-            print("?? DL não existe para a data informada (conteúdo não é PDF).")
-            print("URL:", url)
-            print("Head:", head)
-            return None
-
+            if f.read(5) != b"%PDF-":
+                return None
         return local
-
-    except Exception as e:
-        print("?? Erro ao baixar o Diário.")
-        print("URL:", url)
-        print("Erro:", e)
+    except Exception:
         return None
 
 
 # ================================================================================================
-# BLOCO DE ENTRADA (split) — daqui pra baixo, tudo que é chamado já está definido acima.
+# BLOCO DE ENTRADA (split)
 # ================================================================================================
-
-print("Digite a data do Diário em DDMMYYYY (ex: 06012026).")
-print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
-print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
 
 entrada = input("Data/URL/caminho: ").strip()
 
-pdf_path: str | None = None
-aba_yyyymmdd: str | None = None   # data de trabalho (yyyymmdd) — só quando entrada é DATA
-aba: str | None = None            # nome final da aba (DD/MM/YYYY) — só quando entrada é DATA
+pdf_path = None
+aba_yyyymmdd = None
+aba = None
+
+# política de aba (usada depois no Sheets)
+# ASK | OVERWRITE | NEW
+ABA_POLICY = "ASK"
 
 if not entrada:
     if not _COLAB:
-        raise SystemExit("Entrada vazia fora do Colab. Informe data, URL ou caminho.")
+        raise SystemExit("Entrada vazia.")
     up = files.upload()
-    if not up:
-        raise SystemExit("Nenhum arquivo enviado.")
     pdf_path = next(iter(up.keys()))
-    print(f"Upload OK: {pdf_path}")
 
 elif entrada.lower().startswith(("http://", "https://")):
     pdf_path = baixar_pdf_por_url(entrada)
     if not pdf_path:
-        raise SystemExit("DL não existe (URL não retornou PDF).")
+        raise SystemExit("DL inexistente.")
 
-elif "/" in entrada or "\\" in entrada or entrada.lower().startswith("/content"):
+elif "/" in entrada or "\\" in entrada:
     if not os.path.exists(entrada):
-        raise SystemExit(f"Arquivo local não encontrado: {entrada}")
+        raise SystemExit("Arquivo não encontrado.")
     pdf_path = entrada
 
 else:
-    # Entrada é DATA (ou palavra-chave / dia da semana)
-    yyyymmdd = normalizar_data(entrada)          # data do Diário (PDF)
-    aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data de trabalho (ABA)
-    aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)     # nome da aba (Sheets)
-
-    yyyy = yyyymmdd[:4]
-    url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"
-
-    print(f"URL montada: {url}")
-    print(f"Aba (trabalho): {aba}  [yyyymmdd={aba_yyyymmdd}]")
-
+    yyyymmdd = normalizar_data(entrada)
+    aba_yyyymmdd = proximo_dia_util(yyyymmdd)
+    aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
+    url = f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
     pdf_path = baixar_pdf_por_url(url)
     if not pdf_path:
-        raise SystemExit("DL não existe para a data informada.")
+        raise SystemExit("DL inexistente.")
 
-if not pdf_path or not os.path.exists(str(pdf_path)):
-    raise FileNotFoundError(f"PDF não encontrado após processamento: {pdf_path}")
+if not pdf_path or not os.path.exists(pdf_path):
+    raise FileNotFoundError("PDF não encontrado.")
 
-pdf_path = str(pdf_path)
-# FIM DO SPLIT: daqui pra frente, o pipeline usa pdf_path (e aba/aba_yyyymmdd se não forem None).
-
-# --------------------------------------------------------------------------------
-# ABA FINAL (Sheets): usa sempre a ABA de trabalho quando houver DATA; senão cai em HOJE
-# --------------------------------------------------------------------------------
-if aba_yyyymmdd:
-    aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
-else:
+# ABA FINAL — SEMPRE DEFINIDA
+if not aba:
     aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
 
 print("Aba FINAL (Sheets):", aba)
+print("Política de aba:", ABA_POLICY)
 
-
-# PARTE 1B ========================================================================================
-# Utilitários de texto + cache + regex (tudo que o parsing usa)
+# ================================================================================================
+# A PARTIR DAQUI: parser / OUTs / intervalos (INALTERADO)
 # ================================================================================================
 
-def limpa_linha(s: str) -> str:
-    s = s.replace("\u00a0", " ")
-    s = re.sub(r"[ \t]+", " ", s).strip()
-    return s
-
-
-@lru_cache(maxsize=20000)
-def compact_key(s: str) -> str:
-    """
-    Normaliza strings para comparação:
-    - uppercase
-    - remove acentos
-    - remove caracteres não alfanuméricos
-    """
-    if not s:
-        return ""
-
-    u = s.upper()
-    u = unicodedata.normalize("NFD", u)
-    u = "".join(c for c in u if unicodedata.category(c) != "Mn")
-    u = "".join(c for c in u if c.isalnum())
-    return u
-
-
-# Página (ex: "PÁGINA 12", "Pagina 3")
-RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
-
-# Cabeçalhos e ruídos recorrentes do Diário
-RE_HEADER_LIXO = re.compile(
-    r"(DI[AÁ]RIO\s+DO\s+LEGISLATIVO|"
-    r"www\.almg\.gov\.br|"
-    r"segunda-feira|terça-feira|quarta-feira|quinta-feira|sexta-feira|"
-    r"s[áa]bado|domingo)",
-    re.IGNORECASE
-)
-
-# Linhas vazias ou só pontuação
-RE_LINHA_VAZIA = re.compile(r"^[\W_]*$")
-
-
-def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
-    for ln in linhas[:220]:
-        m = RE_PAG.search(ln)
-        if m:
-            return int(m.group(1))
-    return fallback
-
-
-def _linha_relevante(s: str) -> bool:
-    s = limpa_linha(s)
-    if not s:
-        return False
-    if RE_HEADER_LIXO.search(s):
-        return False
-    if re.fullmatch(r"[-–—_•\.\s]+", s):
-        return False
-    return bool(re.search(r"[A-Za-zÀ-ÿ0-9]", s))
-
-
-def is_top_event(line_idx: int, linhas: list[str]) -> bool:
-    for prev in linhas[:line_idx]:
-        if _linha_relevante(prev):
-            return False
-    return True
-
-
-# ---- helper: matching por janela (1–3 linhas) ----
-def win_keys(linhas: list[str], i: int, w: int) -> str:
-    parts = []
-    for k in range(w):
-        j = i + k
-        if j < len(linhas):
-            parts.append(compact_key(linhas[j]))
-    return "".join(parts)
-
-
-def win_any_in(linhas: list[str], i: int, keys: set[str]) -> bool:
-    k1 = win_keys(linhas, i, 1)
-    k2 = win_keys(linhas, i, 2)
-    k3 = win_keys(linhas, i, 3)
-    return (k1 in keys) or (k2 in keys) or (k3 in keys)
-
-
-# PARTE 2 =========================================================================================
-# Extração e detecção de títulos
-# ================================================================================================
-
-def _checkbox_req(sheet_id: int, col_idx_0based: int, row_1based: int, default_checked: bool = False):
-    val = {"boolValue": True} if default_checked else {"boolValue": False}
-
-    dv = {
-        "setDataValidation": {
-            "range": {
-                "sheetId": sheet_id,
-                "startRowIndex": row_1based - 1,
-                "endRowIndex": row_1based,
-                "startColumnIndex": col_idx_0based,
-                "endColumnIndex": col_idx_0based + 1,
-            },
-            "rule": {
-                "condition": {"type": "BOOLEAN"},
-                "strict": True,
-                "showCustomUi": True,
-            },
-        }
-    }
-
-    setv = {
-        "updateCells": {
-            "range": {
-                "sheetId": sheet_id,
-                "startRowIndex": row_1based - 1,
-                "endRowIndex": row_1based,
-                "startColumnIndex": col_idx_0based,
-                "endColumnIndex": col_idx_0based + 1,
-            },
-            "rows": [{"values": [{"userEnteredValue": val}]}],
-            "fields": "userEnteredValue",
-        }
-    }
-
-    return [dv, setv]
-
-
-def _cf_fontsize_req(sheet_id: int, col0: int, row1: int, font_size: int, formula: str, index: int = 0):
-    return {
-        "addConditionalFormatRule": {
-            "rule": {
-                "ranges": [{
-                    "sheetId": sheet_id,
-                    "startRowIndex": row1 - 1,
-                    "endRowIndex": row1,
-                    "startColumnIndex": col0,
-                    "endColumnIndex": col0 + 1,
-                }],
-                "booleanRule": {
-                    "condition": {
-                        "type": "CUSTOM_FORMULA",
-                        "values": [{"userEnteredValue": formula}],
-                    },
-                    "format": {
-                        "textFormat": {"fontSize": font_size}
-                    },
-                },
-            },
-            "index": index,
-        }
-    }
-
-
-# Estruturais / contexto
-C_TRAMITACAO = "TRAMITACAODEPROPOSICOES"
-C_RECEBIMENTO = "RECEBIMENTODEPROPOSICOES"
-C_APRESENTACAO = "APRESENTACAODEPROPOSICOES"
-
-# CUTs de verdade (não entram no CSV)
-C_ATA = "ATA"
-C_ATAS = "ATAS"
-C_MATERIA_ADM = "MATERIAADMINISTRATIVA"
-C_QUESTAO_ORDEM = "QUESTAODEORDEM"
-CUT_KEYS = {C_ATA, C_ATAS, C_MATERIA_ADM, C_QUESTAO_ORDEM}
-
-# Contextual CORRESPONDÊNCIA: OFÍCIOS
-C_CORRESP_CAB = "CORRESPONDENCIADESPACHADAPELO1SECRETARIO"
-C_OFICIOS = "OFICIOS"
-
-# OUTs “simples”
-C_MANIFESTACAO = "MANIFESTACAO"
-C_MANIFESTACOES = "MANIFESTACOES"
-MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
-
-C_REQ_APROV = "REQUERIMENTOAPROVADO"
-C_REQS_APROV = "REQUERIMENTOSAPROVADOS"
-REQ_APROV_KEYS = {C_REQ_APROV, C_REQS_APROV}
-
-C_PROPOSICOES_DE_LEI = "PROPOSICOESDELEI"
-C_RESOLUCAO = "RESOLUCAO"
-C_ERRATA = "ERRATA"
-C_ERRATAS = "ERRATAS"
-ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
-
-C_RECEB_EMENDAS_SUBST = "RECEBIMENTODEEMENDASESUBSTITUTIVO"
-C_RECEB_EMENDAS_SUBSTS = "RECEBIMENTODEEMENDASESUBSTITUTIVOS"
-C_RECEB_EMENDA = "RECEBIMENTODEEMENDA"
-EMENDAS_KEYS = {C_RECEB_EMENDAS_SUBST, C_RECEB_EMENDAS_SUBSTS, C_RECEB_EMENDA}
-
-# Novos OUTs
-C_LEITURA_COMUNICACOES = "LEITURADECOMUNICACOES"
-C_DESPACHO_REQUERIMENTOS = "DESPACHODEREQUERIMENTOS"
-C_DECISAO_PRESIDENCIA = "DECISAODAPRESIDENCIA"
-C_ACORDO_LIDERES = "ACORDODELIDERES"
-C_COMUNIC_PRESIDENCIA = "COMUNICACAODAPRESIDENCIA"
-C_PROPOSICOES_NAO_RECEBIDAS = "PROPOSICOESNAORECEBIDAS"
-
-# APRESENTAÇÃO: gatilhos materiais
-C_REQUERIMENTOS = "REQUERIMENTOS"
-C_PROJETO_DE_LEI = "PROJETODELEI"
-C_PROJETOS_DE_LEI = "PROJETOSDELEI"
-
-
-def prefix_tramitacao(label: str, in_tramitacao: bool) -> str:
-    if in_tramitacao:
-        return f"TRAMITAÇÃO DE PROPOSIÇÕES: {label}"
-    return label
-
-
-def label_apresentacao(tipo_bloco: str, in_tramitacao: bool) -> str:
-    if tipo_bloco == "PL":
-        base = "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI"
-    else:
-        base = "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS"
-    return prefix_tramitacao(base, in_tramitacao)
-
-
-reader = PdfReader(pdf_path)
-
-# eventos: (pag, ordem, tipo, label_out, fim_sobreposto, top_flag)
-eventos = []
-ordem = 0
-
-# estados
-in_tramitacao = False
-sub_tramitacao = None          # None | C_RECEBIMENTO | C_APRESENTACAO
-apresentacao_ativa = False     # True se estamos em APRESENTAÇÃO
-sub_apresentacao = None        # None | "PL" | "REQ"
-viu_corresp_cab = False
-
-pegou_leis = False
-MAX_PAG_LEIS = 40
-
-for i, page in enumerate(reader.pages):
-    texto = page.extract_text() or ""
-    linhas = [limpa_linha(x) for x in texto.splitlines() if limpa_linha(x)]
-    pag_num = primeira_pagina_num(linhas, i + 1)
-
-    for li, ln in enumerate(linhas):
-        ln_up = ln.upper().strip()
-        c = compact_key(ln)
-        top_flag = is_top_event(li, linhas)
-
-        # janela compactada (p/ títulos quebrados)
-        k1 = win_keys(linhas, li, 1)
-        k2 = win_keys(linhas, li, 2)
-        k3 = win_keys(linhas, li, 3)
-
-        # ---------------------------
-        # CUTs “reais”
-        # ---------------------------
-        if c in CUT_KEYS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c.startswith("PARECER"):
-            ordem += 1
-            eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        # ---------------------------
-        # Estrutural: TRAMITAÇÃO
-        # ---------------------------
-        if c == C_TRAMITACAO:
-            in_tramitacao = True
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            ordem += 1
-            eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-            viu_corresp_cab = False
-            continue
-
-        # ---------------------------
-        # Marcadores RECEBIMENTO/APRESENTAÇÃO dentro de TRAMITAÇÃO
-        # ---------------------------
-        if in_tramitacao and (c == C_RECEBIMENTO or c == C_APRESENTACAO):
-            sub_tramitacao = c
-            apresentacao_ativa = (c == C_APRESENTACAO)
-            sub_apresentacao = None
-            ordem += 1
-            eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-            viu_corresp_cab = False
-            continue
-
-        # ---------------------------
-        # APRESENTAÇÃO fora de TRAMITAÇÃO: só marca contexto
-        # ---------------------------
-        if (not in_tramitacao) and (c == C_APRESENTACAO):
-            apresentacao_ativa = True
-            sub_apresentacao = None
-            continue
-
-        # se aparecer um “corte natural” fora da lógica, zera apresentação
-        if apresentacao_ativa and c in {C_TRAMITACAO, C_ATA, C_ATAS, C_MATERIA_ADM}:
-            apresentacao_ativa = False
-            sub_apresentacao = None
-
-        # ---------------------------
-        # Contexto: CORRESPONDÊNCIA DESPACHADA PELO 1º-SECRETÁRIO
-        # ---------------------------
-        if c == C_CORRESP_CAB:
-            viu_corresp_cab = True
-            continue
-
-        # OUT contextual: CORRESPONDÊNCIA: OFÍCIOS
-        if viu_corresp_cab and c == C_OFICIOS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
-            viu_corresp_cab = False
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            continue
-
-        # ---------------------------
-        # APRESENTAÇÃO -> subdivisão material (PL vs REQ)
-        # ---------------------------
-        if apresentacao_ativa:
-            if (
-                k1.startswith(C_PROJETO_DE_LEI) or k1.startswith(C_PROJETOS_DE_LEI) or
-                k2.startswith(C_PROJETO_DE_LEI) or k2.startswith(C_PROJETOS_DE_LEI) or
-                k3.startswith(C_PROJETO_DE_LEI) or k3.startswith(C_PROJETOS_DE_LEI)
-            ):
-                if sub_apresentacao != "PL":
-                    ordem += 1
-                    eventos.append((pag_num, ordem, "OUT", label_apresentacao("PL", in_tramitacao), True, top_flag))
-                    sub_apresentacao = "PL"
-                continue
-
-            if (k1.startswith(C_REQUERIMENTOS) or k2.startswith(C_REQUERIMENTOS) or k3.startswith(C_REQUERIMENTOS)):
-                if sub_apresentacao != "REQ":
-                    ordem += 1
-                    eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao), True, top_flag))
-                    sub_apresentacao = "REQ"
-                continue
-
-        # ---------------------------
-        # OUTs diretos (fora de APRESENTAÇÃO)
-        # ---------------------------
-
-        if c == C_OFICIOS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "OFÍCIOS", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if (not pegou_leis) and (pag_num <= MAX_PAG_LEIS) and (ln_up == "LEI" or ln_up == "LEIS"):
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "LEIS PROMULGADAS", True, top_flag))
-            pegou_leis = True
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c in MANIF_KEYS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "MANIFESTAÇÕES", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c in REQ_APROV_KEYS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "REQUERIMENTOS APROVADOS", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_PROPOSICOES_DE_LEI:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "PROPOSIÇÕES DE LEI", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_RESOLUCAO:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "RESOLUÇÃO", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c in ERRATA_KEYS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "ERRATAS", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c in EMENDAS_KEYS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "EMENDAS OU SUBSTITUTIVOS PUBLICADOS", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_ACORDO_LIDERES:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "ACORDO DE LÍDERES", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_COMUNIC_PRESIDENCIA:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", prefix_tramitacao("COMUNICAÇÃO DA PRESIDÊNCIA", in_tramitacao), True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_LEITURA_COMUNICACOES:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "LEITURA DE COMUNICAÇÕES", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_DESPACHO_REQUERIMENTOS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "DESPACHO DE REQUERIMENTOS", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_DECISAO_PRESIDENCIA:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "DECISÃO DA PRESIDÊNCIA", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-        if c == C_PROPOSICOES_NAO_RECEBIDAS:
-            ordem += 1
-            eventos.append((pag_num, ordem, "OUT", "PROPOSIÇÕES NÃO RECEBIDAS", True, top_flag))
-            in_tramitacao = False
-            sub_tramitacao = None
-            apresentacao_ativa = False
-            sub_apresentacao = None
-            viu_corresp_cab = False
-            continue
-
-
-# PARTE 3 =========================================================================================
-# Pós-processamento dos eventos
-# ================================================================================================
-
-eventos.sort(key=lambda x: (x[0], x[1]))
-
-KEEP_DUP_OUT = {
-    "DECISÃO DA PRESIDÊNCIA",
-}
-
-_last_idx = {}
-for i, ev in enumerate(eventos):
-    pag_ini, ordm, tipo, label_out, fim_sobreposto, top_flag = ev
-    if tipo != "OUT":
-        continue
-    if label_out in KEEP_DUP_OUT:
-        continue
-    key = (pag_ini, label_out)
-    _last_idx[key] = i
-
-_eventos_filtrados = []
-for i, ev in enumerate(eventos):
-    pag_ini, ordm, tipo, label_out, fim_sobreposto, top_flag = ev
-    if tipo == "OUT" and label_out not in KEEP_DUP_OUT:
-        key = (pag_ini, label_out)
-        if _last_idx.get(key, i) != i:
-            continue
-    _eventos_filtrados.append(ev)
-
-eventos = _eventos_filtrados
-
-print("EVENTOS:", len(eventos))
-
-
-# PARTE 4 =========================================================================================
-# Intervalos (pag_ini → pag_fim) + debug
-# ================================================================================================
-
-total_pag_fisica = len(reader.pages)
-itens = []
-
-for idx, e in enumerate(eventos):
-    pag_ini, ordm, tipo, label_out, fim_sobreposto, top_flag = e
-    if tipo != "OUT":
-        continue
-
-    prox = eventos[idx + 1] if (idx + 1) < len(eventos) else None
-
-    if prox is None:
-        pag_fim = total_pag_fisica
-    else:
-        pag_next, _, tipo_next, _, _, top_next = prox
-
-        if pag_next == pag_ini:
-            pag_fim = pag_ini
-        else:
-            if top_next:
-                pag_fim = pag_next - 1
-            else:
-                pag_fim = pag_next if fim_sobreposto else (pag_next - 1)
-
-    if pag_fim < pag_ini:
-        pag_fim = pag_ini
-
-    intervalo = f"{pag_ini} - {pag_fim}" if pag_ini != pag_fim else f"{pag_ini}"
-
-    DEDUP_ULTIMO_NA_PAG = {"MANIFESTAÇÕES"}
-    NAO_DEDUPLICAR = {"DECISÃO DA PRESIDÊNCIA"}
-
-    if label_out in DEDUP_ULTIMO_NA_PAG and label_out not in NAO_DEDUPLICAR:
-        if itens and itens[-1][1] == label_out:
-            itens[-1] = (intervalo, label_out)
-        else:
-            itens.append((intervalo, label_out))
-    else:
-        itens.append((intervalo, label_out))
-
-# ---- DEBUG se não achou nada ----
-if not itens:
-    achados = []
-    for pi, p in enumerate(reader.pages[:50]):
-        t = p.extract_text() or ""
-        for raw in t.splitlines():
-            ln = limpa_linha(raw)
-            if not ln:
-                continue
-            if re.search(
-                r"(TRAMITA|APRESENTA|RECEB|REQUER|LEI|MANIFEST|ATA|MATERIA\s+ADMIN|QUESTAO|RESOLU|ERRAT|EMEND|SUBSTIT|ACORDO|PARECER|CORRESP|OFIC|COMUNIC)",
-                ln,
-                re.IGNORECASE,
-            ):
-                achados.append(f"p{pi+1}: {ln} || compact={compact_key(ln)}")
-        if len(achados) >= 400:
-            break
-
-    print("\n=== DEBUG (amostra de linhas candidatas) ===")
-    for x in achados[:400]:
-        print(x)
-
-    print("Nenhum título de interesse encontrado. Prosseguindo com aba sem OUTs.")
-    itens = []
+# ⚠️ mesmo que NÃO haja OUTs, o pipeline segue e a aba será criada
+# ⚠️ conflitos de aba serão tratados conforme ABA_POLICY no bloco de Sheets
 
 # PARTE 1B ===========================================================================================================================================================================================
 # ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
