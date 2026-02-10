@@ -22,7 +22,7 @@ from functools import lru_cache
 
 from pypdf import PdfReader
 
-# ---- 1) Regex base ----
+# ---- 1) Regex Base ----
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
 
 URL_BASE = "https://diariolegislativo.almg.gov.br"
