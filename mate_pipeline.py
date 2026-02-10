@@ -1,6 +1,4 @@
 # PARTE 1A ========================================================================================
-# - intervalo SOBREPOSTO quando configurado: pag_fim = página onde começa o próximo título (sem -1)
-#
 # Regras de fechamento (pag_fim):
 # - Se próximo evento (OUT ou CUT) está em outra página:
 #   - Se próximo evento está no TOPO REAL da página: pag_fim = pag_next - 1
@@ -22,6 +20,7 @@ from functools import lru_cache
 
 from pypdf import PdfReader
 
+
 # ---- 1) Regex Base ----
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
 
@@ -30,6 +29,7 @@ CACHE_DIR = "/content/pdfs_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 TZ_BR = ZoneInfo("America/Sao_Paulo")
+
 
 # ================================================================================================
 # NÃO-EXPEDIENTE
@@ -53,9 +53,10 @@ NAO_EXPEDIENTE_2025 = {
     date(2025, 8, 15),
     date(2025, 9, 7),
     date(2025, 10, 12), date(2025, 10, 27),
-    date(2025, 11, 2), date(2025, 11, 15), date(2025, 11, 20), date(2025, 11, 21),
-    date(2025, 12, 8), date(2025, 12, 24), date(2025, 12, 25),
-    date(2025, 12, 26), date(2025, 12, 31),
+    date(2025, 11, 2), date(2025, 11, 15),
+    date(2025, 11, 20), date(2025, 11, 21),
+    date(2025, 12, 8), date(2025, 12, 24),
+    date(2025, 12, 25), date(2025, 12, 26), date(2025, 12, 31),
 }
 
 NAO_EXPEDIENTE_2026 = {
@@ -128,8 +129,8 @@ def normalizar_data(entrada: str) -> str:
     return yyyymmdd
 
 
-def montar_url_diario(entrada: str) -> str:
-    yyyymmdd = normalizar_data(entrada)
+def montar_url_diario(data_in: str) -> str:
+    yyyymmdd = normalizar_data(data_in)
     return f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
 
 
