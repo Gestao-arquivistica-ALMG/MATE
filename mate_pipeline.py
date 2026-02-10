@@ -3231,12 +3231,6 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
     data2 = []
     data2.append({"range": f"'{tab_name}'!B8:C8", "values": [[tab_name, "DIÁRIO DO LEGISLATIVO"]]})
 
-    if itens:
-        data2.append({"range": f"'{tab_name}'!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
-        data2.append({
-        "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
-        "values": extras_out})
-
     ALVOS = (
         "REQUERIMENTOS DE COMISSÃO",
         "LANÇAMENTOS DE TRAMITAÇÃO",
