@@ -284,6 +284,9 @@ def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
             return int(m.group(1))
     return fallback
 
+# PARTE 1B ========================================================================================
+# Normalização e cache de chaves (uso interno)
+# ================================================================================================
 
 from functools import lru_cache
 import unicodedata
@@ -306,14 +309,26 @@ def compact_key(s: str) -> str:
 
     return u
 
-# ---- TOP detection (robusta) ----
+# PARTE 1C ========================================================================================
+# Regex base e padrões de limpeza
+# ================================================================================================
+
+import re
+
+# Página (ex: "PÁGINA 12", "Pagina 3")
+RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
+
+# Cabeçalhos e ruídos recorrentes do Diário
 RE_HEADER_LIXO = re.compile(
-    r"(DI[ÁA]RIO\s+DO\s+LEGISLATIVO|www\.almg\.gov\.br|"
-    r"Segunda-feira|Ter[aç]a-feira|Quarta-feira|Quinta-feira|Sexta-feira|S[aá]bado|Domingo|"
-    r"\bP[ÁA]GINA\s+\d+\b)",
+    r"(DI[AÁ]RIO\s+DO\s+LEGISLATIVO|"
+    r"www\.almg\.gov\.br|"
+    r"segunda-feira|terça-feira|quarta-feira|quinta-feira|sexta-feira|"
+    r"s[áa]bado|domingo)",
     re.IGNORECASE
 )
 
+# Linhas vazias ou só pontuação
+RE_LINHA_VAZIA = re.compile(r"^[\W_]*$")
 
 def _linha_relevante(s: str) -> bool:
     s = limpa_linha(s)
