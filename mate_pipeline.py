@@ -432,8 +432,27 @@ def req_font(
 
 def req_merge(sheet_id: int, a1: str):
     gr = a1_to_grid(a1)
-    return {"mergeCells": {"range": {"sheetId": sheet_id, **gr}, "mergeType": "MERGE_ALL"}}
 
+    # --- GARANTE GridRange completo ---
+    sr = gr.get("startRowIndex")
+    er = gr.get("endRowIndex")
+    sc = gr.get("startColumnIndex")
+    ec = gr.get("endColumnIndex")
+
+    if sr is None or er is None:
+        # merge sem linhas é inválido → IGNORA
+        return None
+
+    if sc is None or ec is None:
+        # merge sem colunas é inválido → IGNORA
+        return None
+
+    return {
+        "mergeCells": {
+            "range": {"sheetId": sheet_id, **gr},
+            "mergeType": "MERGE_ALL",
+        }
+    }
 
 def req_unmerge(sheet_id: int, a1: str):
     gr = a1_to_grid(a1)
