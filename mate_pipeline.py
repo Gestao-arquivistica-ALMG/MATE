@@ -3351,8 +3351,14 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
     reqs = _sanitize_merge_reqs(reqs, rows_target, cols_target)
     _with_backoff(sh.batch_update, body={"requests": reqs})
 
-    return sh.url, ws.title
+# aplica requests MESMO se não houver itens
+if reqs:
+    _with_backoff(sh.batch_update, body={"requests": reqs})
+else:
+    # força criação/layout mínimo (evita retorno None)
+    _with_backoff(sh.batch_update, body={"requests": []})
 
+return sh.url, ws.title
 
 SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
