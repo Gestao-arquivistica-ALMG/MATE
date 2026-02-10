@@ -4,6 +4,10 @@
 
 import os
 import re
+import csv
+import hashlib
+import urllib.request
+from pathlib import Path
 from datetime import datetime, timedelta, date
 from zoneinfo import ZoneInfo
 from functools import lru_cache
@@ -14,6 +18,10 @@ from pypdf import PdfReader
 URL_BASE = "https://diariolegislativo.almg.gov.br"
 TZ_BR = ZoneInfo("America/Sao_Paulo")
 
+# cache de PDFs (restaurado)
+CACHE_DIR = "/content/pdfs_cache"
+os.makedirs(CACHE_DIR, exist_ok=True)
+
 # ---- Colab? ----
 try:
     from google.colab import files  # type: ignore
@@ -23,7 +31,7 @@ except Exception:
 
 
 # --------------------------------------------------------------------------------
-# NÃO-EXPEDIENTE (FERIADOS + RECESSOS) — usado para calcular a ABA (dia útil de trabalho)
+# NÃO-EXPEDIENTE (FERIADOS + RECESSOS)
 # --------------------------------------------------------------------------------
 def _intervalo_datas(inicio: date, fim: date) -> set[date]:
     out: set[date] = set()
@@ -115,6 +123,21 @@ def normalizar_data(entrada: str) -> str:
     raise ValueError("Data inválida.")
 
 
+# --- RESTAURADO ---
+def montar_url_diario(data_in: str) -> str:
+    yyyymmdd = normalizar_data(data_in)
+    return f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
+
+
+# --- RESTAURADO ---
+def _parece_pdf(caminho: str) -> bool:
+    try:
+        with open(caminho, "rb") as f:
+            return f.read(5) == b"%PDF-"
+    except Exception:
+        return False
+
+
 def baixar_pdf_por_url(url: str) -> str | None:
     import requests
 
@@ -124,9 +147,8 @@ def baixar_pdf_por_url(url: str) -> str | None:
         r.raise_for_status()
         with open(local, "wb") as f:
             f.write(r.content)
-        with open(local, "rb") as f:
-            if f.read(5) != b"%PDF-":
-                return None
+        if not _parece_pdf(local):
+            return None
         return local
     except Exception:
         return None
@@ -166,7 +188,7 @@ else:
     yyyymmdd = normalizar_data(entrada)
     aba_yyyymmdd = proximo_dia_util(yyyymmdd)
     aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
-    url = f"{URL_BASE}/{yyyymmdd[:4]}/L{yyyymmdd}.pdf"
+    url = montar_url_diario(entrada)
     pdf_path = baixar_pdf_por_url(url)
     if not pdf_path:
         raise SystemExit("DL inexistente.")
@@ -184,9 +206,8 @@ print("Política de aba:", ABA_POLICY)
 # ================================================================================================
 # A PARTIR DAQUI: parser / OUTs / intervalos (INALTERADO)
 # ================================================================================================
-
 # ⚠️ mesmo que NÃO haja OUTs, o pipeline segue e a aba será criada
-# ⚠️ conflitos de aba serão tratados conforme ABA_POLICY no bloco de Sheets
+# ⚠️ conflitos de aba serão tratados conforme ABA_POLICY
 
 # PARTE 1B ===========================================================================================================================================================================================
 # ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
