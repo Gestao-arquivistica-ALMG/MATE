@@ -243,41 +243,56 @@ def win_any_in(linhas: list[str], i: int, keys: set[str]) -> bool:
     )
 
 
-def _checkbox_req(sheet_id: int, col_idx_0based: int, row_1based: int, default_checked: bool = False):
+def _checkbox_req(
+    sheet_id: int,
+    col_idx_0based: int,
+    row_1based: int,
+    default_checked: bool = False,
+):
+    """
+    Cria checkbox (data validation BOOLEAN) e define o valor padrão (TRUE/FALSE).
+    Retorna uma lista de requests para batch_update.
+    """
     val = {"boolValue": True} if default_checked else {"boolValue": False}
 
-    return [
-        {
-            "setDataValidation": {
-                "range": {
-                    "sheetId": sheet_id,
-                    "startRowIndex": row_1based - 1,
-                    "endRowIndex": row_1based,
-                    "startColumnIndex": col_idx_0based,
-                    "endColumnIndex": col_idx_0based + 1,
-                },
-                "rule": {
-                    "condition": {"type": "BOOLEAN"},
-                    "strict": True,
-                    "showCustomUi": True,
-                },
-            }
-        },
-        {
-            "updateCells": {
-                "range": {
-                    "sheetId": sheet_id,
-                    "startRowIndex": row_1based - 1,
-                    "endRowIndex": row_1based,
-                    "startColumnIndex": col_idx_0based,
-                    "endColumnIndex": col_idx_0based + 1,
-                },
-                "rows": [{"values": [{"userEnteredValue": val}]}],
-                "fields": "userEnteredValue",
-            }
-        },
-    ]
+    dv = {
+        "setDataValidation": {
+            "range": {
+                "sheetId": sheet_id,
+                "startRowIndex": row_1based - 1,
+                "endRowIndex": row_1based,
+                "startColumnIndex": col_idx_0based,
+                "endColumnIndex": col_idx_0based + 1,
+            },
+            "rule": {
+                "condition": {"type": "BOOLEAN"},
+                "strict": True,
+                "showCustomUi": True,
+            },
+        }
+    }
 
+    setv = {
+        "updateCells": {
+            "range": {
+                "sheetId": sheet_id,
+                "startRowIndex": row_1based - 1,
+                "endRowIndex": row_1based,
+                "startColumnIndex": col_idx_0based,
+                "endColumnIndex": col_idx_0based + 1,
+            },
+            "rows": [
+                {
+                    "values": [
+                        {"userEnteredValue": val}
+                    ]
+                }
+            ],
+            "fields": "userEnteredValue",
+        }
+    }
+
+    return [dv, setv]
 
 def _cf_fontsize_req(sheet_id: int, col0: int, row1: int, font_size: int, formula: str, index: int = 0):
     return {
