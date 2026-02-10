@@ -781,7 +781,15 @@ def upsert_tab_diario(
     # o que realmente vai aparecer na planilha (troca DROPDOWN_x por "-")
     extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
 
-    itens_len = len(itens) if itens else 0
+        # --- ITENS ---
+    if itens is None:
+        itens = []
+
+    itens_len = len(itens)
+
+    # FORÇA layout mesmo quando itens vier vazio
+    HAS_LAYOUT = True
+
     start_extra_row = 9 + itens_len
 
     footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
