@@ -887,8 +887,17 @@ def upsert_tab_diario(
         }
     })
 
-    # merges fixos (MERGES) — sempre (layout base não depende de itens)
+    # merges fixos (MERGES) — só aplica se o range couber no grid atual
     for r in MERGES:
+        gr = a1_to_grid(r)
+
+        # ignora merges que extrapolam o grid (causa erro 400)
+        if (
+            gr.get("endRowIndex", 0) > rows_target
+            or gr.get("endColumnIndex", 0) > cols_target
+        ):
+            continue
+
         reqs.append(req_unmerge(sheet_id, r))
         reqs.append(req_merge(sheet_id, r))
 
