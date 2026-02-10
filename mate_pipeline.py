@@ -3348,6 +3348,7 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
 
     reqs = reqs_ok
 
+    reqs = _sanitize_merge_reqs(reqs, rows_target, cols_target)
     _with_backoff(sh.batch_update, body={"requests": reqs})
 
     return sh.url, ws.title
