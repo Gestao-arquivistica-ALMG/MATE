@@ -3350,7 +3350,7 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
 
     reqs = reqs_ok
 
-    reqs = _sanitize_merge_reqs(reqs, rows_target, cols_target)
+    # reqs = _sanitize_merge_reqs(reqs, rows_target, cols_target)
     _with_backoff(sh.batch_update, body={"requests": reqs})
 
     # aplica requests MESMO se não houver itens
