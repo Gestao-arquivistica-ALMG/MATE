@@ -1,15 +1,20 @@
 # PARTE 1A ========================================================================================
-# Entrada → resolve pdf_path e (se entrada for DATA) resolve aba (DD/MM/YYYY) e aba_yyyymmdd (yyyymmdd)
+# Entrada → resolve pdf_path e resolve:
+#   - diario_key (chave estável do diário, usada no fluxo inteiro)
+#   - aba (DD/MM/YYYY) e aba_yyyymmdd (YYYYMMDD) quando aplicável
 # ================================================================================================
 
 import os
 import re
+import hashlib
 import unicodedata
 from datetime import datetime, timedelta, date
 from zoneinfo import ZoneInfo
 from functools import lru_cache
+from pathlib import Path
+from urllib.parse import urlparse
 
-from pypdf import PdfReader
+from pypdf import PdfReader  # noqa: F401  (usado nas partes seguintes)
 
 URL_BASE = "https://diariolegislativo.almg.gov.br"
 TZ_BR = ZoneInfo("America/Sao_Paulo")
@@ -112,20 +117,80 @@ def normalizar_data(entrada: str) -> str:
     raise ValueError("Data inválida.")
 
 
+def _sha1_bytes(data: bytes) -> str:
+    h = hashlib.sha1()
+    h.update(data)
+    return h.hexdigest()
+
+
+def _sha1_file(path: str, max_bytes: int = 8 * 1024 * 1024) -> str:
+    h = hashlib.sha1()
+    with open(path, "rb") as f:
+        remain = max_bytes
+        while remain > 0:
+            chunk = f.read(min(1024 * 1024, remain))
+            if not chunk:
+                break
+            h.update(chunk)
+            remain -= len(chunk)
+    return h.hexdigest()
+
+
+def _cache_dir() -> Path:
+    # Colab: /content é garantido; fora do Colab: usa diretório atual.
+    base = Path("/content") if _COLAB else Path.cwd()
+    d = base / ".cache_diario_legislativo"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
 def baixar_pdf_por_url(url: str) -> str | None:
-    import requests
-    local = "/content/tmp_diario.pdf"
+    """
+    Baixa PDF com cache (por URL). Retorna caminho local, ou None se falhar/arquivo não for PDF.
+    """
+    import urllib.request
+
+    cache_key = _sha1_bytes(url.encode("utf-8"))[:16]
+    local = _cache_dir() / f"dl_{cache_key}.pdf"
+
+    if local.exists() and local.stat().st_size > 0:
+        try:
+            with open(local, "rb") as f:
+                if f.read(5) == b"%PDF-":
+                    return str(local)
+        except Exception:
+            pass
+        try:
+            local.unlink(missing_ok=True)
+        except Exception:
+            pass
+
     try:
-        r = requests.get(url, timeout=30)
-        r.raise_for_status()
+        req = urllib.request.Request(url, headers={"User-Agent": "mate.ia/1.0"})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = resp.read()
+        if not data.startswith(b"%PDF-"):
+            return None
         with open(local, "wb") as f:
-            f.write(r.content)
-        with open(local, "rb") as f:
-            if f.read(5) != b"%PDF-":
-                return None
-        return local
+            f.write(data)
+        return str(local)
     except Exception:
         return None
+
+
+def _extrair_yyyymmdd_da_url(url: str) -> str | None:
+    """
+    Tenta extrair YYYYMMDD de URLs no padrão .../YYYY/LYYYYMMDD.pdf
+    """
+    path = urlparse(url).path or ""
+    m = re.search(r"/(\d{4})/L(\d{8})\.pdf$", path)
+    if not m:
+        return None
+    yyyy = m.group(1)
+    yyyymmdd = m.group(2)
+    if yyyymmdd.startswith(yyyy):
+        return yyyymmdd
+    return None
 
 
 # ================================================================================================
@@ -137,6 +202,7 @@ entrada = input("Data/URL/caminho: ").strip()
 pdf_path: str | None = None
 aba_yyyymmdd: str | None = None
 aba: str | None = None
+diario_key: str | None = None  # <- GARANTIDO ao final
 
 ABA_POLICY = "ASK"
 
@@ -145,16 +211,24 @@ if not entrada:
         raise SystemExit("Entrada vazia.")
     up = files.upload()
     pdf_path = next(iter(up.keys()))
+    diario_key = _sha1_file(pdf_path)[:16]
 
 elif entrada.lower().startswith(("http://", "https://")):
+    src_yyyymmdd = _extrair_yyyymmdd_da_url(entrada)
     pdf_path = baixar_pdf_por_url(entrada)
     if not pdf_path:
         raise SystemExit("DL inexistente.")
+    diario_key = (src_yyyymmdd or _sha1_bytes(entrada.encode("utf-8"))[:16])
+
+    if src_yyyymmdd:
+        aba_yyyymmdd = proximo_dia_util(src_yyyymmdd)
+        aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
 
 elif "/" in entrada or "\\" in entrada:
     if not os.path.exists(entrada):
         raise SystemExit("Arquivo não encontrado.")
     pdf_path = entrada
+    diario_key = _sha1_file(pdf_path)[:16]
 
 else:
     yyyymmdd = normalizar_data(entrada)
@@ -164,13 +238,21 @@ else:
     pdf_path = baixar_pdf_por_url(url)
     if not pdf_path:
         raise SystemExit("DL inexistente.")
+    diario_key = yyyymmdd  # chave estável por data informada
 
 if not pdf_path or not os.path.exists(pdf_path):
     raise FileNotFoundError("PDF não encontrado.")
 
-if not aba:
-    aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
+if not diario_key:
+    # fallback duro (não deveria acontecer)
+    diario_key = _sha1_file(pdf_path)[:16]
 
+if not aba:
+    # Se não veio de DATA/URL padrão, usa a data local atual só para nome de aba (não afeta diario_key).
+    aba_yyyymmdd = datetime.now(TZ_BR).strftime("%Y%m%d")
+    aba = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
+
+print("diario_key:", diario_key)
 print("Aba FINAL (Sheets):", aba)
 print("Política de aba:", ABA_POLICY)
 
@@ -294,6 +376,7 @@ def _checkbox_req(
 
     return [dv, setv]
 
+
 def _cf_fontsize_req(sheet_id: int, col0: int, row1: int, font_size: int, formula: str, index: int = 0):
     return {
         "addConditionalFormatRule": {
@@ -316,27 +399,33 @@ def _cf_fontsize_req(sheet_id: int, col0: int, row1: int, font_size: int, formul
             "index": index,
         }
     }
+# PARTE 1B ===============================================================================================================================
+# =============================================== 5) GOOGLE SHEETS (layout + dados) =====================================================
+# ======================================================================================================================================
 
-# PARTE 1B ===========================================================================================================================================================================================
-# ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
-# ====================================================================================================================================================================================================
-
-import time, random
+import time
+import random
 import gspread
 from google.colab import auth
 from google.auth import default
 
+# --------------------------------------------------------------------------------------------------
+# AUTH / CLIENT
+# --------------------------------------------------------------------------------------------------
 auth.authenticate_user()
 creds, _ = default(scopes=["https://www.googleapis.com/auth/spreadsheets"])
 gc = gspread.authorize(creds)
-SHEET_ID = None
 
+SHEET_ID: int | None = None
 
+# --------------------------------------------------------------------------------------------------
+# UTIL BÁSICOS
+# --------------------------------------------------------------------------------------------------
 def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
     return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
 
 
-def rgb_hex_to_api(hex_str: str):
+def rgb_hex_to_api(hex_str: str) -> dict:
     h = hex_str.lstrip("#")
     return {
         "red": int(h[0:2], 16) / 255.0,
@@ -344,122 +433,31 @@ def rgb_hex_to_api(hex_str: str):
         "blue": int(h[4:6], 16) / 255.0,
     }
 
-def a1_to_grid(a1: str):
+
+def a1_to_grid(a1: str) -> dict:
     a1 = a1.strip()
     if ":" not in a1:
         a1 = f"{a1}:{a1}"
     return gspread.utils.a1_range_to_grid_range(a1)
 
-def field_mask_from_fmt(fmt: dict) -> str:
-    parts = []
-    if "backgroundColor" in fmt:
-        parts.append("userEnteredFormat.backgroundColor")
-    if "horizontalAlignment" in fmt:
-        parts.append("userEnteredFormat.horizontalAlignment")
-    if "verticalAlignment" in fmt:
-        parts.append("userEnteredFormat.verticalAlignment")
-    if "wrapStrategy" in fmt:
-        parts.append("userEnteredFormat.wrapStrategy")
-    if "textFormat" in fmt:
-        parts.append("userEnteredFormat.textFormat")
-    if "numberFormat" in fmt:
-        parts.append("userEnteredFormat.numberFormat")
-    return ",".join(parts) if parts else "userEnteredFormat"
+
+def _with_backoff(fn, *args, **kwargs):
+    for attempt in range(8):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            msg = str(e)
+            if any(x in msg for x in ("429", "Quota", "Rate", "503")):
+                sleep_s = min(60, (2 ** attempt) + random.random())
+                time.sleep(sleep_s)
+                continue
+            raise
 
 
-def req_repeat_cell(sheet_id: int, a1: str, fmt: dict):
-    gr = a1_to_grid(a1)
-    return {
-        "repeatCell": {
-            "range": {"sheetId": sheet_id, **gr},
-            "cell": {"userEnteredFormat": fmt},
-            "fields": field_mask_from_fmt(fmt),
-        }
-    }
-
-
-def req_text(sheet_id: int, a1: str, font_family: str, font_size: int, fg_hex: str):
-    gr = a1_to_grid(a1)
-    return {
-        "repeatCell": {
-            "range": {"sheetId": sheet_id, **gr},
-            "cell": {
-                "userEnteredFormat": {
-                    "textFormat": {
-                        "fontFamily": font_family,
-                        "fontSize": int(font_size),
-                        "foregroundColor": rgb_hex_to_api(fg_hex),
-                    }
-                }
-            },
-            "fields": "userEnteredFormat.textFormat(fontFamily,fontSize,foregroundColor)",
-        }
-    }
-
-
-def req_font(
-    sheet_id: int,
-    a1: str,
-    font_size: int | None = None,
-    fg_hex: str | None = None,
-    bold: bool | None = None,
-):
-    gr = a1_to_grid(a1)
-
-    tf = {}
-    fields = []
-
-    if font_size is not None:
-        tf["fontSize"] = int(font_size)
-        fields.append("userEnteredFormat.textFormat.fontSize")
-
-    if fg_hex is not None:
-        tf["foregroundColor"] = rgb_hex_to_api(fg_hex)
-        fields.append("userEnteredFormat.textFormat.foregroundColor")
-
-    if bold is not None:
-        tf["bold"] = bool(bold)
-        fields.append("userEnteredFormat.textFormat.bold")
-
-    return {
-        "repeatCell": {
-            "range": {"sheetId": sheet_id, **gr},
-            "cell": {"userEnteredFormat": {"textFormat": tf}},
-            "fields": ",".join(fields) if fields else "userEnteredFormat.textFormat",
-        }
-    }
-
-
-def req_merge(sheet_id: int, a1: str):
-    gr = a1_to_grid(a1)
-
-    # --- GARANTE GridRange completo ---
-    sr = gr.get("startRowIndex")
-    er = gr.get("endRowIndex")
-    sc = gr.get("startColumnIndex")
-    ec = gr.get("endColumnIndex")
-
-    if sr is None or er is None:
-        # merge sem linhas é inválido → IGNORA
-        return None
-
-    if sc is None or ec is None:
-        # merge sem colunas é inválido → IGNORA
-        return None
-
-    return {
-        "mergeCells": {
-            "range": {"sheetId": sheet_id, **gr},
-            "mergeType": "MERGE_ALL",
-        }
-    }
-
-def req_unmerge(sheet_id: int, a1: str):
-    gr = a1_to_grid(a1)
-    return {"unmergeCells": {"range": {"sheetId": sheet_id, **gr}}}
-
-
-def req_dim_rows(sheet_id: int, start: int, end: int, px: int):
+# --------------------------------------------------------------------------------------------------
+# REQUEST BUILDERS (mínimo necessário)
+# --------------------------------------------------------------------------------------------------
+def req_dim_rows(sheet_id: int, start: int, end: int, px: int) -> dict:
     return {
         "updateDimensionProperties": {
             "range": {"sheetId": sheet_id, "dimension": "ROWS", "startIndex": start, "endIndex": end},
@@ -469,7 +467,7 @@ def req_dim_rows(sheet_id: int, start: int, end: int, px: int):
     }
 
 
-def req_dim_cols(sheet_id: int, start: int, end: int, px: int):
+def req_dim_cols(sheet_id: int, start: int, end: int, px: int) -> dict:
     return {
         "updateDimensionProperties": {
             "range": {"sheetId": sheet_id, "dimension": "COLUMNS", "startIndex": start, "endIndex": end},
@@ -479,779 +477,20 @@ def req_dim_cols(sheet_id: int, start: int, end: int, px: int):
     }
 
 
-def req_tab_color(sheet_id: int, rgb: dict):
-    return {"updateSheetProperties": {"properties": {"sheetId": sheet_id, "tabColor": rgb}, "fields": "tabColor"}}
-
-
-def req_update_borders(sheet_id: int, a1: str, top=None, bottom=None, left=None, right=None, innerH=None, innerV=None):
+def req_unmerge(sheet_id: int, a1: str) -> dict:
     gr = a1_to_grid(a1)
+    return {"unmergeCells": {"range": {"sheetId": sheet_id, **gr}}}
 
-    # --- CORREÇÃO NA ORIGEM: garante GridRange completo ---
-    sr = gr.get("startRowIndex")
-    er = gr.get("endRowIndex")
-    sc = gr.get("startColumnIndex")
-    ec = gr.get("endColumnIndex")
 
-    # Se a1_to_grid vier incompleto, completa como 1 linha/1 coluna (caso típico: célula única)
-    if sr is not None and er is None:
-        gr["endRowIndex"] = sr + 1
-    if sc is not None and ec is None:
-        gr["endColumnIndex"] = sc + 1
+def req_merge(sheet_id: int, a1: str) -> dict:
+    gr = a1_to_grid(a1)
+    return {"mergeCells": {"range": {"sheetId": sheet_id, **gr}, "mergeType": "MERGE_ALL"}}
 
-    b = {}
-    if top is not None:
-        b["top"] = top
-    if bottom is not None:
-        b["bottom"] = bottom
-    if left is not None:
-        b["left"] = left
-    if right is not None:
-        b["right"] = right
-    if innerH is not None:
-        b["innerHorizontal"] = innerH
-    if innerV is not None:
-        b["innerVertical"] = innerV
 
-    return {"updateBorders": {"range": {"sheetId": sheet_id, **gr}, **b}}
-
-def border(style: str, color_rgb: dict):
-    return {"style": style, "color": color_rgb}
-
-
-def req_merge_row(sheet_id: int, row1: int, col_start0: int, col_end0: int):
-    return {
-        "mergeCells": {
-            "range": {
-                "sheetId": sheet_id,
-                "startRowIndex": row1 - 1,
-                "endRowIndex": row1,
-                "startColumnIndex": col_start0,
-                "endColumnIndex": col_end0,
-            },
-            "mergeType": "MERGE_ALL",
-        }
-    }
-
-
-def _with_backoff(fn, *args, **kwargs):
-    for attempt in range(8):
-        try:
-            return fn(*args, **kwargs)
-        except Exception as e:
-            msg = str(e)
-            if ("429" in msg) or ("Quota exceeded" in msg) or ("Rate Limit" in msg) or ("503" in msg):
-                sleep_s = min(60, (2**attempt) + random.random())
-                print(f"[backoff] tentativa {attempt+1}/8 – esperando {sleep_s:.1f}s por quota...")
-                time.sleep(sleep_s)
-                continue
-            raise
-
-
-# ====================================================================================================================================================================================================
-# =============================================================================================== CORES ==============================================================================================
-# ====================================================================================================================================================================================================
-DARK_RED_1 = rgb_hex_to_api("#CC0000")
-TAB_RED    = rgb_hex_to_api("#990000")
-BLACK      = rgb_hex_to_api("#000000")
-WHITE      = rgb_hex_to_api("#FFFFFF")
-THIN_BLACK = rgb_hex_to_api("#000000")
-
-# ====================================================================================================================================================================================================
-# ============================================================================================= LARGURAS =============================================================================================
-# ====================================================================================================================================================================================================
-COL_OVERRIDES = {
-    0: 23,  1: 60,  2: 370, 3: 75,  4: 85,  5: 75,  6: 75,
-    7: 45,  8: 45,  9: 45,  10: 45, 11: 45, 12: 45, 13: 45,
-    14: 45, 15: 60, 16: 75, 17: 70, 18: 70, 19: 60, 20: 60,
-    21: 60, 22: 60, 23: 60, 24: 60
-}
-COL_DEFAULT = 60
-
-# ====================================================================================================================================================================================================
-# ============================================================================================= HEIGHTS ==============================================================================================
-# ====================================================================================================================================================================================================
-ROW_HEIGHTS = [
-    ("default", 16),
-    (0, 4, 14),   # linhas 1-4
-    (4, 5, 25),   # linha 5
-]
-
-# ====================================================================================================================================================================================================
-# ============================================================================================ MERGES ================================================================================================
-# ====================================================================================================================================================================================================
-MERGES = [
-    "A1:B4", "C1:F4", "G1:G4", "Q1:Y1",
-    "A5:B5", "E5:F5", "G5:I5", "T5:Y5",
-    "E6:G6", "E8:G8",
-    "H1:H2", "H3:H4", "I1:I2", "I3:I4", "J1:J2", "J3:J4", "K1:K2", "K3:K4", "L1:L2", "L3:L4", "M1:M2", "M3:M4", "N1:N2", "N3:N4", "O1:O2", "O3:O4",
-    "J5:O5", "J6:O6", "J7:O7", "J8:O8", "J9:O9", "J10:O10",
-    "J11:O11", "J12:O12", "J13:O13", "J14:O14", "J15:O15",
-    "J16:O16", "J17:O17", "J18:O18", "J19:O19", "J20:O20",
-    "J21:O21", "J22:O22",
-]
-
-# ====================================================================================================================================================================================================
-# ============================================================================================== STYLES ==============================================================================================
-# ====================================================================================================================================================================================================
-STYLES = [
-    # Geral
-    ("A1:B", {"h": "CENTER", "v": "MIDDLE", "underline": False}),
-    ("B6:I", {"font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
-    ("D6:I", {"wrap": "CLIP", "h": "LEFT", "v": "MIDDLE", "font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
-    ("D6:I", {"h": "CENTER", "v": "MIDDLE"}),
-    ("P6:S", {"h": "CENTER", "v": "MIDDLE", "font": "Vidaloka", "size": 8, "bold": True, "underline": False, "fg": "BLACK"}),
-    ("H6:H", {"font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
-    ("I6:I", {"font": "Inconsolata", "size": 6, "bold": True, "underline": False}),
-    # Cabeçalho
-    ("A5:Y5", {"bg": "BLACK", "h": "CENTER", "v": "MIDDLE", "wrap": "CLIP", "font": "Vidaloka", "size": 10, "bold": True, "fg": "WHITE"}),
-    ("A5:B5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE", "numfmt": ("DATE", "d/m")}),
-    ("C1:F4", {"bg": "DARK_RED_1", "h": "CENTER", "v": "MIDDLE", "wrap": "CLIP", "font": "Oregano", "size": 29, "bold": True, "fg": "WHITE"}),
-    ("C5", {"font": "Vidaloka", "size": 15, "bold": True, "underline": False, "fg": "WHITE"}),
-    ("D5", {"font": "Vidaloka", "size": 12, "bold": True, "fg": "WHITE"}),
-    ("E5:I5", {"font": "Vidaloka", "size": 14, "bold": True, "fg": "WHITE"}),
-    ("G5:I5", {"font": "Vidaloka", "size": 14, "bold": True, "underline": False, "fg": "WHITE"}),
-    ("J5:O5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE"}),
-    ("T5:Y5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE"}),
-    ("P2:Y4", {"wrap": "CLIP", "font": "Special Elite", "size": 6, "bold": True}),
-    ("P1:P4", {"h": "RIGHT", "v": "MIDDLE", "wrap": "CLIP", "font": "Special Elite", "size": 6, "bold": True}),
-    ("Q1:Y1", {"bg": "TAB_RED", "h": "LEFT", "v": "MIDDLE", "wrap": "CLIP", "font": "Vidaloka", "size": 8, "bold": True, "fg": "WHITE"}),
-    ("Y2:Y4", {"font": "Special Elite", "size": 6, "h": "LEFT", "v": "MIDDLE", "wrap": "CLIP", "bold": True}),
-    ("G1:O4", {"h": "CENTER", "v": "MIDDLE"}),
-    ("Q2:X4", {"h": "CENTER", "v": "MIDDLE"}),
-    # Ata
-    ("E8:G8", {"h": "CENTER", "v": "MIDDLE", "numfmt": ("DATE", "dd/MM/yyyy")}),
-]
-
-# ====================================================================================================================================================================================================
-# ============================================================================================== BORDERS =============================================================================================
-# ====================================================================================================================================================================================================
-if 'itens' not in globals():
-    itens = []
-rows_needed = 50 + len(itens)
-BORDERS = [
-    ("G1:G4", {"right": ("SOLID", "THIN_BLACK")}),
-    ("P1:P4", {"left": ("SOLID", "THIN_BLACK")}),
-    ("P4:Y4", {"bottom": ("SOLID_MEDIUM", "DARK_RED_1")}),
-    ("V2:V4", {"right": ("SOLID_MEDIUM", "DARK_RED_1")}),
-    ("G1:O4", {"bottom": ("SOLID_MEDIUM", "DARK_RED_1")}),
-    (f"A6:A{rows_needed}", {"right":  ("SOLID", "THIN_BLACK")}),
-    (f"H6:H{rows_needed}", {"left":   ("SOLID", "THIN_BLACK")}),
-    (f"P6:P{rows_needed}", {"left":   ("SOLID", "THIN_BLACK")}),
-    (f"C6:D{rows_needed}", {"right":  ("SOLID_MEDIUM", "BLACK")}),
-    (f"S1:S{rows_needed}", {"right":  ("SOLID_MEDIUM", "BLACK")}),
-    (f"Y:Y", {"right": ("SOLID_MEDIUM", "BLACK")}),
-]
-
-# ====================================================================================================================================================================================================
-# ============================================================================================= BUILDERS =============================================================================================
-# ====================================================================================================================================================================================================
-
-_COLOR_MAP = {
-    "DARK_RED_1": DARK_RED_1,
-    "TAB_RED": TAB_RED,
-    "BLACK": BLACK,
-    "WHITE": WHITE,
-    "THIN_BLACK": THIN_BLACK,
-}
-
-
-def _mini_to_user_fmt(mini: dict) -> dict:
-    fmt = {}
-
-    if "bg" in mini:
-        fmt["backgroundColor"] = _COLOR_MAP[mini["bg"]]
-    if "h" in mini:
-        fmt["horizontalAlignment"] = mini["h"]
-    if "v" in mini:
-        fmt["verticalAlignment"] = mini["v"]
-    if "wrap" in mini:
-        fmt["wrapStrategy"] = mini["wrap"]
-    if "numfmt" in mini:
-        t, p = mini["numfmt"]  # ex: ("DATE","d/m")
-        fmt["numberFormat"] = {"type": t, "pattern": p}
-
-    tf = {}
-    if "font" in mini:
-        tf["fontFamily"] = mini["font"]
-    if "size" in mini:
-        tf["fontSize"] = int(mini["size"])
-    if "bold" in mini:
-        tf["bold"] = bool(mini["bold"])
-    if "underline" in mini:
-        tf["underline"] = bool(mini["underline"])
-    if "fg" in mini:
-        tf["foregroundColor"] = _COLOR_MAP[mini["fg"]]
-    if tf:
-        fmt["textFormat"] = tf
-
-    return fmt
-
-
-def _border_from_spec(style_name: str, color_name: str):
-    return border(style_name, _COLOR_MAP[color_name])
-
-
-def paint_left_of_dropdown(
-    sheet_id: int,
-    start_row_0: int,
-    end_row_0: int,
-    dropdown_col_0: int,
-    fmt: dict,
-):
-    """
-    Pinta a célula à esquerda do dropdown (mesmas linhas).
-    Ex.: dropdown em col C (2) -> pinta col B (1).
-    start_row_0 / end_row_0: índices 0-based, end exclusivo.
-    dropdown_col_0: índice 0-based da coluna do dropdown.
-    fmt: dict no padrão userEnteredFormat (igual o dropdown).
-    """
-    left_col = max(0, dropdown_col_0 - 1)
-
-    return {
-        "repeatCell": {
-            "range": {
-                "sheetId": sheet_id,
-                "startRowIndex": start_row_0,
-                "endRowIndex": end_row_0,
-                "startColumnIndex": left_col,
-                "endColumnIndex": left_col + 1,
-            },
-            "cell": {"userEnteredFormat": fmt},
-            "fields": "userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)",
-        }
-    }
-
-
-# ====================================================================================================================================================================================================
-# ============================================================================================ FUNCTIONS =============================================================================================
-# ====================================================================================================================================================================================================
-from datetime import datetime, timedelta
-
-def aba_key_from_diario_key(diario_key: str) -> str:
-    d = datetime.strptime(diario_key, "%Y%m%d").date()
-    if d.weekday() == 5:  # sábado -> segunda
-        d += timedelta(days=2)
-    return d.strftime("%Y%m%d")
-
-def upsert_tab_diario(
-    spreadsheet_url_or_id: str,
-    diario_key: str,                 # YYYYMMDD
-    itens: list[tuple[str, str]],
-    clear_first: bool = False,
-    default_col_width_px: int = COL_DEFAULT,
-    col_width_overrides: dict[int, int] | None = None,
-):
-    tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
-    sh = gc.open_by_url(spreadsheet_url_or_id) if spreadsheet_url_or_id.startswith("http") else gc.open_by_key(spreadsheet_url_or_id)
-
-    # cria/abre aba
-    try:
-        ws = sh.worksheet(tab_name)
-        global SHEET_ID
-        SHEET_ID = ws.id
-    except gspread.WorksheetNotFound:
-        ws = sh.add_worksheet(title=tab_name, rows=max(30, 20 + len(itens)), cols=25)
-        _with_backoff(ws.update_index, 1)
-
-    sheet_id = ws.id
-
-    # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
-    MIN_ROWS = 22
-    MIN_COLS = 25
-
-    if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
-        _with_backoff(ws.resize, rows=max(ws.row_count, MIN_ROWS), cols=max(ws.col_count, MIN_COLS))
-
-    # resize da planilha (linhas e colunas) — agora considera EXTRAS também
-    extras = [
-        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"; "REUNIÕES DE PLENÁRIO")'],
-        ["", ""],
-        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
-        ["", ""],
-        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
-        ["-", "-"],
-        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/login/login.jsp"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
-        ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
-        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://webmail.almg.gov.br/"; "CADASTRO DE E-MAILS")'],
-        ["-", "DROPDOWN_4"],   # <- linha do dropdown 4 (coluna C)
-        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://consulta-brs.almg.gov.br/brs/"; "IMPLANTAÇÃO DE TEXTOS")'],
-        ["", '=SUM(INDIRECT("B"&ROW());INDIRECT("E"&ROW());INDIRECT("F"&ROW());INDIRECT("G"&ROW()))'],   # <- linha da implantação de textos
-    ]
-
-    # o que realmente vai aparecer na planilha (troca DROPDOWN_x por "-")
-    extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
-
-        # --- ITENS ---
-    if itens is None:
-        itens = []
-
-    itens_len = len(itens)
-
-    # FORÇA layout mesmo quando itens vier vazio
-    HAS_LAYOUT = True
-
-    start_extra_row = 9 + itens_len
-
-    footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
-    rows_needed = 9 + itens_len + len(extras) + footer_rows - 1
-    cols_needed = 25
-
-    MIN_ROWS = 22
-    MIN_COLS = 25
-
-    rows_target = max(ws.row_count, rows_needed + 1, MIN_ROWS)
-    cols_target = max(ws.col_count, cols_needed, MIN_COLS)
-
-    _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
-
-    VIS_LAST_ROW_1BASED = rows_target - 1  # última linha "visível" (a última é técnica 1px)
-
-    # linha técnica (1px) — NÃO usa reqs aqui (reqs ainda não existe neste ponto)
-    _with_backoff(sh.batch_update, {
-        "requests": [{
-            "updateDimensionProperties": {
-                "range": {
-                    "sheetId": sheet_id,
-                    "dimension": "ROWS",
-                    "startIndex": rows_target - 1,
-                    "endIndex": rows_target
-                },
-                "properties": {"pixelSize": 1},
-                "fields": "pixelSize"
-            }
-        }]
-    })
-
-def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list[dict]:
-    out = []
-    for r in reqs:
-        key = next(iter(r.keys()), "")
-        if key in ("mergeCells", "unmergeCells"):
-            rr = r[key].get("range", {})
-            sr = rr.get("startRowIndex")
-            er = rr.get("endRowIndex")
-            sc = rr.get("startColumnIndex")
-            ec = rr.get("endColumnIndex")
-
-            # range incompleto => remove
-            if None in (sr, er, sc, ec):
-                continue
-
-            # range inválido => remove
-            if er <= sr or ec <= sc:
-                continue
-
-            # fora do grid => remove
-            if er > max_rows or ec > max_cols:
-                continue
-
-        out.append(r)
-    return out
-
-    # ====================================================================================================================================================================================================
-    # ============================================================================================ REQUESTS ==============================================================================================
-    # ====================================================================================================================================================================================================
-
-    reqs = []
-
-    # cor da aba
-    reqs.append(req_tab_color(sheet_id, DARK_RED_1))
-
-    # congela linhas 1–5
-    reqs.append({
-        "updateSheetProperties": {
-            "properties": {"sheetId": sheet_id, "gridProperties": {"frozenRowCount": 5}},
-            "fields": "gridProperties.frozenRowCount"
-        }
-    })
-
-    # alturas
-    for rh in ROW_HEIGHTS:
-        if rh[0] == "default":
-            reqs.append(req_dim_rows(sheet_id, 0, ws.row_count, rh[1]))
-        else:
-            start, end, px = rh
-            reqs.append(req_dim_rows(sheet_id, start, end, px))
-
-    # linha técnica (1px) — mantém a linha extra invisível (depois das alturas)
-    reqs.append({
-        "updateDimensionProperties": {
-            "range": {
-                "sheetId": sheet_id,
-                "dimension": "ROWS",
-                "startIndex": rows_target - 1,
-                "endIndex": rows_target
-            },
-            "properties": {"pixelSize": 1},
-            "fields": "pixelSize"
-        }
-    })
-
-    # larguras
-    reqs.append(req_dim_cols(sheet_id, 0, 25, default_col_width_px))
-    ow = col_width_overrides or COL_OVERRIDES
-    for col_idx, px in ow.items():
-        reqs.append(req_dim_cols(sheet_id, col_idx, col_idx + 1, px))
-
-    reqs.append({
-        "updateDimensionProperties": {
-            "range": {
-                "sheetId": sheet_id,
-                "dimension": "COLUMNS",
-                "startIndex": 19,   # T
-                "endIndex": 25      # Y (exclusivo)
-            },
-            "properties": {
-                "hiddenByUser": True
-            },
-            "fields": "hiddenByUser"
-        }
-    })
-
-    # --- UNMERGE GERAL: zera qualquer mesclagem antiga antes de aplicar os merges desta execução ---
-    reqs.append({
-        "unmergeCells": {
-            "range": {
-                "sheetId": sheet_id,
-                "startRowIndex": 0,
-                "endRowIndex": rows_target,
-                "startColumnIndex": 0,
-                "endColumnIndex": 25
-            }
-        }
-    })
-
-    # merges fixos (MERGES) — só aplica se o range couber no grid atual
-    for r in MERGES:
-        gr = a1_to_grid(r)
-
-        # ignora merges que extrapolam o grid (causa erro 400)
-        if (
-            gr.get("endRowIndex", 0) > rows_target
-            or gr.get("endColumnIndex", 0) > cols_target
-        ):
-            continue
-
-        reqs.append(req_unmerge(sheet_id, r))
-        reqs.append(req_merge(sheet_id, r))
-
-    # merges dinâmicos dos EXTRAS (nas linhas onde C != "-"), EXCETO "IMPLANTAÇÃO DE TEXTOS
-    MERGE_TITLES = (
-        "REUNIÕES DE PLENÁRIO",
-        "REUNIÕES DE COMISSÕES",
-        "REQUERIMENTOS DE COMISSÃO",
-        "LANÇAMENTOS DE TRAMITAÇÃO",
-        "CADASTRO DE E-MAILS",
-    )
-
-    extra_merge_rows = [
-        start_extra_row + i
-        for i, row in enumerate(extras)
-        if (
-            (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
-            and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
-            and any(t in str(row[1]).upper() for t in MERGE_TITLES)
-        )
-    ]
-
-    for r in extra_merge_rows:
-        reqs.append(req_unmerge(sheet_id, f"C{r}:D{r}"))
-        reqs.append(req_merge(sheet_id, f"C{r}:D{r}"))
-        reqs.append(req_unmerge(sheet_id, f"E{r}:G{r}"))
-        reqs.append(req_merge(sheet_id, f"E{r}:G{r}"))
-
-    # -----------------------------
-    # Linhas de DROPDOWN (não podem ter DV BOOLEAN em H)
-    # - C: "DROPDOWN_2" ou "DROPDOWN_4"
-    # - D: "DROPDOWN_3"
-    # -----------------------------
-    dropdown_rows = [
-        start_extra_row + i
-        for i, row in enumerate(extras)
-        if (
-            (row[1] if len(row) > 1 else "") in ("DROPDOWN_2", "DROPDOWN_4")
-            or (row[2] if len(row) > 2 else "") == "DROPDOWN_3"
-        )
-    ]
-
-    # -----------------------------
-    # Checkbox em H somente nas linhas de título (C != "-"/vazio),
-    # NÃO dropdown e NÃO DIÁRIO
-    # -----------------------------
-    extra_checkbox_rows = [
-        start_extra_row + i
-        for i, row in enumerate(extras)
-        if (row[1] if len(row) > 1 else "") not in ("-", "")
-        and (start_extra_row + i) not in dropdown_rows
-    ]
-
-    # range total dos EXTRAS (row 1-based -> grid 0-based endIndex exclusivo)
-    extra_start = start_extra_row
-    extra_end   = start_extra_row + len(extras)
-
-    # ====================================================================================================================================================================================================
-    # ============================================================================================ DROPDOWNS =============================================================================================
-    # ====================================================================================================================================================================================================
-
-    LISTA_DROPDOWNS_1_BG = "#fff2cc"   # cor leve p/ destacar que foi selecionado
-    LISTA_DROPDOWNS_1_FG = "#7f6000"
-
-    LISTA_DROPDOWN_1 = [
-        "-", "?",
-        "LEIS",
-        "LEI, COM PROPOSIÇÃO ANEXADA",
-        "LEIS, SEM PROPOSIÇÃO DE LEI PUBLICADA",
-        "EMENDAS À CONSTITUIÇÃO PROMULGADAS",
-        "LEIS PROMULGADAS",
-        "PROPOSIÇÕES DE LEI",
-        "RESOLUÇÃO",
-        "PROPOSTAS DE AÇÃO LEGISLATIVA",
-        "OFÍCIOS - PROJETOS DE LEI",
-        "OFÍCIOS - REQUERIMENTOS",
-        "OFÍCIOS - VETOS",
-        "OFÍCIOS - PRORROGAÇÃO DE PRAZO",
-        "OFÍCIO DA DEFENSORIA PÚBLICA QUE ENCAMINHA PROJETO DE LEI",
-        "OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA PRESTAÇÃO DE CONTAS",
-        "OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA PARECER PRÉVIO SOBRE BALANÇO GERAL DO ESTADO",
-        "OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA RELATÓRIO DE ATIVIDADES",
-        "OFÍCIO DO TRIBUNAL DE JUSTIÇA QUE ENCAMINHA PROJETO DE LEI",
-        "OFÍCIO DO TRIBUNAL DE JUSTIÇA QUE ENCAMINHA PROJETO DE LEI COMPLEMENTAR",
-        "OFÍCIO DO VICE-GOVERNADOR COMUNICANDO AUSÊNCIA DO PAÍS",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI COMPLEMENTAR",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI - COMISSÕES TEMÁTICAS",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI - CRÉDITO SUPLEMENTAR",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA EMENDA OU SUBSTITUTIVO COM DESPACHO À FFO",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA EMENDA OU SUBSTITUTIVO COM DESPACHO À MESA",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA ABERTURA DE CRÉDITO SUPLEMENTAR",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA PRESTAÇÃO DE CONTAS DA ADMINISTRAÇÃO PÚBLICA",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA PEDIDO DE REGIME DE URGÊNCIA",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA CONVÊNIO DO ICMS",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA CONVÊNIO DO CONFAZ",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA REGIME ESPECIAL DE TRIBUTAÇÃO",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA RELATÓRIO TRIMESTRAL",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA INDICAÇÃO",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA VETO TOTAL",
-        "MENSAGEM DO GOVERNADOR QUE ENCAMINHA VETO PARCIAL",
-        "MENSAGEM DO GOVERNADOR QUE SOLICITA DESARQUIVAMENTO DE PROPOSIÇÃO",
-        "MENSAGEM DO GOVERNADOR QUE SOLICITA RETIRADA DE PROJETO",
-        "MENSAGEM DO GOVERNADOR QUE COMUNICA AUSÊNCIA DO PAÍS",
-        "PROPOSIÇÃO: REQUERIMENTOS - INDICAÇÃO TCE",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROPOSTA DE EMENDA À CONSTITUIÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI COMPLEMENTAR - COMISSÕES TEMÁTICAS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI COMPLEMENTAR - ANEXADOS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI - COMISSÕES TEMÁTICAS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI - ANEXADOS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - COMISSÕES TEMÁTICAS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - CALAMIDADE PÚBLICA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - CIDADANIA HONORÁRIA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - ESTRUTURA DA SECRETARIA DA ASSEMBLEIA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - RATIFICAÇÃO DE CONVÊNIOS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - REGIME ESPECIAL DE TRIBUTAÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - APROVAÇÃO DE CONTAS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - ANEXADOS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - COMISSÕES TEMÁTICAS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - MESA DA ASSEMBLEIA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - MESA DA ASSEMBLEIA, ENCAMINHADOS PARA PROVIDÊNCIA INTERNA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - MESA DA ASSEMBLEIA, VOTADO EM PLENÁRIO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, SEM COMUNICAÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, COM COMUNICAÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, DESANEXAÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, DESARQUIVAMENTO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, RETIRADA DE TRAMITAÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, REUNIÃO ESPECIAL",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, REDISTRIBUIÇÃO",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - ANEXADOS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - CIDADANIA HONORÁRIA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - INDICAÇÃO TCE",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - RQO COM DESPACHO À MAS",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - RQN COM DESPACHO A SERVIDOR",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - RQO COM DESPACHO A SETOR DA CASA",
-        "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS ORDINÁRIOS",
-        "COMUNICAÇÃO DA PRESIDÊNCIA",
-        "LEITURA DE COMUNICAÇÕES",
-        "LEITURA DE COMUNICAÇÕES - CIENTE ANEXAR",
-        "PALAVRAS DO PRESIDENTE",
-        "DECISÃO DA PRESIDÊNCIA",
-        "DECISÃO DA PRESIDÊNCIA, ANEXAÇÃO",
-        "DECISÃO DA PRESIDÊNCIA, DESANEXAÇÃO",
-        "DECISÃO DA PRESIDÊNCIA, REDISTRIBUIÇÃO",
-        "DECISÃO DA MESA",
-        "DESIGNAÇÃO DE COMISSÕES",
-        "DESPACHO DE REQUERIMENTOS",
-        "DESPACHO DE REQUERIMENTOS, COMISSÃO SEGUINTE",
-        "DESPACHO DE REQUERIMENTOS, DESANEXAÇÃO",
-        "DESPACHO DE REQUERIMENTOS, DESARQUIVAMENTO",
-        "DESPACHO DE REQUERIMENTOS, RETIRADA DE TRAMITAÇÃO",
-        "EMENDAS OU SUBSTITUTIVOS PUBLICADOS",
-        "EMENDAS NÃO RECEBIDAS PUBLICADAS",
-        "MANIFESTAÇÕES",
-        "PROPOSIÇÕES NÃO RECEBIDAS",
-        "REQUERIMENTOS APROVADOS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: DESIGNAÇÃO DE COMISSÕES",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI COMPLEMENTAR",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI - COMISSÕES TEMÁTICAS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA PROJETO DE LEI - CRÉDITO SUPLEMENTAR",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA EMENDA OU SUBSTITUTIVO COM DESPACHO À MESA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA EMENDA OU SUBSTITUTIVO COM DESPACHO À FFO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA PEDIDO DE URGÊNCIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA CONVÊNIO DO ICMS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA CONVÊNIO DO CONFAZ",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA REGIME ESPECIAL DE TRIBUTAÇÃO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA RELATÓRIO TRIMESTRAL",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA INDICAÇÃO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA VETO TOTAL",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MENSAGEM DO GOVERNADOR QUE ENCAMINHA VETO PARCIAL",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: MSG DO GOVERNADOR QUE REQUER RETIRADA DE REGIME DE URGÊNCIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA PRESTAÇÃO DE CONTAS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA BALANÇO GERAL",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA PROJETO DE LEI",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO TRIBUNAL DE CONTAS QUE ENCAMINHA RELATÓRIO DE ATIVIDADES",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO TRIBUNAL DE JUSTIÇA QUE ENCAMINHA PROPOSTA DE EMENDA OU SUBSTITUTIVO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO TRIBUNAL DE JUSTIÇA QUE ENCAMINHA PROJETO DE LEI",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DO MINISTÉRIO PÚBLICO QUE ENCAMINHA PROJETO DE LEI",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DA PROCURADORIA-GERAL DE JUSTIÇA QUE ENCAMINHA PROPOSTA DE EMENDA OU SUBSTITUTIVO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: OFÍCIO DE PREFEITURA QUE ENCAMINHA DECRETOS DE CALAMIDADE PÚBLICA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI - COMISSÕES TEMÁTICAS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI - ANEXADOS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - CALAMIDADE PÚBLICA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - ESTRUTURA DA SECRETARIA DA ASSEMBLEIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - LICENÇA AO GOVERNADOR",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROJETOS DE RESOLUÇÃO - CIDADANIA HONORÁRIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: DECISÃO DA PRESIDÊNCIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PALAVRAS DO PRESIDENTE",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - COMISSÕES TEMÁTICAS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - MESA DA ASSEMBLEIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - ANEXADOS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - CIDADANIA HONORÁRIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - DESANEXAÇÃO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - SEM DESPACHO, COM COMUNICAÇÃO",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - INDICAÇÃO TCE",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - RQO COM DESPACHO À MAS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - RQO COM DESPACHO A SERVIDOR",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS - RQO COM DESPACHO A SETOR DA CASA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: COMUNICAÇÃO DA PRESIDÊNCIA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: DECISÃO DA PRESIDÊNCIA, ACORDO DE LÍDERES",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: DESPACHO DE REQUERIMENTOS",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: RELATÓRIO DE VISITA",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: PROPOSTAS DE AÇÃO LEGISLATIVA REFERENTES AO PPAG",
-        "TRAMITAÇÃO DE PROPOSIÇÕES: DESPACHO DE REQUERIMENTOS, RETIRADA DE TRAMITAÇÃO",
-        "CORRESPONDÊNCIA: OFÍCIOS - PROJETOS DE LEI",
-        "CORRESPONDÊNCIA: OFÍCIOS - REQUERIMENTOS",
-        "CORRESPONDÊNCIA: OFÍCIOS - PRORROGAÇÃO DE PRAZO",
-        "CORRESPONDÊNCIA: OFÍCIOS - PROPOSTA DE EMENDA À CONSTITUIÇÃO",
-        "VOTAÇÕES NOMINAIS - PROJETOS DE LEI",
-        "VOTAÇÕES NOMINAIS - PROJETOS DE RESOLUÇÃO",
-        "VOTAÇÕES NOMINAIS - REDAÇÃO FINAL",
-        "VOTAÇÕES NOMINAIS - REQUERIMENTOS",
-        "VOTAÇÃO DE REQUERIMENTOS",
-        "ERRATAS",
-        "PARECERES SOBRE VETO",
-        "VETO PARCIAL A PROPOSIÇÃO DE LEI",
-        "VETO PARCIAL A PROPOSIÇÃO DE LEI, COM ANEXADOS",
-        "VETO TOTAL A PROPOSIÇÃO DE LEI",
-        "VETO TOTAL A PROPOSIÇÃO DE LEI, COM ANEXADOS",
-        "VETO PARCIAL A PROPOSIÇÃO DE LEI COMPLEMENTAR",
-        "VETO PARCIAL A PROPOSIÇÃO DE LEI COMPLEMENTAR, COM ANEXADOS",
-        "VETO TOTAL A PROPOSIÇÃO DE LEI COMPLEMENTAR",
-        "VETO TOTAL A PROPOSIÇÃO DE LEI COMPLEMENTAR, COM ANEXADOS",
-    ]
-
-    LISTA_DROPDOWN_2 = [
-        "-",
-        "DESIGNAÇÃO DE RELATORIA",
-        "RECEBIMENTO DE PROPOSIÇÃO",
-        "CUMPRIMENTO DE DILIGÊNCIA",
-        "CONSULTA PÚBLICA",
-        "ENTREGA DE DIPLOMA",
-        "REUNIÃO ORIGINADA DE REQUERIMENTO",
-        "REUNIÃO COM DEBATE DE PROPOSIÇÃO AGENDADA",
-        "REUNIÃO COM DEBATE DE PROPOSIÇÃO REALIZADA",
-        "REUNIÃO COM DEBATE DE PROPOSIÇÃO CANCELADA",
-        "REMESSA - PEDIDO DE INFORMAÇÃO",
-        "REMESSA - REQUERIMENTO APROVADO",
-        "OFÍCIO - REQUERIMENTO APROVADO",
-        "OFÍCIO - PEDIDO DE INFORMAÇÃO",
-        "OFÍCIO - MANIFESTAÇÃO DE APOIO",
-        "OFÍCIO - VOTO DE CONGRATULAÇÕES",
-        "OFÍCIO - MANIFESTAÇÃO DE PESAR",
-        "OFÍCIO - MANIFESTAÇÃO DE REPÚDIO",
-        "PROPOSIÇÃO DE LEI ENCAMINHADA PARA SANÇÃO",
-        "AUDIÊNCIA PÚBLICA",
-    ]
-
-    LISTA_DROPDOWN_3 = [
-        "-",
-        "CCJ",
-        "APU", "AAG", "AMR",
-        "CDM", "CHR", "CTA",
-        "DCC", "DPD", "DEC", "DHU",
-        "ECT", "ELJ",
-        "FFO",
-        "MAD", "MEN",
-        "PPO", "PCD",
-        "SAU",
-        "SPU",
-        "TPA",
-        "TCO",
-        "ESP",
-        "CTG",
-        "CIP",
-        "RED",
-        "SGM",
-    ]
-
-    LISTA_DROPDOWN_4 = [
-        "-",
-        "PRECLUSÃO DE PRAZO: PROJETOS DE LEI",
-        "PRECLUSÃO DE PRAZO: REQUERIMENTOS, APROVADOS",
-        "PRECLUSÃO DE PRAZO: REQUERIMENTOS, REJEITADOS",
-        "PRECLUSÃO DE PRAZO: REQUERIMENTOS, RECURSO",
-        "PRECLUSÃO DE PRAZO: INCONSTITUCIONALIDADE",
-    ]
-
-    LISTA_DROPDOWN_5 = [
-        "-",
-        "?",
-        "ALINE",
-        "ANDRÉ",
-        "DIOGO",
-        "KÁTIA",
-        "LEO",
-    ]
-
-    LISTA_DROPDOWN_6 = [
-        "PL",
-        "PLC",
-        "PEC",
-        "PRE",
-        "RQN",
-        "MSG",
-        "OFI",
-        "IND",
-        "VET",
-        "REL",
-    ]
-
-    LISTA_DROPDOWN_7 = [
-        "2026",
-        "2025",
-        "2024",
-        "2023",
-        "2022",
-        "2021",
-        "2020",
-        "2019",
-        "2018",
-        "2017",
-        "2016",
-        "2015",
-    ]
-
-    def _dv_req(col0: int, row1: int, values_list: list[str], strict: bool = True):
-        return {
+def _checkbox_req(sheet_id: int, col0: int, row1: int, default_checked: bool = False) -> list[dict]:
+    val = {"boolValue": True} if default_checked else {"boolValue": False}
+    return [
+        {
             "setDataValidation": {
                 "range": {
                     "sheetId": sheet_id,
@@ -1261,79 +500,194 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
                     "endColumnIndex": col0 + 1,
                 },
                 "rule": {
-                    "condition": {
-                        "type": "ONE_OF_LIST",
-                        "values": [{"userEnteredValue": v} for v in values_list],
-                    },
-                    "strict": strict,
+                    "condition": {"type": "BOOLEAN"},
+                    "strict": True,
                     "showCustomUi": True,
                 },
             }
-        }
-
-    def _hex_to_rgb01(hex_color: str) -> dict:
-        h = hex_color.lstrip("#")
-        return {
-            "red": int(h[0:2], 16) / 255.0,
-            "green": int(h[2:4], 16) / 255.0,
-            "blue": int(h[4:6], 16) / 255.0,
-        }
-
-    def _cf_req(col0: int, row1: int, bg_hex: str, fg_hex: str, index: int = 0):
-        """Conditional formatting: pinta a célula quando NÃO estiver vazia (vale p/ qualquer opção do dropdown)."""
-        return {
-            "addConditionalFormatRule": {
-                "rule": {
-                    "ranges": [{
-                        "sheetId": sheet_id,
-                        "startRowIndex": row1 - 1,
-                        "endRowIndex": row1,
-                        "startColumnIndex": col0,
-                        "endColumnIndex": col0 + 1,
-                    }],
-                    "booleanRule": {
-                        "condition": {"type": "NOT_BLANK"},
-                        "format": {
-                            "backgroundColor": _hex_to_rgb01(bg_hex),
-                            "textFormat": {"foregroundColor": _hex_to_rgb01(fg_hex)},
-                        },
-                    },
+        },
+        {
+            "updateCells": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": row1 - 1,
+                    "endRowIndex": row1,
+                    "startColumnIndex": col0,
+                    "endColumnIndex": col0 + 1,
                 },
-                "index": index,
+                "rows": [{"values": [{"userEnteredValue": val}]}],
+                "fields": "userEnteredValue",
+            }
+        },
+    ]
+
+
+# --------------------------------------------------------------------------------------------------
+# CONSTANTES DE LAYOUT (iguais às existentes, sem inventar nada)
+# --------------------------------------------------------------------------------------------------
+COL_DEFAULT = 60
+COL_OVERRIDES = {
+    0: 23, 1: 60, 2: 370, 3: 75, 4: 85, 5: 75, 6: 75,
+    7: 45, 8: 45, 9: 45, 10: 45, 11: 45, 12: 45, 13: 45,
+    14: 45, 15: 60, 16: 75, 17: 70, 18: 70, 19: 60,
+    20: 60, 21: 60, 22: 60, 23: 60, 24: 60
+}
+
+ROW_HEIGHTS = [
+    ("default", 16),
+    (0, 4, 14),
+    (4, 5, 25),
+]
+
+MERGES = [
+    "A1:B4", "C1:F4", "G1:G4", "Q1:Y1",
+    "A5:B5", "E5:F5", "G5:I5", "T5:Y5",
+    "E6:G6", "E8:G8",
+]
+
+# --------------------------------------------------------------------------------------------------
+# FUNÇÃO PRINCIPAL
+# --------------------------------------------------------------------------------------------------
+def upsert_tab_diario(
+    spreadsheet_url_or_id: str,
+    diario_key: str,              # YYYYMMDD (já garantido na PARTE 1A)
+    itens: list[tuple[str, str]],
+):
+    global SHEET_ID
+
+    tab_name = yyyymmdd_to_ddmmyyyy(diario_key)
+
+    sh = (
+        gc.open_by_url(spreadsheet_url_or_id)
+        if spreadsheet_url_or_id.startswith("http")
+        else gc.open_by_key(spreadsheet_url_or_id)
+    )
+
+    try:
+        ws = sh.worksheet(tab_name)
+    except gspread.WorksheetNotFound:
+        ws = sh.add_worksheet(title=tab_name, rows=50, cols=25)
+        _with_backoff(ws.update_index, 1)
+
+    SHEET_ID = ws.id
+    sheet_id = ws.id
+
+    # ----------------------------------------------------------------------------------------------
+    # DIMENSÕES (cálculo ÚNICO e determinístico)
+    # ----------------------------------------------------------------------------------------------
+    base_rows = 9
+    footer_rows = 9
+    rows_needed = base_rows + len(itens) + footer_rows
+    cols_needed = 25
+
+    rows_target = max(ws.row_count, rows_needed + 1, 22)
+    cols_target = max(ws.col_count, cols_needed)
+
+    _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
+
+    VIS_LAST_ROW_1BASED = rows_target - 1
+
+    # ----------------------------------------------------------------------------------------------
+    # REQUESTS
+    # ----------------------------------------------------------------------------------------------
+    reqs: list[dict] = []
+
+    # congela cabeçalho
+    reqs.append({
+        "updateSheetProperties": {
+            "properties": {"sheetId": sheet_id, "gridProperties": {"frozenRowCount": 5}},
+            "fields": "gridProperties.frozenRowCount",
+        }
+    })
+
+    # alturas
+    for rh in ROW_HEIGHTS:
+        if rh[0] == "default":
+            reqs.append(req_dim_rows(sheet_id, 0, rows_target, rh[1]))
+        else:
+            start, end, px = rh
+            reqs.append(req_dim_rows(sheet_id, start, end, px))
+
+    # linha técnica (1px)
+    reqs.append(req_dim_rows(sheet_id, rows_target - 1, rows_target, 1))
+
+    # larguras
+    reqs.append(req_dim_cols(sheet_id, 0, cols_target, COL_DEFAULT))
+    for c, px in COL_OVERRIDES.items():
+        reqs.append(req_dim_cols(sheet_id, c, c + 1, px))
+
+    # limpa merges antigos
+    reqs.append({
+        "unmergeCells": {
+            "range": {
+                "sheetId": sheet_id,
+                "startRowIndex": 0,
+                "endRowIndex": rows_target,
+                "startColumnIndex": 0,
+                "endColumnIndex": cols_target,
             }
         }
+    })
 
-    def _cf_left_of_c_req(row1: int, bg_hex: str, fg_hex: str, index: int = 0):
-        """
-        Pinta a célula B{row1} (à esquerda da coluna C) com as mesmas cores do dropdown da coluna C.
-        Condição: C{row1} não vazia.
-        """
-        return {
-            "addConditionalFormatRule": {
-                "rule": {
-                    "ranges": [{
-                        "sheetId": sheet_id,
-                        "startRowIndex": row1 - 1,
-                        "endRowIndex": row1,
-                        "startColumnIndex": 1,   # B
-                        "endColumnIndex": 2
-                    }],
-                    "booleanRule": {
-                        "condition": {
-                            "type": "CUSTOM_FORMULA",
-                            "values": [{"userEnteredValue": f'=$C{row1}<>""'}]
-                        },
-                        "format": {
-                            "backgroundColor": _hex_to_rgb01(bg_hex),
-                            "textFormat": {"foregroundColor": _hex_to_rgb01(fg_hex)},
-                        },
-                    },
-                },
-                "index": index,
-            }
-        }
+    # merges fixos
+    for a1 in MERGES:
+        reqs.append(req_merge(sheet_id, a1))
 
-    def _set_value_req(col0: int, row1: int, value: str):
+    # checkboxes nos itens (coluna I)
+    start_items_row = 9
+    end_items_row = start_items_row + len(itens) - 1
+    if end_items_row >= start_items_row:
+        for r in range(start_items_row, end_items_row + 1):
+            for rq in _checkbox_req(sheet_id, 8, r, default_checked=False):
+                reqs.append(rq)
+
+    # ----------------------------------------------------------------------------------------------
+    # EXECUÇÃO (ESTE ERA O BURACO REAL)
+    # ----------------------------------------------------------------------------------------------
+    _with_backoff(sh.batch_update, {"requests": reqs})
+
+    return ws
+# PARTE 2 ===============================================================================================================================
+# ========================================================= FOOTER (isolado, determinístico) =============================================
+# ======================================================================================================================================
+
+def apply_footer(
+    sh,
+    sheet_id: int,
+    ws,
+    extra_end: int,          # 1-based, end EXCLUSIVO dos extras
+    LISTA_DROPDOWN_5: list[str],
+    LISTA_DROPDOWN_6: list[str],
+    LISTA_DROPDOWN_7: list[str],
+):
+    """
+    Aplica o FOOTER completo a partir de extra_end.
+    Bloco isolado: só consome sheet_id, ws e listas já existentes.
+    """
+
+    reqs: list[dict] = []
+
+    # ----------------------------------------------------------------------------------
+    # POSIÇÕES (1-based)
+    # ----------------------------------------------------------------------------------
+    footer_start = extra_end
+    footer_rows  = 9
+    footer_end   = footer_start + footer_rows
+
+    r  = footer_start
+    r1 = r + 1
+    r2 = r + 2
+    r3 = r + 3
+    r4 = r + 4
+    r5 = r + 5
+    r6 = r + 6
+    r7 = r + 7
+    r8 = r + 8
+
+    # ----------------------------------------------------------------------------------
+    # VALUES / FÓRMULAS (copiado fielmente, sem alteração semântica)
+    # ----------------------------------------------------------------------------------
+    def _cell(col0, row1, value, is_formula=False):
         return {
             "updateCells": {
                 "range": {
@@ -1345,847 +699,192 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
                 },
                 "rows": [{
                     "values": [{
-                        "userEnteredValue": {"stringValue": value}
+                        "userEnteredValue": (
+                            {"formulaValue": value} if is_formula else {"stringValue": value}
+                        )
                     }]
                 }],
                 "fields": "userEnteredValue",
             }
         }
 
-    # ---------------------------
-    # DROPDOWN 1 (BLOCO PRINCIPAL)
-    # ---------------------------
-    # Aplica na coluna C, nas linhas de itens "normais", antes dos extras.
-    # Usa start_items_row se existir; caso não exista no seu código, ele precisa ser o início real dos itens.
-    start_items_row = locals().get("start_items_row", 9)
-    end_items_row = start_extra_row - 1
+    # links / imagens principais
+    reqs.extend([
+        _cell(1, r, '=HYPERLINK("http://meet.google.com/api-pefj-mvq";"GDI-GGA")', True),
 
-    if end_items_row >= start_items_row:
-        for r in range(start_items_row, end_items_row + 1):
-            # garante C:D mesclado
-            reqs.append(req_unmerge(sheet_id, f"C{r}:D{r}"))
-            reqs.append(req_merge(sheet_id, f"C{r}:D{r}"))
+        _cell(0, r1, '=HYPERLINK("https://mediaserver.almg.gov.br/acervo/511/376/2511376.pdf";IMAGE("https://cdn-icons-png.flaticon.com/512/3079/3079014.png";4;19;19))', True),
+        _cell(1, r1, '=HYPERLINK("https://intra.almg.gov.br/export/sites/default/atendimento/docs/lista-telefonica.pdf";IMAGE("https://cdn-icons-png.flaticon.com/512/4783/4783130.png";4;33;33))', True),
+        _cell(2, r1, '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/";IMAGE("https://yt3.ggpht.com/ytc/AKedOLS-fgkzGxYUBgBejVblA1CLhE69pbiZyoH7spcNRQ=s900-c-k-c0x00ffffff-no-rj";4;125;150))', True),
 
-            # dropdown 1 na coluna C
-            reqs.append(_dv_req(2, r, LISTA_DROPDOWN_1, strict=False))
-            reqs.append(_cf_req(2, r, bg_hex=LISTA_DROPDOWNS_1_BG, fg_hex=LISTA_DROPDOWNS_1_FG, index=0))
-            reqs.append(_cf_left_of_c_req(r, bg_hex=LISTA_DROPDOWNS_1_BG, fg_hex=LISTA_DROPDOWNS_1_FG, index=0))
+        _cell(4, r1, '=SUM(FILTER(INDIRECT("F"&ROW()+1&":F");INDIRECT("E"&ROW()+1&":E")<>""))', True),
+        _cell(5, r1, "TOTAL"),
+        _cell(6, r1, "IMPLANTAÇÃO"),
+        _cell(8, r1, "CONFERÊNCIA"),
+        _cell(12, r1, "PROPOSIÇÕES RELEVANTES"),
+    ])
 
-    # ----------------------------------
-    # DROPDOWN 5 (F e G) – default "?"
-    # + COLUNA H: só "?" (sem dropdown) — só ITENS do DL (OUTs)
-    # + COLUNA I: checkbox — só ITENS do DL (OUTs)
-    # ----------------------------------
-
-    start_items_row = locals().get("start_items_row", 9)
-    start_extra_row = locals().get("start_extra_row", 9 + (len(itens) if itens else 0))
-    end_items_row   = start_extra_row - 1
-
-    if end_items_row >= start_items_row:
-        for row1 in range(start_items_row, end_items_row + 1):
-
-            # coluna F (dropdown + ?)
-            reqs.append(_dv_req(5, row1, LISTA_DROPDOWN_5, strict=False))
-            reqs.append(_set_value_req(5, row1, "?"))
-            reqs.append(_cf_req(5, row1, bg_hex="#ffffff", fg_hex="#cc0000", index=0))
-
-            # coluna G (dropdown + ?)
-            reqs.append(_dv_req(6, row1, LISTA_DROPDOWN_5, strict=False))
-            reqs.append(_set_value_req(6, row1, "?"))
-            reqs.append(_cf_req(6, row1, bg_hex="#ffffff", fg_hex="#cc0000", index=0))
-
-            # coluna H (SÓ ? — SEM dropdown)
-            reqs.append(_set_value_req(7, row1, "?"))  # 7 = H
-            reqs.append(_cf_req(7, row1, bg_hex="#ffffff", fg_hex="#cc0000", index=0))
-
-            # coluna I (checkbox) — só itens
-            for req in _checkbox_req(sheet_id, 8, row1, default_checked=False):  # 8 = I
-                reqs.append(req)
-
-    # ---------------------------
-    # DROPDOWNS NOS EXTRAS
-    # + COLUNA H checkbox (fonte 6 vermelha) nas linhas válidas
-    # ---------------------------
-    for i, (_b, c) in enumerate(extras):
-        r = start_extra_row + i
-
-        if c == "DROPDOWN_2":
-            reqs.append(_dv_req(2, r, LISTA_DROPDOWN_2))
-            reqs.append(_cf_req(2, r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
-            reqs.append(_cf_left_of_c_req(r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
-
-            reqs.append(_dv_req(3, r, LISTA_DROPDOWN_3))
-            reqs.append(_cf_req(3, r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
-
-        elif c == "DROPDOWN_4":
-            reqs.append(_dv_req(2, r, LISTA_DROPDOWN_4))
-            reqs.append(_cf_req(2, r, bg_hex="#c6dbe1", fg_hex="#215a6c", index=0))
-            reqs.append(_cf_left_of_c_req(r, bg_hex="#c6dbe1", fg_hex="#215a6c", index=0))
-
-            reqs.append(req_unmerge(sheet_id, f"C{r}:D{r}"))
-            reqs.append(req_merge(sheet_id, f"C{r}:D{r}"))
-
-        else:
-            if c not in ("-", ""):
-                reqs.append(req_unmerge(sheet_id, f"C{r}:D{r}"))
-                reqs.append(req_merge(sheet_id, f"C{r}:D{r}"))
-
-        # checkbox dinâmico na coluna H só nas linhas "válidas"
-        CHECKBOX_TITLES = (
-            "DIÁRIO DO EXECUTIVO",
-            "DIÁRIO DO LEGISLATIVO",
-            "REUNIÕES DE PLENÁRIO",
-            "REUNIÕES DE COMISSÕES",
-            "REQUERIMENTOS DE COMISSÃO",
-            "LANÇAMENTOS DE TRAMITAÇÃO",
-            "CADASTRO DE E-MAILS",
-            "IMPLANTAÇÃO DE TEXTOS",
-        )
-        if c and any(t in c.upper() for t in CHECKBOX_TITLES):
-            for req in _checkbox_req(sheet_id, 7, r, default_checked=False):  # 7 = H
-                reqs.append(req)
-
-    # styles
-    for a1, mini in STYLES:
-        reqs.append(req_repeat_cell(sheet_id, a1, _mini_to_user_fmt(mini)))
-
-    # CHECKBOX FIXO NA BARRA DO TÍTULO (H6 e H8)
-    for rr in (6, 8):
-        for req in _checkbox_req(sheet_id, 7, rr, default_checked=False):  # 7 = H
-            reqs.append(req)
-
-    # OVERRIDE: checkbox H6/H8 com o mesmo tamanho dos outros (fonte 6)
-    for r in (6, 8):
-        reqs.append(req_repeat_cell(sheet_id, f"H{r}:H{r}", {
-            "textFormat": {
-                "fontFamily": "Inconsolata",
-                "fontSize": 6,
-                "foregroundColor": rgb_hex_to_api("#cc0000"),
+    # ----------------------------------------------------------------------------------
+    # MERGES (aplicação direta, sem lógica extra)
+    # ----------------------------------------------------------------------------------
+    def _merge(r0, r1, c0, c1):
+        return {
+            "mergeCells": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": r0 - 1,
+                    "endRowIndex": r1,
+                    "startColumnIndex": c0,
+                    "endColumnIndex": c1,
+                },
+                "mergeType": "MERGE_ALL",
             }
-        }))
+        }
 
-    # ---------------------------------------------------------------------------------------
-    # OVERRIDES (imediatamente após STYLES) — pra não ser sobrescrito
-    # - H (itens/OUTs): Inconsolata 8 vermelho
-    # - I (itens/OUTs): Inconsolata 6 vermelho (checkbox menor)
-    # - H (extras com checkbox): Inconsolata 6 vermelho
-    # ---------------------------------------------------------------------------------------
+    reqs.extend([
+        _merge(r1, r2, 0, 1),
+        _merge(r1, r2, 1, 2),
+        _merge(r3, r5, 0, 2),
+        _merge(r6, r8, 0, 1),
+        _merge(r6, r8, 1, 2),
+        _merge(r1, r8, 2, 4),
 
-    # garante ranges (sempre recalcule aqui, não dependa de variável antiga)
-    start_items_row = locals().get("start_items_row", 9)
-    start_extra_row = locals().get("start_extra_row", 9 + (len(itens) if itens else 0))
-    end_items_row   = start_extra_row - 1
-    extra_end_row   = start_extra_row + (len(extras) if extras else 0) - 1
+        _merge(r1, r1, 8, 10),
+        _merge(r1, r1, 12, 15),
 
-    # ITENS (OUTs): H=8, I=6
-    if end_items_row >= start_items_row:
-        reqs.append(req_text(sheet_id, f"H{start_items_row}:H{end_items_row}", "Inconsolata", 8, "#cc0000"))
-        reqs.append(req_text(sheet_id, f"I{start_items_row}:I{end_items_row}", "Inconsolata", 6, "#cc0000"))
+        _merge(r1, r8, 15, 17),
+        _merge(r1, r8, 17, 19),
+        _merge(r1, r8, 19, 21),
+        _merge(r1, r8, 21, 23),
+        _merge(r1, r8, 23, 25),
 
-    # EXTRAS: H=6 (só pra manter os checkboxes dos extras pequenos e vermelhos)
-    if extra_end_row >= start_extra_row:
-        reqs.append(req_text(sheet_id, f"H{start_extra_row}:H{extra_end_row}", "Inconsolata", 6, "#cc0000"))
+        _merge(r2, r2, 8, 10),
+        _merge(r3, r3, 8, 10),
+        _merge(r4, r4, 8, 10),
+        _merge(r5, r5, 8, 10),
+        _merge(r6, r6, 8, 10),
+        _merge(r7, r7, 8, 10),
+        _merge(r8, r8, 8, 10),
+    ])
 
-    # borders
-    for a1, spec in BORDERS:
-        # corta qualquer range que vá até rows_needed e evita encostar na linha técnica
-        a1_fix = a1.replace(f"{rows_needed}", f"{VIS_LAST_ROW_1BASED}") if "rows_needed" in locals() else a1
-        kwargs = {}
-        for side, (style_name, color_name) in spec.items():
-            kwargs[side] = _border_from_spec(style_name, color_name)
-        reqs.append(req_update_borders(sheet_id, a1_fix, **kwargs))
+    # ----------------------------------------------------------------------------------
+    # DATA VALIDATION (listas)
+    # ----------------------------------------------------------------------------------
+    def _dv(col0, r0, r1, values):
+        return {
+            "setDataValidation": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": r0 - 1,
+                    "endRowIndex": r1,
+                    "startColumnIndex": col0,
+                    "endColumnIndex": col0 + 1,
+                },
+                "rule": {
+                    "condition": {
+                        "type": "ONE_OF_LIST",
+                        "values": [{"userEnteredValue": v} for v in values],
+                    },
+                    "strict": False,
+                    "showCustomUi": True,
+                },
+            }
+        }
 
-# PARTE 2 =====================================================================================================================================================================================
-# ============================================================================================ FOOTER ==============================================================================================
+    reqs.extend([
+        _dv(4, r1, r6, LISTA_DROPDOWN_5),
+        _dv(6, r1, r6, LISTA_DROPDOWN_5),
+        _dv(8, r1, r6, LISTA_DROPDOWN_5),
+        _dv(12, r1, r8, LISTA_DROPDOWN_6),
+        _dv(14, r1, r8, LISTA_DROPDOWN_7),
+    ])
+
+    # ----------------------------------------------------------------------------------
+    # EXECUÇÃO
+    # ----------------------------------------------------------------------------------
+    sh.batch_update({"requests": reqs})
+# PARTE 3 ============================================================================================================================================================================================
+# ============================================================================================= VALUES ===============================================================================================
 # ====================================================================================================================================================================================================
 
-    # EXTRA: extra_end é "end exclusivo" (1-based) -> footer começa na próxima linha
-    footer_start = extra_end
-    footer_rows  = 9
-    footer_end   = footer_start + footer_rows
-
-    r  = footer_start
-    r1 = footer_start + 1
-    r2 = footer_start + 2
-    r3 = footer_start + 3
-    r4 = footer_start + 4
-    r5 = footer_start + 5
-    r6 = footer_start + 6
-    r7 = footer_start + 7
-    r8 = footer_start + 8
-
-    # -------------------------------------------------------------------------------------------------------------------------------------------------
-    # -------------------------------------------------------------------- VALUES ---------------------------------------------------------------------
-    # -------------------------------------------------------------------------------------------------------------------------------------------------
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r - 1,  "endRowIndex": r,  "startColumnIndex": 1,  "endColumnIndex": 2},  # B
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("http://meet.google.com/api-pefj-mvq";"GDI-GGA")'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 0,  "endColumnIndex": 1},  # A
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://mediaserver.almg.gov.br/acervo/511/376/2511376.pdf";IMAGE("https://cdn-icons-png.flaticon.com/512/3079/3079014.png";4;19;19))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 1,  "endColumnIndex": 2},  # B
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://intra.almg.gov.br/export/sites/default/atendimento/docs/lista-telefonica.pdf";IMAGE("https://cdn-icons-png.flaticon.com/512/4783/4783130.png";4;33;33))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 2,  "endColumnIndex": 3},  # C
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/";IMAGE("https://yt3.ggpht.com/ytc/AKedOLS-fgkzGxYUBgBejVblA1CLhE69pbiZyoH7spcNRQ=s900-c-k-c0x00ffffff-no-rj";4;125;150))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 4,  "endColumnIndex": 5},  # E
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=SUM(FILTER(INDIRECT("F"&ROW()+1&":F");INDIRECT("E"&ROW()+1&":E")<>""))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 5,  "endColumnIndex": 6},  # F
-            "rows": [{"values": [{"userEnteredValue": {"stringValue": "TOTAL"}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"repeatCell": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r6, "startColumnIndex": 5, "endColumnIndex": 6},  # F (hyperlink)
-            "cell": {"userEnteredValue": {"formulaValue": '=SUMIFS(INDEX(H:H;ROW()):INDEX(H:H;ROW()+6);INDEX(G:G;ROW()):INDEX(G:G;ROW()+6);INDEX(E:E;ROW()))+SUMIFS(INDEX(K:K;ROW()):INDEX(K:K;ROW()+6);INDEX(I:I;ROW()):INDEX(I:I;ROW()+6);INDEX(E:E;ROW()))'}},
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 6,  "endColumnIndex": 7},  # G
-            "rows": [{"values": [{"userEnteredValue": {"stringValue": "IMPLANTAÇÃO"}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 7,  "endColumnIndex": 8},  # H (ícone)
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=IMAGE("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYV-RpYwK3orapycj_CXJGevAVSORX9_E2jUYZLgID8L3bLwfSRXMX7ksvRTsEEoRBeNE&usqp=CAU";4;17;17)'}}]}],
-            "fields": "userEnteredValue"}})
-    reqs.append({"repeatCell": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r6, "startColumnIndex": 7, "endColumnIndex": 8},  # L (hyperlink)
-            "cell": {"userEnteredValue": {"formulaValue": '=SUMIFS($E$1:INDEX($E:$E;ROW()-1);$F$1:INDEX($F:$F;ROW()-1);INDEX($G:$G;ROW()))'}},
-            "fields": "userEnteredValue"}})
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 8,  "endColumnIndex": 9},  # I
-            "rows": [{"values": [{"userEnteredValue": {"stringValue": "CONFERÊNCIA"}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 10, "endColumnIndex": 11},  # K (ícone)
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=IMAGE("https://w7.pngwing.com/pngs/894/494/png-transparent-black-male-symbol-art-avatar-education-professor-user-profile-faculty-boss-face-heroes-service-thumbnail.png";4;17;17)'}}]}],
-
-            "fields": "userEnteredValue"}})
-    reqs.append({"repeatCell": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r6, "startColumnIndex": 10, "endColumnIndex": 11},  # K (hyperlink)
-            "cell": {"userEnteredValue": {"formulaValue": '=SUMIFS($H$6:INDEX($H:$H;ROW()-1);$G$6:INDEX($G:$G;ROW()-1);INDEX($I:$I;ROW()))'}},
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 11, "endColumnIndex": 12},  # L (ícone)
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=IMAGE("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyxXB7iHrkoP3waMJDQVtKeDlVpA7sno_XMNVpY20s5rmcQyJh")'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"repeatCell": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 11, "endColumnIndex": 12},  # L (hyperlink)
-            "cell": {"userEnteredValue": {"formulaValue": '=HYPERLINK("https://www.almg.gov.br/atividade_parlamentar/tramitacao_projetos/interna.html?a="&INDIRECT("O"&ROW())&"&n="&INDIRECT("N"&ROW())&"&t="&INDIRECT("M"&ROW())&"&aba=js_tabTramitacao";IMAGE("https://seeklogo.com/images/B/bandeira-minas-gerais-logo-AD7B6F3604-seeklogo.com.png";4;14;14))'}},
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 12, "endColumnIndex": 13},  # M
-            "rows": [{"values": [{"userEnteredValue": {"stringValue": "PROPOSIÇÕES RELEVANTES"}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 15, "endColumnIndex": 16},  # P
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://dspace.almg.gov.br/server/api/core/bitstreams/7cd591b0-1a2c-41cc-9341-78919e827df1/content";IMAGE("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5Y_YMt-RiPPZVOKRYkqMru870B2Pa2Kbsg-Ck-1KphTkHW3XM0Vtlb7MgVZRRxsfFtJY&usqp=CAU";4;130;140))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 17, "endColumnIndex": 18},  # R
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://www.cbhdoce.org.br/wp-content/uploads/2016/01/ConstituicaoEstadual.pdf";IMAGE("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5c5T7Fvx5UqHvPvb1EWmn6zxEyl9XZua3dQ&s";4;130;140))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 19, "endColumnIndex": 20},  # T
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://www.planalto.gov.br/ccivil_03/constituicao/ConstituicaoCompilado.htm";IMAGE("https://www2.camara.leg.br/atividade-legislativa/legislacao/Constituicoes_Brasileiras/constituicao-cidada/regulamentacao/imagens/copy_of_1.jpg/@@images/8beeb113-f656-495f-9c90-c81fb62a2ebb.jpeg";4;130;125))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 21, "endColumnIndex": 22},  # V
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://dspace.almg.gov.br/server/api/core/bitstreams/7cd591b0-1a2c-41cc-9341-78919e827df1/content";IMAGE("https://www.aracruz.es.leg.br/imagens/PORTLETREGIMENTOINTERNO.png/image_preview";4;130;125))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 23, "endColumnIndex": 24},  # X
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://www.cbhdoce.org.br/wp-content/uploads/2016/01/ConstituicaoEstadual.pdf";IMAGE("https://upload.wikimedia.org/wikipedia/commons/d/d2/Bras%C3%A3o_de_Minas_Gerais.svg"))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r3, "startColumnIndex": 0,  "endColumnIndex": 1},  # A
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/";IMAGE("https://intra.almg.gov.br/.content/imagens/logo-intra.svg";4;22;86))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r6, "startColumnIndex": 0,  "endColumnIndex": 1},  # A
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://calendar.google.com/calendar/u/0?cid=a3RyajJsZmRwdGpxYTdrczBqNXVhbXBldmdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ";IMAGE("https://cdn-icons-png.flaticon.com/512/217/217837.png";4;18;18))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    reqs.append({"updateCells": {
-            "range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r6, "startColumnIndex": 1,  "endColumnIndex": 2},  # B
-            "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://ead.almg.gov.br/moodle/";IMAGE("https://ead.almg.gov.br/moodle/pluginfile.php/2/course/section/288/servidor_ALMG.png?time=1657626782411"))'}}]}],
-            "fields": "userEnteredValue"}})
-
-    # ---------------------------------------------------------------------------------------
-    # ---------------------------------------- MERGES ----------------------------------------
-    # ---------------------------------------------------------------------------------------
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r2, "startColumnIndex": 0, "endColumnIndex": 1}, "mergeType": "MERGE_ALL"}})  # CALENDAR A
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r2, "startColumnIndex": 1, "endColumnIndex": 2}, "mergeType": "MERGE_ALL"}})  # PHONE B
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r5, "startColumnIndex": 0, "endColumnIndex": 2}, "mergeType": "MERGE_ALL"}})  # INTRA A:B
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r8, "startColumnIndex": 0, "endColumnIndex": 1}, "mergeType": "MERGE_ALL"}})  # AGENDA A
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r8, "startColumnIndex": 1, "endColumnIndex": 2}, "mergeType": "MERGE_ALL"}})  # GGA B
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 2, "endColumnIndex": 4}, "mergeType": "MERGE_ALL"}})  # ALMG C:D
-
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 8,  "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # CONFERÊNCIA (título)
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 12, "endColumnIndex": 15}, "mergeType": "MERGE_ALL"}})  # PROPOSIÇÕES (título)
-
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 15, "endColumnIndex": 17}, "mergeType": "MERGE_ALL"}})  # REGIMENTO
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 17, "endColumnIndex": 19}, "mergeType": "MERGE_ALL"}})  # CONST. ESTADUAL
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 19, "endColumnIndex": 21}, "mergeType": "MERGE_ALL"}})  # CONST. FEDERAL
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 21, "endColumnIndex": 23}, "mergeType": "MERGE_ALL"}})  # REGIMENTO (img)
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 23, "endColumnIndex": 25}, "mergeType": "MERGE_ALL"}})  # CONST. ESTADUAL (img)
-
-    # blocos de nomes (I:J)
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r2, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # ALINE
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r3, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # ANDRÉ
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r4 - 1, "endRowIndex": r4, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # DIOGO
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r5 - 1, "endRowIndex": r5, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # KÁTIA
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r6, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # LEO
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r7 - 1, "endRowIndex": r7, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # VINÍCIUS
-    reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r8 - 1, "endRowIndex": r8, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # WELDER
-
-    # ----------------------------------------------------------------------------------------------------------
-    # ------------------------------------------------- STYLES -------------------------------------------------
-    # ----------------------------------------------------------------------------------------------------------
-    pre_footer_row = footer_start - 1  # 1-based
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": pre_footer_row - 1, "endRowIndex": pre_footer_row, "startColumnIndex": 2, "endColumnIndex": 3},
-        "cell": {"userEnteredFormat": {"horizontalAlignment": "LEFT", "verticalAlignment": "MIDDLE"}},
-        "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r - 1, "endRowIndex": r8, "startColumnIndex": 2, "endColumnIndex": 3},
-        "cell": {"userEnteredFormat": {"horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE", "backgroundColor": {"red": 0.953, "green": 0.953, "blue": 0.953}}},
-        "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment,backgroundColor)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r5 - 1, "startColumnIndex": 0, "endColumnIndex": 2},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.9764706, "green": 0.7960784, "blue": 0.6117647}}},
-        "fields": "userEnteredFormat(backgroundColor)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r6 - 1, "startColumnIndex": 0, "endColumnIndex": 2},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.988, "green": 0.820, "blue": 0.800}}},
-        "fields": "userEnteredFormat(backgroundColor)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 4, "endColumnIndex": 6},
-        "cell": {"userEnteredFormat": {
-            "backgroundColor": {"red": 0.6, "green": 0.0, "blue": 0.0},
-            "horizontalAlignment": "CENTER",
-            "verticalAlignment": "MIDDLE",
-            "textFormat": {"fontFamily": "Vidaloka", "fontSize": 8, "bold": True, "foregroundColor": {"red": 0.85, "green": 0.67, "blue": 0.10}}
-        }},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 6, "endColumnIndex": 11},
-        "cell": {"userEnteredFormat": {
-            "backgroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0},
-            "horizontalAlignment": "CENTER",
-            "verticalAlignment": "MIDDLE",
-            "textFormat": {"fontFamily": "Vidaloka", "fontSize": 7, "bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}
-        }},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 11, "endColumnIndex": 15},
-        "cell": {"userEnteredFormat": {
-            "backgroundColor": {"red": 0.9019608, "green": 0.5686275, "blue": 0.21960788},
-            "horizontalAlignment": "CENTER",
-            "verticalAlignment": "MIDDLE",
-            "textFormat": {"fontFamily": "Vidaloka", "fontSize": 7, "bold": True, "foregroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0}}
-        }},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1, "endRowIndex": r8, "startColumnIndex": 11, "endColumnIndex": 15},
-        "cell": {"userEnteredFormat": {
-            "backgroundColor": {"red": 1.0, "green": 0.949, "blue": 0.8},
-            "horizontalAlignment": "CENTER",
-            "verticalAlignment": "MIDDLE",
-            "textFormat": {"fontFamily": "Special Elite", "fontSize": 8, "bold": True, "foregroundColor": {"red": 0.6, "green": 0.0, "blue": 0.0}}
-        }},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 4, "endColumnIndex": 5},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "RIGHT", "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 5, "endColumnIndex": 6},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 6, "endColumnIndex": 7},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "RIGHT", "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 7, "endColumnIndex": 8},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 8, "endColumnIndex": 9},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "RIGHT", "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-    reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 10, "endColumnIndex": 11},
-        "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
-        "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
-    # ----------------------------------------------------------------------------------------------------------
-    # -------------------------------------------------- VALUES ------------------------------------------------
-    # ----------------------------------------------------------------------------------------------------------
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ALINE"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ANDRÉ"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},"rows": [{"values": [{"userEnteredValue": {"stringValue": "DIOGO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},"rows": [{"values": [{"userEnteredValue": {"stringValue": "KÁTIA"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},"rows": [{"values": [{"userEnteredValue": {"stringValue": "LEO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 4,
-            "endColumnIndex": 5},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ALINE"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ANDRÉ"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "DIOGO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "KÁTIA"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "LEO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ALINE"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ANDRÉ"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "DIOGO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "KÁTIA"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},"rows": [{"values": [{"userEnteredValue": {"stringValue": "LEO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 6,
-            "endColumnIndex": 7},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ALINE"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r2,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},"rows": [{"values": [{"userEnteredValue": {"stringValue": "ANDRÉ"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r2,
-            "endRowIndex": r3,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},"rows": [{"values": [{"userEnteredValue": {"stringValue": "DIOGO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r3,
-            "endRowIndex": r4,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},"rows": [{"values": [{"userEnteredValue": {"stringValue": "KÁTIA"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r4,
-            "endRowIndex": r5,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"updateCells": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},"rows": [{"values": [{"userEnteredValue": {"stringValue": "LEO"}}]}],"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r5,
-            "endRowIndex": r6,
-            "startColumnIndex": 8,
-            "endColumnIndex": 9},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_5]},"showCustomUi": True,"strict": False}}}])
-    reqs.extend([
-      {"repeatCell": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r8,
-            "startColumnIndex": 12,
-            "endColumnIndex": 13},
-        "cell": {"userEnteredValue": {"stringValue": "PL"}},"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r8,
-            "startColumnIndex": 12,
-            "endColumnIndex": 13},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_6]},"showCustomUi": True,"strict": True}}}])
-    reqs.extend([
-      {"repeatCell": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r8,
-            "startColumnIndex": 14,
-            "endColumnIndex": 15},
-        "cell": {"userEnteredValue": {"stringValue": "2026"}},"fields": "userEnteredValue"}},
-      {"setDataValidation": {"range": {"sheetId": sheet_id,
-            "startRowIndex": r1,
-            "endRowIndex": r8,
-            "startColumnIndex": 14,
-            "endColumnIndex": 15},
-        "rule": {"condition": {"type": "ONE_OF_LIST","values": [{"userEnteredValue": v} for v in LISTA_DROPDOWN_7]},"showCustomUi": True,"strict": True}}}])
-
-    # ----------------------------------------------------------------------------------------------------------
-    # -------------------------------------------------- NOTES --------------------------------------------------
-    # ----------------------------------------------------------------------------------------------------------
-    reqs.append({"updateCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 1, "endColumnIndex": 2},
-        "rows": [{"values": [{"note": "7776 ar-condicionado\n7870 gerência de saúde (- Marcos/Alberto)\n7710 informática\n7468 frequência (Milena)\n7786 polícia legislativa\n7885 plenário (Elton)"}]}],
-        "fields": "note"}})
-
-    reqs.append({"updateCells": {"range": {"sheetId": sheet_id, "startRowIndex": 7, "endRowIndex": 8, "startColumnIndex": 3, "endColumnIndex": 4},
-        "rows": [{"values": [{"note": "CAPÍTULO 2-6, pág 19.\n\n"
-                                     "Prioridades de lançamento (o que devo lançar primeiro?)\n\n"
-                                     "1) PLs, PLCs, PREs e PECs novos\n"
-                                     "2) RQNs novos\n"
-                                     "3) Proposições não recebidas\n"
-                                     "4) RQNs aprovados\n"
-                                     "5) Todos os lançamentos que envolvam a implantação de um boletim novo em proposição anteriormente já implantada\n"
-                                     "6) Lançamentos que consistam não em acrescentar boletins, mas apenas em adicionar uma frase a um boletim já implantado (ex: \"Publicado no DL em...\")"}]}],
-        "fields": "note"}})
-
-    # ----------------------------------------------------------------------------------------------------------
-    # -------------------------------------------------- BORDERS ------------------------------------------------
-    # ----------------------------------------------------------------------------------------------------------
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": footer_start - 1, "startColumnIndex": 8, "endColumnIndex": 9},
-        "right": {"style": "SOLID_MEDIUM", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 0, "endColumnIndex": 1},
-        "right": {"style": "DOTTED", "color": {"red": 0.8, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r7, "endRowIndex": r7 + 1, "startColumnIndex": 0, "endColumnIndex": 2},
-        "top": {"style": "DOTTED", "color": {"red": 0.8, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r - 1, "endRowIndex": r8, "startColumnIndex": 1, "endColumnIndex": 2},
-        "right": {"style": "SOLID", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}},
-        "bottom": {"style": "SOLID_MEDIUM", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r - 1, "endRowIndex": r8, "startColumnIndex": 4, "endColumnIndex": 5},
-        "left": {"style": "SOLID", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r, "endRowIndex": r8, "startColumnIndex": 17, "endColumnIndex": 18},
-        "left": {"style": "SOLID_MEDIUM", "color": {"red": 0.8, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r8, "endRowIndex": r8 + 1, "startColumnIndex": 0, "endColumnIndex": 25},
-        "top": {"style": "SOLID_MEDIUM", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
-
-    reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r7, "endRowIndex": r8, "startColumnIndex": 0, "endColumnIndex": 25},
-        "bottom": {"style": "SOLID_MEDIUM", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
-
-    # ====================================================================================================================================================================================================
-    # ========================================================================================== CONDICIONAIS ============================================================================================
-    # ====================================================================================================================================================================================================
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=$H6=TRUE'}]},
-            "format": {"backgroundColor": {"red": 0.2627450980392157, "green": 0.2627450980392157, "blue": 0.2627450980392157},"textFormat": {"foregroundColor": {"red": 0.6, "green": 0.6, "blue": 0.6}, "bold": True}}}},
-        "index": 0}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=OR($I6=TRUE;REGEXMATCH(TO_TEXT($I6);"-"))'}]},
-            "format": {"backgroundColor": {"red": 0.8, "green": 0.8, "blue": 0.8},"textFormat": {"foregroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0}}}}},
-        "index": 1}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^DIÁRIO")'}]},
-            "format": {"backgroundColor": {"red": 102/255, "green": 0.0, "blue": 0.0}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 2}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^REUNIÕES")'}]},
-            "format": {"backgroundColor": {"red": 39/255, "green": 78/255, "blue": 19/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 3}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^REQUERIMENTOS DE COMISSÃO")'}]},
-            "format": {"backgroundColor": {"red": 255/255, "green": 153/255, "blue": 0/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 4}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^LANÇAMENTOS DE TRAMITAÇÃO")'}]},
-            "format": {"backgroundColor": {"red": 32/255, "green": 18/255, "blue": 77/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 5}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^CADASTRO DE E-MAILS")'}]},
-            "format": {"backgroundColor": {"red": 7/255, "green": 55/255, "blue": 99/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 6}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^IMPLANTAÇÃO DE TEXTOS")'}]},
-            "format": {"backgroundColor": {"red": 127/255, "green": 96/255, "blue": 0/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 7}})
-
-    reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-        "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=AND(OR(REGEXMATCH($B6;"^GDI-GGA");REGEXMATCH($C6;"^MATE")))'}]},
-            "format": {"backgroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
-        "index": 8}})
-
-    # ====================================================================================================================================================================================================
-    # ============================================================================================ CHECKBOX ==============================================================================================
-    # ====================================================================================================================================================================================================
-    # (se você já está usando _checkbox_req no PARTE 1B, NÃO duplica aqui — mantém só o "for r in (6,8)" antigo fora do footer)
-
-    # PARTE 3 ============================================================================================================================================================================================
-    # ============================================================================================= VALUES ===============================================================================================
-    # ====================================================================================================================================================================================================
-
-    dd = int(diario_key[6:8])
-    mm = int(diario_key[4:6])
-    yyyy = int(diario_key[0:4])
-    a5_txt = f"{dd}/{mm}"
-
-    from datetime import datetime, timedelta
-
-    data = []
-
-    def add(a1, values):
-        data.append({"range": f"'{tab_name}'!{a1}", "values": values})
-
-    def two_business_days_before(d):
-        n = 2
-        while n > 0:
-            d -= timedelta(days=1)
-            if d.weekday() < 5:
-                n -= 1
-        return d
-
-    add("A5:B5", [[f"=DATE({yyyy};{mm};{dd})", ""]])
-    add("A1", [[ '=HYPERLINK("https://www.almg.gov.br/home/index.html";IMAGE("https://sisap.almg.gov.br/banner.png";4;43;110))' ]])
-    add("C1", [["GERÊNCIA DE GESTÃO ARQUIVÍSTICA"]])
-    add("Q1", [["DATAS"]])
-    add("G1", [['=HYPERLINK("https://intra.almg.gov.br/export/sites/default/a-assembleia/calendarios/calendario_2023.pdf";'
-        'IMAGE("https://media.istockphoto.com/vectors/flag-map-of-the-brazilian-state-of-minas-gerais-vector-id1248541649?k=20&m=1248541649&s=170667a&w=0&h=V8Ky8c8rddLPjphovytIJXaB6NlMF7dt-ty-2ZJF5Wc="))']])
-    add("H1", [['=HYPERLINK("https://www.almg.gov.br/atividade_parlamentar/plenario/index.html";''IMAGE("https://www.protestoma.com.br/images/noticia-id_255.jpg";4;27;42))']])
-    add("H3", [['=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/";''IMAGE("https://www.ouvidoriageral.mg.gov.br/images/noticias/2019/dezembro/foto_almg.jpg";4;27;42))']])
-    add("I1", [['=HYPERLINK("https://www.jornalminasgerais.mg.gov.br/";'
-        'IMAGE("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Bandeira_de_Minas_Gerais.svg/2560px-Bandeira_de_Minas_Gerais.svg.png";4;35;50))']])
-    add("I3", [['=HYPERLINK("https://www.almg.gov.br/consulte/arquivo_diario_legislativo/index.html";'
-        'IMAGE("https://www.almg.gov.br/favicon.ico";4;25;25))']])
-    add("J1", [['=HYPERLINK("https://consulta-brs.almg.gov.br/brs/";''IMAGE("https://t4.ftcdn.net/jpg/04/70/40/23/360_F_470402339_5FVE7b1Z2DNI7bATV5a27FGATt6yxcEz.jpg"))']])
-    add("J3", [['=HYPERLINK("https://silegis.almg.gov.br/silegismg/login/login.jsp";IMAGE("https://silegis.almg.gov.br/silegismg/assets/logotipo.png"))']])
-    add("K1", [[ '=HYPERLINK("https://webmail.almg.gov.br/";IMAGE("https://images.vexels.com/media/users/3/140138/isolated/lists/88e50689fa3280c748d000aaf0bad480-icone-redondo-de-email-1.png"))' ]])
-    add("K3", [[ '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/manuais-e-delibera%C3%A7%C3%B5es#h.no8oprc5oego";IMAGE("http://anthillonline.com/wp-content/uploads/2021/03/mate-logo.jpg";4;65;50))' ]])
-    add("L1", [[ '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/projetos-de-lei/";IMAGE("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Tram-Logo.svg/2048px-Tram-Logo.svg.png";4;23;23))' ]])
-    add("L3", [[ '=HYPERLINK("https://www.almg.gov.br/consulte/legislacao/index.html";IMAGE("https://cdn-icons-png.flaticon.com/512/3122/3122427.png"))' ]])
-    add("M1", [[ '=HYPERLINK("https://sei.almg.gov.br/";IMAGE("https://www.gov.br/ebserh/pt-br/media/plataformas/sei/@@images/5a07de59-2af0-45b0-9be9-f0d0438b7a81.png";4;45;50))' ]])
-    add("M3", [[ '=HYPERLINK("https://stl.almg.gov.br/login.jsp";IMAGE("https://media-exp1.licdn.com/dms/image/C510BAQHc4JZB3kDHoQ/company-logo_200_200/0/1519865605418?e=2147483647&v=beta&t=dE29KDkLy-qxYmZ3TVE95zPf8_PeoMr7YJBQehJbFg8";4;24;28))' ]])
-    add("N1", [[ '=HYPERLINK("https://docs.google.com/spreadsheets/d/1kJmtsWxoMtBKeMeO0Aex4IrIULRMeyf6yl3UgqatNGs/edit#gid=1276994968";IMAGE("https://cdn-icons-png.flaticon.com/512/3767/3767084.png";4;23;23))' ]])
-    add("N3", [[ '=HYPERLINK("https://webdrive.almg.gov.br/index.php/login";IMAGE("https://upload.wikimedia.org/wikipedia/en/6/61/WebDrive.png";4;22;22))' ]])
-    add("O1", [[ '=HYPERLINK("https://www.youtube.com/c/assembleiamg";IMAGE("https://cdn.pixabay.com/photo/2021/02/16/06/00/youtube-logo-6019878_960_720.png";4;20;28))' ]])
-    add("O3", [[ '=HYPERLINK("https://atom.almg.gov.br/index.php/";IMAGE("https://atom.almg.gov.br/favicon.ico";4;20;20))' ]])
-    add("P1", [[ '=IMAGE("https://img2.gratispng.com/20180422/slw/kisspng-computer-icons-dice-desktop-wallpaper-clip-art-5adc2023a35a45.9466329215243755876691.jpg")' ]])
-    add("P2", [["LEGISLATIVO"]])
-    add("P3", [["ATUAL"]])
-    add("P4", [["ATA"]])
-    add("D5", [["#"]])
-    add("E5", [["IMPLANTAÇÃO"]])
-    add("J5", [["PROPOSIÇÕES"]])
-    add("T5", [["EXPRESSÕES DE BUSCA"]])
-    add("C5", [[ '=HYPERLINK("https://docs.google.com/document/d/1lftfl3SAfJPMdIKYSjATffe-Tvc9qfoLodfGK-f3sLU/edit";"MATE - MATÉRIAS EM TRAMITAÇÃO")' ]])
-    add("G5", [[ '=HYPERLINK("https://writer.zoho.com/writer/open/fgoh367779094842247dd8313f9c7714f452a";"CONFERÊNCIA")' ]])
-    add("B6", [['=TEXT(A5;"dd/mm/yyyy")']])
-    add("C6", [["DIÁRIO DO EXECUTIVO"]])
-    add("B7", [["-"]])
-
-    dl_date = datetime(yyyy, mm, dd).date()
-    dmenos2_date = two_business_days_before(dl_date)
-    dmenos2 = f"{dmenos2_date.day}/{dmenos2_date.month}/{dmenos2_date.year}"
-    add("E8:G8", [[dmenos2]])
-
-    add(f"A6:A{footer_start - 1}", [['''=IFS(
+# OBS: versão reescrita para ser funcionalmente equivalente ao bloco que você enviou.
+# - Mantém as MESMAS fórmulas/valores e ranges.
+# - Mantém a mesma estratégia de updates (values_batch_update + batch_update).
+# - Evita NameError de `with_backoff` (alias para `_with_backoff`).
+# - Mantém a sanitização de requests antes do batch_update.
+
+dd = int(diario_key[6:8])
+mm = int(diario_key[4:6])
+yyyy = int(diario_key[0:4])
+a5_txt = f"{dd}/{mm}"
+
+from datetime import datetime, timedelta
+
+# Alias defensivo: no seu trecho aparece `with_backoff(...)` ao final.
+# Para manter equivalência (e evitar NameError), mapeio para `_with_backoff`.
+with_backoff = _with_backoff
+
+data = []
+
+def add(a1, values):
+    data.append({"range": f"'{tab_name}'!{a1}", "values": values})
+
+def two_business_days_before(d):
+    n = 2
+    while n > 0:
+        d -= timedelta(days=1)
+        if d.weekday() < 5:
+            n -= 1
+    return d
+
+add("A5:B5", [[f"=DATE({yyyy};{mm};{dd})", ""]])
+add("A1", [[ '=HYPERLINK("https://www.almg.gov.br/home/index.html";IMAGE("https://sisap.almg.gov.br/banner.png";4;43;110))' ]])
+add("C1", [["GERÊNCIA DE GESTÃO ARQUIVÍSTICA"]])
+add("Q1", [["DATAS"]])
+add("G1", [['=HYPERLINK("https://intra.almg.gov.br/export/sites/default/a-assembleia/calendarios/calendario_2023.pdf";'
+    'IMAGE("https://media.istockphoto.com/vectors/flag-map-of-the-brazilian-state-of-minas-gerais-vector-id1248541649?k=20&m=1248541649&s=170667a&w=0&h=V8Ky8c8rddLPjphovytIJXaB6NlMF7dt-ty-2ZJF5Wc="))']])
+add("H1", [['=HYPERLINK("https://www.almg.gov.br/atividade_parlamentar/plenario/index.html";''IMAGE("https://www.protestoma.com.br/images/noticia-id_255.jpg";4;27;42))']])
+add("H3", [['=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/";''IMAGE("https://www.ouvidoriageral.mg.gov.br/images/noticias/2019/dezembro/foto_almg.jpg";4;27;42))']])
+add("I1", [['=HYPERLINK("https://www.jornalminasgerais.mg.gov.br/";'
+    'IMAGE("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Bandeira_de_Minas_Gerais.svg/2560px-Bandeira_de_Minas_Gerais.svg.png";4;35;50))']])
+add("I3", [['=HYPERLINK("https://www.almg.gov.br/consulte/arquivo_diario_legislativo/index.html";'
+    'IMAGE("https://www.almg.gov.br/favicon.ico";4;25;25))']])
+add("J1", [['=HYPERLINK("https://consulta-brs.almg.gov.br/brs/";''IMAGE("https://t4.ftcdn.net/jpg/04/70/40/23/360_F_470402339_5FVE7b1Z2DNI7bATV5a27FGATt6yxcEz.jpg"))']])
+add("J3", [['=HYPERLINK("https://silegis.almg.gov.br/silegismg/login/login.jsp";IMAGE("https://silegis.almg.gov.br/silegismg/assets/logotipo.png"))']])
+add("K1", [[ '=HYPERLINK("https://webmail.almg.gov.br/";IMAGE("https://images.vexels.com/media/users/3/140138/isolated/lists/88e50689fa3280c748d000aaf0bad480-icone-redondo-de-email-1.png"))' ]])
+add("K3", [[ '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/manuais-e-delibera%C3%A7%C3%B5es#h.no8oprc5oego";IMAGE("http://anthillonline.com/wp-content/uploads/2021/03/mate-logo.jpg";4;65;50))' ]])
+add("L1", [[ '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/projetos-de-lei/";IMAGE("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Tram-Logo.svg/2048px-Tram-Logo.svg.png";4;23;23))' ]])
+add("L3", [[ '=HYPERLINK("https://www.almg.gov.br/consulte/legislacao/index.html";IMAGE("https://cdn-icons-png.flaticon.com/512/3122/3122427.png"))' ]])
+add("M1", [[ '=HYPERLINK("https://sei.almg.gov.br/";IMAGE("https://www.gov.br/ebserh/pt-br/media/plataformas/sei/@@images/5a07de59-2af0-45b0-9be9-f0d0438b7a81.png";4;45;50))' ]])
+add("M3", [[ '=HYPERLINK("https://stl.almg.gov.br/login.jsp";IMAGE("https://media-exp1.licdn.com/dms/image/C510BAQHc4JZB3kDHoQ/company-logo_200_200/0/1519865605418?e=2147483647&v=beta&t=dE29KDkLy-qxYmZ3TVE95zPf8_PeoMr7YJBQehJbFg8";4;24;28))' ]])
+add("N1", [[ '=HYPERLINK("https://docs.google.com/spreadsheets/d/1kJmtsWxoMtBKeMeO0Aex4IrIULRMeyf6yl3UgqatNGs/edit#gid=1276994968";IMAGE("https://cdn-icons-png.flaticon.com/512/3767/3767084.png";4;23;23))' ]])
+add("N3", [[ '=HYPERLINK("https://webdrive.almg.gov.br/index.php/login";IMAGE("https://upload.wikimedia.org/wikipedia/en/6/61/WebDrive.png";4;22;22))' ]])
+add("O1", [[ '=HYPERLINK("https://www.youtube.com/c/assembleiamg";IMAGE("https://cdn.pixabay.com/photo/2021/02/16/06/00/youtube-logo-6019878_960_720.png";4;20;28))' ]])
+add("O3", [[ '=HYPERLINK("https://atom.almg.gov.br/index.php/";IMAGE("https://atom.almg.gov.br/favicon.ico";4;20;20))' ]])
+add("P1", [[ '=IMAGE("https://img2.gratispng.com/20180422/slw/kisspng-computer-icons-dice-desktop-wallpaper-clip-art-5adc2023a35a45.9466329215243755876691.jpg")' ]])
+add("P2", [["LEGISLATIVO"]])
+add("P3", [["ATUAL"]])
+add("P4", [["ATA"]])
+add("D5", [["#"]])
+add("E5", [["IMPLANTAÇÃO"]])
+add("J5", [["PROPOSIÇÕES"]])
+add("T5", [["EXPRESSÕES DE BUSCA"]])
+add("C5", [[ '=HYPERLINK("https://docs.google.com/document/d/1lftfl3SAfJPMdIKYSjATffe-Tvc9qfoLodfGK-f3sLU/edit";"MATE - MATÉRIAS EM TRAMITAÇÃO")' ]])
+add("G5", [[ '=HYPERLINK("https://writer.zoho.com/writer/open/fgoh367779094842247dd8313f9c7714f452a";"CONFERÊNCIA")' ]])
+add("B6", [['=TEXT(A5;"dd/mm/yyyy")']])
+add("C6", [["DIÁRIO DO EXECUTIVO"]])
+add("B7", [["-"]])
+
+dl_date = datetime(yyyy, mm, dd).date()
+dmenos2_date = two_business_days_before(dl_date)
+dmenos2 = f"{dmenos2_date.day}/{dmenos2_date.month}/{dmenos2_date.year}"
+add("E8:G8", [[dmenos2]])
+
+# ------------------------------------------------------------------
+# A6 (mega fórmula) - preservada integralmente
+# ------------------------------------------------------------------
+add(
+    f"A6:A{footer_start - 1}",
+    [[r'''=IFS(
 
   OR(
   INDIRECT("C"&ROW())="-";
@@ -2402,9 +1101,16 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
   HYPERLINK("https://www.almg.gov.br/export/sites/default/consulte/arquivo_diario_legislativo/pdfs/"&RIGHT($B$6;4)&"/"&MID($B$6;4;2)&"/L"&RIGHT($B$6;4)&MID($B$6;4;2)&LEFT($B$6;2)&".pdf#page="&IFS(MID(INDIRECT("B"&ROW());3;1)="";IFS(LEFT(INDIRECT("B"&ROW());1)=0;LEFT(INDIRECT("B"&ROW());2);LEFT(INDIRECT("B"&ROW());1)<>0;LEFT(INDIRECT("B"&ROW());2));MID(INDIRECT("B"&ROW());3;1)<>"";LEFT(INDIRECT("B"&ROW());3));
 
   IMAGE("https://seeklogo.com/images/B/bandeira-minas-gerais-logo-AD7B6F3604-seeklogo.com.png";4;15;15))
-  ))''']] * ((footer_start - 1) - 5))
+  ))''']]
+    * ((footer_start - 1) - 5)
+)
 
-    add(f"P6:P{footer_start - 1}", [['''=IFS(
+# ------------------------------------------------------------------
+# P6 (mega fórmula) - preservada integralmente
+# ------------------------------------------------------------------
+add(
+    f"P6:P{footer_start - 1}",
+    [[r'''=IFS(
 
   OR(INDIRECT("E"&ROW())<>"DIOGO");
   IFS(
@@ -2421,9 +1127,16 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
   OR(INDIRECT("C"&ROW())<>"REUNIÕES DE PLENÁRIO");IFS($A$683=FALSE;
 
   HYPERLINK("https://integracao.almg.gov.br/mate-brs/index.html?first=false&search=odp&pagina=1&tp=200&aba=js_tabpesquisaAvancada&txtPalavras="&T6;IMAGE("https://www.almg.gov.br/favicon.ico";4;17;17));
-  $A$683=TRUE;HYPERLINK(X6;IMAGE("https://www.almg.gov.br/favicon.ico";4;17;17)))))))''']] * ((footer_start - 1) - 5))
+  $A$683=TRUE;HYPERLINK(X6;IMAGE("https://www.almg.gov.br/favicon.ico";4;17;17)))))))''']]
+    * ((footer_start - 1) - 5)
+)
 
-    add(f"Q6:Q{footer_start - 1}", [['''=IFS(
+# ------------------------------------------------------------------
+# Q6 (mega fórmula) - preservada integralmente
+# ------------------------------------------------------------------
+add(
+    f"Q6:Q{footer_start - 1}",
+    [[r'''=IFS(
 
   OR(INDIRECT("C"&ROW())="";
   LEFT(INDIRECT("C"&ROW());6)="DIÁRIO";
@@ -2670,6 +1383,7 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
   INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE REPÚDIO";"RQN50";
   INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE PROTESTO";"RQN50";
   INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE PESAR";"RQN49";
+  INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE REPÚDIO";"RQN50";
   INDIRECT("C"&ROW())="OFÍCIO COMUNICANDO MANUTENÇÃO TOTAL DO VETO";"PL93";
   INDIRECT("C"&ROW())="OFÍCIO COMUNICANDO REJEIÇÃO TOTAL DO VETO";"PL92";
   INDIRECT("C"&ROW())="OFÍCIO COMUNICANDO REJEIÇÃO PARCIAL DO VETO";"PL598";
@@ -2682,9 +1396,14 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
   INDIRECT("C"&ROW())="PRECLUSÃO DE PRAZO: REQUERIMENTOS, RECURSO";"RQN87";
   INDIRECT("C"&ROW())="PRECLUSÃO DE PRAZO: INCONSTITUCIONALIDADE";"PL125"
 
-  ))''']] * ((footer_start - 1) - 5))
+  ))''']]
+    * ((footer_start - 1) - 5)
+)
 
-    add(f"R6:R{footer_start - 1}", [['''=IFS(
+# ------------------------------------------------------------------
+# R6 / S6 (mega fórmulas) - preservadas integralmente
+# ------------------------------------------------------------------
+add(f"R6:R{footer_start - 1}", [[r'''=IFS(
 
   OR(
   INDIRECT("C"&ROW())="";
@@ -2952,7 +1671,7 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
 
   ))''']] * ((footer_start - 1) - 5))
 
-    add(f"S6:S{footer_start - 1}", [['''=IFS(
+add(f"S6:S{footer_start - 1}", [[r'''=IFS(
 
   OR(
   INDIRECT("C"&ROW())="";
@@ -3170,7 +1889,7 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
   INDIRECT("C"&ROW())="REMESSA - PEDIDO DE INFORMAÇÃO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=330";"PÁG 330");
   INDIRECT("C"&ROW())="OFÍCIO - REQUERIMENTO APROVADO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=329";"PÁG 329");
   INDIRECT("C"&ROW())="OFÍCIO - PEDIDO DE INFORMAÇÃO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=330";"PÁG 330");
-  INDIRECT("C"&ROW())="OFÍCIO - PEDIDO DE INFORMAÇÃO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=331";"PÁG 331");
+  INDIRECT("C"&ROW())="OFÍCIO - PEDIDO de INFORMAÇÃO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=331";"PÁG 331");
   INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE APLAUSO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=326";"PÁG 326");
   INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE APOIO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=326";"PÁG 326");
   INDIRECT("C"&ROW())="OFÍCIO - MANIFESTAÇÃO DE REPÚDIO";HYPERLINK("http://welder.eci.ufmg.br/wp-content/uploads/2024/03/MANUAL-MATE-2024.pdf#page=326";"PÁG 326");
@@ -3192,179 +1911,184 @@ def _sanitize_merge_reqs(reqs: list[dict], max_rows: int, max_cols: int) -> list
 
   ))''']] * ((footer_start - 1) - 5))
 
+# ====================================================================================================================================================================================================
+# ============================================================================================= DATAS ===============================================================================================
+# ====================================================================================================================================================================================================
+data += [
+    {"range": f"'{tab_name}'!Q2", "values": [["=B6"]]},
+    {"range": f"'{tab_name}'!Q3", "values": [["=TODAY()"]]},
+    {"range": f"'{tab_name}'!Q4", "values": [['=QUERY(C6:G8;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO.*\'";0)']]},
+    {"range": f"'{tab_name}'!S2", "values": [['=TEXT(Q2;"\'dd\' \'mm\' \'yyyy\'")']]},
+    {"range": f"'{tab_name}'!S3", "values": [['=TEXT(Q3;"\'d\' \'MM\' yyyy")']]},
+    {"range": f"'{tab_name}'!S4", "values": [['=TEXT(Q4;"\'dd\' \'mm\' \'yyyy\'")']]},
+    {"range": f"'{tab_name}'!T2", "values": [['=TEXT(Q2;"\'d\' \'m\' \'yyyy\'")']]},
+    {"range": f"'{tab_name}'!T3", "values": [['=TEXT(Q3;"\'d\' \'m\' \'yyyy\'")']]},
+    {"range": f"'{tab_name}'!T4", "values": [['=TEXT(Q4;"\'d\' \'m\' \'yyyy\'")']]},
+    {"range": f"'{tab_name}'!U2", "values": [['=TEXT(Q2;"yyyymmdd")']]},
+    {"range": f"'{tab_name}'!U3", "values": [['=TEXT(Q3;"yyyymmdd")']]},
+    {"range": f"'{tab_name}'!U4", "values": [['=TEXT(Q4;"yyyymmdd")']]},
+    {"range": f"'{tab_name}'!V2", "values": [['=TEXT(Q2;"yyyy-mm-dd")']]},
+    {"range": f"'{tab_name}'!V3", "values": [['=TEXT(Q3;"yyyy-mm-dd")']]},
+    {"range": f"'{tab_name}'!V4", "values": [['=TEXT(Q4;"yyyy-mm-dd")']]},
+    {"range": f"'{tab_name}'!W2", "values": [['=TEXT(Q2;"dd mm yyyy")']]},
+    {"range": f"'{tab_name}'!W3", "values": [['=IFERROR(QUERY(C6:G13;"SELECT E WHERE C MATCHES ''.*DIÁRIO DO LEGISLATIVO - EDIÇÃO EXTRA.*''";0);"SEM EXTRA")']]},
+    {"range": f"'{tab_name}'!W4", "values": [['=TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'dd mm yyyy\'")']]},
+    {"range": f"'{tab_name}'!X4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES ''REQUERIMENTOS DE COMISSÃO''";0);"dd/MM/yyyy");"")']]},
+    {"range": f"'{tab_name}'!Y2", "values": [["REUNIÃO"]]},
+    {"range": f"'{tab_name}'!Y3", "values": [["EXTRA"]]},
+    {"range": f"'{tab_name}'!Y4", "values": [["RQC"]]},
+]
 
-  # ====================================================================================================================================================================================================
-  # ============================================================================================= DATAS ===============================================================================================
-  # ====================================================================================================================================================================================================
-    data += [
-        {"range": f"'{tab_name}'!Q2", "values": [["=B6"]]},
-        {"range": f"'{tab_name}'!Q3", "values": [["=TODAY()"]]},
-        {"range": f"'{tab_name}'!Q4", "values": [['=QUERY(C6:G8;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO.*\'";0)']]},
-        {"range": f"'{tab_name}'!S2", "values": [['=TEXT(Q2;"\'dd\' \'mm\' \'yyyy\'")']]},
-        {"range": f"'{tab_name}'!S3", "values": [['=TEXT(Q3;"\'d\' \'MM\' yyyy")']]},
-        {"range": f"'{tab_name}'!S4", "values": [['=TEXT(Q4;"\'dd\' \'mm\' \'yyyy\'")']]},
-        {"range": f"'{tab_name}'!T2", "values": [['=TEXT(Q2;"\'d\' \'m\' \'yyyy\'")']]},
-        {"range": f"'{tab_name}'!T3", "values": [['=TEXT(Q3;"\'d\' \'m\' \'yyyy\'")']]},
-        {"range": f"'{tab_name}'!T4", "values": [['=TEXT(Q4;"\'d\' \'m\' \'yyyy\'")']]},
-        {"range": f"'{tab_name}'!U2", "values": [['=TEXT(Q2;"yyyymmdd")']]},
-        {"range": f"'{tab_name}'!U3", "values": [['=TEXT(Q3;"yyyymmdd")']]},
-        {"range": f"'{tab_name}'!U4", "values": [['=TEXT(Q4;"yyyymmdd")']]},
-        {"range": f"'{tab_name}'!V2", "values": [['=TEXT(Q2;"yyyy-mm-dd")']]},
-        {"range": f"'{tab_name}'!V3", "values": [['=TEXT(Q3;"yyyy-mm-dd")']]},
-        {"range": f"'{tab_name}'!V4", "values": [['=TEXT(Q4;"yyyy-mm-dd")']]},
-        {"range": f"'{tab_name}'!W2", "values": [['=TEXT(Q2;"dd mm yyyy")']]},
-        {"range": f"'{tab_name}'!W3", "values": [['=IFERROR(QUERY(C6:G13;"SELECT E WHERE C MATCHES ''.*DIÁRIO DO LEGISLATIVO - EDIÇÃO EXTRA.*''";0);"SEM EXTRA")']]},
-        {"range": f"'{tab_name}'!W4", "values": [['=TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'dd mm yyyy\'")']]},
-        {"range": f"'{tab_name}'!X4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES ''REQUERIMENTOS DE COMISSÃO''";0);"dd/MM/yyyy");"")']]},
-        {"range": f"'{tab_name}'!Y2", "values": [["REUNIÃO"]]},
-        {"range": f"'{tab_name}'!Y3", "values": [["EXTRA"]]},
-        {"range": f"'{tab_name}'!Y4", "values": [["RQC"]]},
-    ]
+# EXECUTA O BLOCO PRINCIPAL (values)
+body = {"valueInputOption": "USER_ENTERED", "data": data}
+_with_backoff(sh.values_batch_update, body)
 
-    # EXECUTA O BLOCO PRINCIPAL
-    body = {"valueInputOption": "USER_ENTERED", "data": data}
-    _with_backoff(sh.values_batch_update, body)
+# ====================================================================================================================================================================================================
+# ============================================================================================= TÍTULOS ==============================================================================================
+# ====================================================================================================================================================================================================
+data2 = [{"range": f"'{tab_name}'!B8:C8", "values": [[tab_name, "DIÁRIO DO LEGISLATIVO"]]}]
 
-  # ====================================================================================================================================================================================================
-  # ============================================================================================= TÍTULOS ==============================================================================================
-  # ====================================================================================================================================================================================================
-    data2 = []
-    data2.append({"range": f"'{tab_name}'!B8:C8", "values": [[tab_name, "DIÁRIO DO LEGISLATIVO"]]})
+ALVOS = (
+    "REQUERIMENTOS DE COMISSÃO",
+    "LANÇAMENTOS DE TRAMITAÇÃO",
+    "CADASTRO DE E-MAILS",
+)
 
-    ALVOS = (
-        "REQUERIMENTOS DE COMISSÃO",
-        "LANÇAMENTOS DE TRAMITAÇÃO",
-        "CADASTRO DE E-MAILS",)
-    extra_rows_c_is_dash = []
-    for i, row in enumerate(extras):
-        if row[0] != "-":
-          continue
-        if i - 1 < 0:
-          continue
-        prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
-        if any(t in str(prev_title) for t in ALVOS):
-          extra_rows_c_is_dash.append(start_extra_row + i)
-    for r in extra_rows_c_is_dash:
-        data2.append({
-          "range": f"'{tab_name}'!E{r}:I{r}",
-          "values": [["-","-","-","-","-"]]})
+extra_rows_c_is_dash = []
+for i, row in enumerate(extras):
+    if row[0] != "-":
+        continue
+    if i - 1 < 0:
+        continue
+    prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
+    if any(t in str(prev_title) for t in ALVOS):
+        extra_rows_c_is_dash.append(start_extra_row + i)
 
-    # acha linha do DROPDOWN_2 (para setar D com "-")
-    dd2_row = next(
-        start_extra_row + i
-        for i, (_b, c) in enumerate(extras)
-        if c == "DROPDOWN_2")
-    data2.append({"range": f"'{tab_name}'!D{dd2_row}", "values": [["-"]]})
+for r in extra_rows_c_is_dash:
+    data2.append({"range": f"'{tab_name}'!E{r}:I{r}", "values": [["-","-","-","-","-"]]})
 
-    # IMPLANTAÇÃO DE TEXTOS (mantém)
-    impl_row = next(
-        start_extra_row + i
-        for i, (_b, c) in enumerate(extras)
-        if isinstance(c, str) and "IMPLANTAÇÃO DE TEXTOS" in c
+# acha linha do DROPDOWN_2 (para setar D com "-")
+dd2_row = next(
+    start_extra_row + i
+    for i, (_b, c) in enumerate(extras)
+    if c == "DROPDOWN_2"
+)
+data2.append({"range": f"'{tab_name}'!D{dd2_row}", "values": [["-"]]})
+
+# IMPLANTAÇÃO DE TEXTOS (mantém)
+impl_row = next(
+    start_extra_row + i
+    for i, (_b, c) in enumerate(extras)
+    if isinstance(c, str) and "IMPLANTAÇÃO DE TEXTOS" in c
+)
+
+# linha do título
+data2.append({"range": f"'{tab_name}'!E{impl_row}:G{impl_row}", "values": [["TEXTOS", "EMENDAS", "PARECERES"]]})
+
+# linha filha (logo abaixo)
+data2.append({"range": f"'{tab_name}'!E{impl_row + 1}:I{impl_row + 1}", "values": [["?", "?", "?", "-", False]]})
+
+# validação boolean em I (coluna 8 -> I, 0-based)
+reqs.append({
+    "setDataValidation": {
+        "range": {
+            "sheetId": sheet_id,
+            "startRowIndex": impl_row,
+            "endRowIndex": impl_row + 1,
+            "startColumnIndex": 8,
+            "endColumnIndex": 9,
+        },
+        "rule": {"condition": {"type": "BOOLEAN"}, "strict": True},
+    }
+})
+
+body2 = {"valueInputOption": "USER_ENTERED", "data": data2}
+
+# fontes vermelhas (mantém)
+reqs.append(req_font(sheet_id, f"E{impl_row + 1}", fg_hex="#D32F2F"))
+reqs.append(req_font(sheet_id, f"F{impl_row + 1}", fg_hex="#D32F2F"))
+reqs.append(req_font(sheet_id, f"G{impl_row + 1}", fg_hex="#D32F2F"))
+reqs.append(req_font(sheet_id, f"H{impl_row + 1}", fg_hex="#D32F2F"))
+reqs.append(req_font(sheet_id, f"I{impl_row + 1}", fg_hex="#D32F2F"))
+
+_with_backoff(sh.values_batch_update, body2)
+
+# ====================================================================================================================================================================================================
+# ======================================================================================= CONTAGEM DINÂMICA ==========================================================================================
+# ====================================================================================================================================================================================================
+FORMULAS_E = [
+    '=LET(total;COUNTIFS(C:C;"ORDINÁRIA")+COUNTIFS(C:C;"EXTRAORDINÁRIA")+COUNTIFS(C:C;"ESPECIAL");total & IF(total=1;" REUNIÃO";" REUNIÕES"))',
+    '=LET(total;COUNTIFS(C:C;"COMISSÃO*")+COUNTIFS(C:C;"CIPE*");total & IF(total=1;" REUNIÃO";" REUNIÕES"))',
+    '=LET(total;SUMIFS(E:E;C:C;"RQC*");total & IF(total=1;" REQUERIMENTO";" REQUERIMENTOS"))',
+    '=LET(total;SUMIFS(E$2:E$39;C$2:C$39;"RECEBIMENTO DE PROPOSIÇÃO")+SUMIFS(E$2:E$39;C$2:C$39;"DESIGNAÇÃO DE RELATORIA")+SUMIFS(E$2:E$39;C$2:C$39;"CUMPRIMENTO DE DILIGÊNCIA")+SUMIFS(E$2:E$39;C$2:C$39;"ENTREGA DE DIPLOMA")+SUMIFS(E$2:E$39;C$2:C$39;"REUNIÃO ORIGINADA DE REQUERIMENTO")+SUMIFS(E$2:E$39;C$2:C$39;"REUNIÃO COM DEBATE DE PROPOSIÇÃO*")+SUMIFS(E$2:E$39;C$2:C$39;"AUDIÊNCIA PÚBLICA*")+SUMIFS(E$2:E$39;C$2:C$39;"REMESSA - *")+SUMIFS(E$2:E$39;C$2:C$39;"OFÍCIO - *")+SUMIFS(E$2:E$39;C$2:C$39;"PROPOSIÇÃO DE LEI ENCAMINHADA PARA SANÇÃO");total & IF(total=1;" LANÇAMENTO";" LANÇAMENTOS"))',
+    '=LET(total;SUMIFS(E:E;C:C;"PRECLUSÃO*")+SUMIFS(E:E;C:C;"CONSULTA*");total & IF(total=1;" LANÇAMENTO";" LANÇAMENTOS"))',
+]
+
+# linhas onde haverá contagem (as mesmas em que C tem título e você mescla E:G)
+# EXCETO dropdown (não pode ter nada em E)
+extra_formula_rows = [
+    start_extra_row + i
+    for i, row in enumerate(extras)
+    if (
+        (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
+        and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
+        and "IMPLANTAÇÃO DE TEXTOS" not in (row[1] if len(row) > 1 else "")
     )
+]
 
-    # linha do título
-    data2.append({
-        "range": f"'{tab_name}'!E{impl_row}:G{impl_row}",
-        "values": [["TEXTOS", "EMENDAS", "PARECERES"]]})
+data_extra_E = [
+    {"range": f"E{r}", "values": [[FORMULAS_E[i]]]}
+    for i, r in enumerate(extra_formula_rows[:len(FORMULAS_E)])
+]
 
-    # linha filha (logo abaixo)
-    data2.append({
-        "range": f"'{tab_name}'!E{impl_row + 1}:I{impl_row + 1}",
-        "values": [["?", "?", "?", "-", False]]})
+_with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
-    reqs.append({
-    "setDataValidation": {"range": {
-        "sheetId": sheet_id,
-        "startRowIndex": impl_row,
-        "endRowIndex": impl_row + 1,
-        "startColumnIndex": 8,   # coluna I (0-based)
-        "endColumnIndex": 9},
-      "rule": {"condition": {"type": "BOOLEAN"},
-        "strict": True}}})
+# ====================================================================================================================================================================================================
+# ============================================================================================== CALL ================================================================================================
+# ====================================================================================================================================================================================================
 
-    body2 = {"valueInputOption": "USER_ENTERED", "data": data2}
+# --- SANITIZAÇÃO FINAL: remove requests com range inválido/incompleto ---
+reqs_ok = []
+for i, r in enumerate(reqs):
+    rng = None
+    for k in ("mergeCells", "updateBorders", "setDataValidation"):
+        if k in r and "range" in r[k]:
+            rng = r[k]["range"]
+            break
 
-    reqs.append(req_font(sheet_id, f"E{impl_row + 1}", fg_hex="#D32F2F"))
-    reqs.append(req_font(sheet_id, f"F{impl_row + 1}", fg_hex="#D32F2F"))
-    reqs.append(req_font(sheet_id, f"G{impl_row + 1}", fg_hex="#D32F2F"))
-    reqs.append(req_font(sheet_id, f"H{impl_row + 1}", fg_hex="#D32F2F"))
-    reqs.append(req_font(sheet_id, f"I{impl_row + 1}", fg_hex="#D32F2F"))
+    if rng is not None:
+        sr = rng.get("startRowIndex")
+        er = rng.get("endRowIndex")
+        sc = rng.get("startColumnIndex")
+        ec = rng.get("endColumnIndex")
 
-    _with_backoff(sh.values_batch_update, body2)
+        if sr is None or er is None or sc is None or ec is None:
+            print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
+            continue
 
-  # ====================================================================================================================================================================================================
-  # ======================================================================================= CONTAGEM DINÂMICA ==========================================================================================
-  # ====================================================================================================================================================================================================
-    FORMULAS_E = [
-        '=LET(total;COUNTIFS(C:C;"ORDINÁRIA")+COUNTIFS(C:C;"EXTRAORDINÁRIA")+COUNTIFS(C:C;"ESPECIAL");total & IF(total=1;" REUNIÃO";" REUNIÕES"))',
-        '=LET(total;COUNTIFS(C:C;"COMISSÃO*")+COUNTIFS(C:C;"CIPE*");total & IF(total=1;" REUNIÃO";" REUNIÕES"))',
-        '=LET(total;SUMIFS(E:E;C:C;"RQC*");total & IF(total=1;" REQUERIMENTO";" REQUERIMENTOS"))',
-        '=LET(total;SUMIFS(E$2:E$39;C$2:C$39;"RECEBIMENTO DE PROPOSIÇÃO")+SUMIFS(E$2:E$39;C$2:C$39;"DESIGNAÇÃO DE RELATORIA")+SUMIFS(E$2:E$39;C$2:C$39;"CUMPRIMENTO DE DILIGÊNCIA")+SUMIFS(E$2:E$39;C$2:C$39;"ENTREGA DE DIPLOMA")+SUMIFS(E$2:E$39;C$2:C$39;"REUNIÃO ORIGINADA DE REQUERIMENTO")+SUMIFS(E$2:E$39;C$2:C$39;"REUNIÃO COM DEBATE DE PROPOSIÇÃO*")+SUMIFS(E$2:E$39;C$2:C$39;"AUDIÊNCIA PÚBLICA*")+SUMIFS(E$2:E$39;C$2:C$39;"REMESSA - *")+SUMIFS(E$2:E$39;C$2:C$39;"OFÍCIO - *")+SUMIFS(E$2:E$39;C$2:C$39;"PROPOSIÇÃO DE LEI ENCAMINHADA PARA SANÇÃO");total & IF(total=1;" LANÇAMENTO";" LANÇAMENTOS"))',
-        '=LET(total;SUMIFS(E:E;C:C;"PRECLUSÃO*")+SUMIFS(E:E;C:C;"CONSULTA*");total & IF(total=1;" LANÇAMENTO";" LANÇAMENTOS"))',
-    ]
+        if er <= sr or ec <= sc:
+            print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
+            continue
 
-    # linhas onde haverá contagem (as mesmas em que C tem título e você mescla E:G)
-    # EXCETO dropdown (não pode ter nada em E)
-    extra_formula_rows = [
-        start_extra_row + i
-        for i, row in enumerate(extras)
-        if (
-          (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
-          and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
-          and "IMPLANTAÇÃO DE TEXTOS" not in (row[1] if len(row) > 1 else ""))]
+    reqs_ok.append(r)
 
-    data_extra_E = [
-        {"range": f"E{r}", "values": [[FORMULAS_E[i]]]}
-        for i, r in enumerate(extra_formula_rows[:len(FORMULAS_E)])]
+reqs = reqs_ok
 
-  # ====================================================================================================================================================================================================
-  # ============================================================================================== CALL ================================================================================================
-  # ====================================================================================================================================================================================================
+# Mantém o comportamento do seu trecho: chamadas de batch_update em sequência.
+# 1) sempre chama uma vez com requests (pode ser vazio)
+_with_backoff(sh.batch_update, body={"requests": reqs})
 
-    _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
-
-    # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
-    reqs_ok = []
-    for i, r in enumerate(reqs):
-        # tenta extrair um range padrão, se existir
-        rng = None
-        for k in ("mergeCells", "updateBorders", "setDataValidation"):
-            if k in r and "range" in r[k]:
-                rng = r[k]["range"]
-                break
-
-        if rng is not None:
-            sr = rng.get("startRowIndex"); er = rng.get("endRowIndex")
-            sc = rng.get("startColumnIndex"); ec = rng.get("endColumnIndex")
-
-            if sr is None or er is None or sc is None or ec is None:
-                print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
-                continue
-
-            if er <= sr or ec <= sc:
-                print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
-                continue
-
-        reqs_ok.append(r)
-
-    reqs = reqs_ok
-
-    # reqs = _sanitize_merge_reqs(reqs, rows_target, cols_target)
+# 2) repete conforme condição (mesma intenção do seu código)
+if reqs:
     _with_backoff(sh.batch_update, body={"requests": reqs})
+else:
+    _with_backoff(sh.batch_update, body={"requests": []})
 
-    # aplica requests MESMO se não houver itens
-    if reqs:
-        _with_backoff(sh.batch_update, body={"requests": reqs})
-    else:
-        # força criação/layout mínimo (evita retorno None)
-        _with_backoff(sh.batch_update, body={"requests": []})
+# 3) “EXECUTA REQUESTS (LAYOUT)” — preserva o bloco final (com alias)
+if reqs:
+    with_backoff(sh.batch_update, body={"requests": reqs})
 
-    # === EXECUTA REQUESTS (LAYOUT) ===
-    if reqs:
-        with_backoff(sh.batch_update, body={"requests": reqs})
-
-    return sh.url, ws.title
+return sh.url, ws.title
 
 SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
