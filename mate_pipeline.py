@@ -3809,17 +3809,20 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         if itens:
             data2.append({"range": f"'{tab_name}'!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
             data2.append({
-            "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
-            "values": extras_out})
+                "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
+                "values": extras_out
+            })
 
         ALVOS = (
             "REQUERIMENTOS DE COMISSÃO",
             "LANÇAMENTOS DE TRAMITAÇÃO",
-            "CADASTRO DE E-MAILS",)
-    extra_rows_c_is_dash = []
-    for i, row in enumerate(extras):
-        if row[0] != "-":
-            continue
+            "CADASTRO DE E-MAILS",
+        )
+
+        extra_rows_c_is_dash = []
+        for i, row in enumerate(extras):
+            if row[0] != "-":
+                continue
 
         if i - 1 < 0:
             continue
