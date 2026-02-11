@@ -3810,6 +3810,9 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
             "values": extras_out})
 
+        if "extras" not in locals():
+            extras = []
+
         ALVOS = (
             "REQUERIMENTOS DE COMISSÃO",
             "LANÇAMENTOS DE TRAMITAÇÃO",
