@@ -1215,8 +1215,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # Geral
         ("A1:B", {"h": "CENTER", "v": "MIDDLE", "underline": False}),
         ("B6:I", {"font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
-        ("D6:I", {"wrap": "CLIP", "h": "LEFT", "v": "MIDDLE", "font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
-        ("D6:I", {"h": "CENTER", "v": "MIDDLE"}),
+        ("D6:I", {"wrap": "CLIP", "h": "CENTER", "v": "MIDDLE", "font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
         ("P6:S", {"h": "CENTER", "v": "MIDDLE", "font": "Vidaloka", "size": 8, "bold": True, "underline": False, "fg": "BLACK"}),
         ("H6:H", {"font": "Inconsolata", "size": 8, "bold": True, "underline": False}),
         ("I6:I", {"font": "Inconsolata", "size": 6, "bold": True, "underline": False}),
