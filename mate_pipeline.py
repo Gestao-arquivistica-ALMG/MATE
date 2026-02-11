@@ -1362,10 +1362,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # cria/abre aba
         try:
-            sheet_id = ws.id
             ws = sh.worksheet(tab_name)
-            global SHEET_ID
-            SHEET_ID = ws.id
         except gspread.WorksheetNotFound:
             ws = sh.add_worksheet(title=tab_name, rows=max(30, 20 + len(itens)), cols=25)
             _with_backoff(ws.update_index, 1)
