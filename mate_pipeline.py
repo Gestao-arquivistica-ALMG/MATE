@@ -3856,7 +3856,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
             # linha filha (logo abaixo)
             data2.append({
-                "range": f"'{tab_name}'!E{impl_row + 1}:I{impl_row + 1}",
+                "range": f"'{tab_name}'!E{impl_row + 1}:J{impl_row + 1}",
                 "values": [["?","?","?","-","", False]]
             })
 
