@@ -3923,6 +3923,12 @@ SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZ
 
 # >>> diario_key PRECISA SER YYYYMMDD (é isso que upsert_tab_diario faz strptime("%Y%m%d"))
 # >>> quando a entrada foi DATA, você já tem aba_yyyymmdd (dia útil de trabalho)
+if not aba_yyyymmdd and entrada and "L20" in entrada:
+    import re
+    m = re.search(r"L(\d{8})\.pdf", entrada)
+    if m:
+        yyyymmdd = m.group(1)
+        aba_yyyymmdd = proximo_dia_util(yyyymmdd)
 diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
 
 url, aba = upsert_tab_diario(
