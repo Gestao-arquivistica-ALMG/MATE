@@ -3866,15 +3866,15 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 "range": f"'{tab_name}'!E{impl_row}:G{impl_row}",
                 "values": [["TEXTOS", "EMENDAS", "PARECERES"]]})
 
-        reqs.append({
-        "setDataValidation": {"range": {
-            "sheetId": sheet_id,
-            "startRowIndex": impl_row,
-            "endRowIndex": impl_row + 1,
-            "startColumnIndex": 8,   # coluna I (0-based)
-            "endColumnIndex": 9},
-        "rule": {"condition": {"type": "BOOLEAN"},
-            "strict": True}}})
+            reqs.append({
+            "setDataValidation": {"range": {
+                "sheetId": sheet_id,
+                "startRowIndex": impl_row,
+                "endRowIndex": impl_row + 1,
+                "startColumnIndex": 8,   # coluna I (0-based)
+                "endColumnIndex": 9},
+            "rule": {"condition": {"type": "BOOLEAN"},
+                "strict": True}}})
 
         body2 = {"valueInputOption": "USER_ENTERED", "data": data2}
 
