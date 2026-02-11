@@ -284,6 +284,7 @@ entrada = input("Data/URL/caminho: ").strip()
 pdf_path = None  # sempre inicializa
 aba_yyyymmdd = None  # data da ABA (trabalho), quando a entrada for DATA
 aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
+yyyymmdd = None  # fallback seguro p/ diario_key quando entrada não for DATA
 
 if not entrada:
     if not _COLAB:
