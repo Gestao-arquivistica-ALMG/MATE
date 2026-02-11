@@ -3848,22 +3848,18 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # IMPLANTAÇÃO DE TEXTOS (mantém)
         impl_row = next(
             (start_extra_row + i for i, (_b, c) in enumerate(extras)
-             if isinstance(c, str) and "IMPLANTAÇÃO DE TEXTOS" in c),
+            if isinstance(c, str) and "IMPLANTAÇÃO DE TEXTOS" in c),
             None
         )
 
         if impl_row is not None:
-            data2.append({
-                "range": f"'{tab_name}'!E{impl_row}",
-                "values": [["..."]]
-            })
+            data2.append({"range": f"'{tab_name}'!E{impl_row}", "values": [["..."]]})
 
             # linha filha (logo abaixo)
             data2.append({
                 "range": f"'{tab_name}'!E{impl_row + 1}:I{impl_row + 1}",
-                "values": [["?", "?", "?", "-", False]]
+                "values": [["?","?","?","-","", False]]
             })
-
 
         # linha do título
         data2.append({
