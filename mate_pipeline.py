@@ -286,6 +286,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         entrada = input("Data/URL/caminho: ").strip()
     else:
         entrada = str(entrada_override).strip()
+    import re
+
 
     # A partir daqui, cole TODO o fluxo atual (o que hoje está global),
     # usando a variável local `entrada` (sem globals()).
