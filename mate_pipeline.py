@@ -3819,15 +3819,18 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "REQUERIMENTOS DE COMISSÃO",
             "LANÇAMENTOS DE TRAMITAÇÃO",
             "CADASTRO DE E-MAILS",)
-        extra_rows_c_is_dash = []
-        for i, row in enumerate(extras):
-            if row[0] != "-":
+    extra_rows_c_is_dash = []
+    for i, row in enumerate(extras):
+        if row[0] != "-":
             continue
-            if i - 1 < 0:
+
+        if i - 1 < 0:
             continue
-            prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
-            if any(t in str(prev_title) for t in ALVOS):
+
+        prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
+        if any(t in str(prev_title) for t in ALVOS):
             extra_rows_c_is_dash.append(start_extra_row + i)
+
         for r in extra_rows_c_is_dash:
             data2.append({
             "range": f"'{tab_name}'!E{r}:I{r}",
