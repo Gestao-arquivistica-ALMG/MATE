@@ -1362,6 +1362,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # cria/abre aba
         try:
+            sheet_id = ws.id
             ws = sh.worksheet(tab_name)
             global SHEET_ID
             SHEET_ID = ws.id
