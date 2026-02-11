@@ -3837,10 +3837,15 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # acha linha do DROPDOWN_2 (para setar D com "-")
         dd2_row = next(
-            start_extra_row + i
-            for i, (_b, c) in enumerate(extras)
-            if c == "DROPDOWN_2")
-        data2.append({"range": f"'{tab_name}'!D{dd2_row}", "values": [["-"]]})
+            (start_extra_row + i for i, (_b, c) in enumerate(extras) if c == "DROPDOWN_2"),
+            None
+        )
+
+        if dd2_row is not None:
+            data2.append({
+                "range": f"'{tab_name}'!D{dd2_row}",
+                "values": [["-"]]
+            })
 
         # IMPLANTAÇÃO DE TEXTOS (mantém)
         impl_row = next(
