@@ -3866,6 +3866,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 "values": [["?", "?", "?", "-", False]]
             })
 
+
         # linha do título
         data2.append({
             "range": f"'{tab_name}'!E{impl_row}:G{impl_row}",
