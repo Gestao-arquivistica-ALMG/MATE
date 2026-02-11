@@ -152,11 +152,6 @@ def proximo_dia_util(yyyymmdd: str) -> str:
 
     return d.strftime("%Y%m%d")
 
-
-def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
-    return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
-
-
 def normalizar_data(entrada: str) -> str:
     s_raw = "" if entrada is None else str(entrada)
     s = s_raw.strip()
@@ -278,6 +273,9 @@ def baixar_pdf_por_url(url: str) -> str | None:
 print("Digite a data do Diário em DDMMYYYY (ex: 06012026).")
 print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
 print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
+
+def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
+    return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
 
 def main(entrada_override=None, spreadsheet_url_or_id=None):
     # Se veio override, não pede input
