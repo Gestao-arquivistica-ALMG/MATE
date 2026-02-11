@@ -3823,9 +3823,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         for i, row in enumerate(extras):
             if row[0] != "-":
                 continue
-
             if i - 1 < 0:
-            continue
+                continue
 
             prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
             if any(t in str(prev_title) for t in ALVOS):
