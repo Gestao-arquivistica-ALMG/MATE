@@ -971,11 +971,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     gc = gspread.authorize(creds)
     SHEET_ID = None
 
-
-    def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
-        return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
-
-
     def rgb_hex_to_api(hex_str: str):
         h = hex_str.lstrip("#")
         return {
