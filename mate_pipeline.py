@@ -3864,27 +3864,30 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             # linha do título
             data2.append({
                 "range": f"'{tab_name}'!E{impl_row}:G{impl_row}",
-                "values": [["TEXTOS", "EMENDAS", "PARECERES"]]})
+                "values": [["TEXTOS", "EMENDAS", "PARECERES"]]
+            })
 
             reqs.append({
-            "setDataValidation": {"range": {
-                "sheetId": sheet_id,
-                "startRowIndex": impl_row,
-                "endRowIndex": impl_row + 1,
-                "startColumnIndex": 8,   # coluna I (0-based)
-                "endColumnIndex": 9},
-            "rule": {"condition": {"type": "BOOLEAN"},
-                "strict": True}}})
+                "setDataValidation": {"range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": impl_row,
+                    "endRowIndex": impl_row + 1,
+                    "startColumnIndex": 8,  # coluna I (0-based)
+                    "endColumnIndex": 9
+                },
+                "rule": {"condition": {"type": "BOOLEAN"},
+                        "strict": True}}
+            })
+
+            reqs.append(req_font(sheet_id, f"E{impl_row + 1}", fg_hex="#D32F2F"))
+            reqs.append(req_font(sheet_id, f"F{impl_row + 1}", fg_hex="#D32F2F"))
+            reqs.append(req_font(sheet_id, f"G{impl_row + 1}", fg_hex="#D32F2F"))
+            reqs.append(req_font(sheet_id, f"H{impl_row + 1}", fg_hex="#D32F2F"))
+            reqs.append(req_font(sheet_id, f"I{impl_row + 1}", fg_hex="#D32F2F"))
 
         body2 = {"valueInputOption": "USER_ENTERED", "data": data2}
-
-        reqs.append(req_font(sheet_id, f"E{impl_row + 1}", fg_hex="#D32F2F"))
-        reqs.append(req_font(sheet_id, f"F{impl_row + 1}", fg_hex="#D32F2F"))
-        reqs.append(req_font(sheet_id, f"G{impl_row + 1}", fg_hex="#D32F2F"))
-        reqs.append(req_font(sheet_id, f"H{impl_row + 1}", fg_hex="#D32F2F"))
-        reqs.append(req_font(sheet_id, f"I{impl_row + 1}", fg_hex="#D32F2F"))
-
         _with_backoff(sh.values_batch_update, body2)
+
 
     # ====================================================================================================================================================================================================
     # ======================================================================================= CONTAGEM DINÂMICA ==========================================================================================
