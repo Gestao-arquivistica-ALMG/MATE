@@ -3824,12 +3824,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             if row[0] != "-":
                 continue
 
-        if i - 1 < 0:
+            if i - 1 < 0:
             continue
 
-        prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
-        if any(t in str(prev_title) for t in ALVOS):
-            extra_rows_c_is_dash.append(start_extra_row + i)
+            prev_title = extras[i - 1][1] if len(extras[i - 1]) > 1 else ""
+            if any(t in str(prev_title) for t in ALVOS):
+                extra_rows_c_is_dash.append(start_extra_row + i)
 
         for r in extra_rows_c_is_dash:
             data2.append({
