@@ -3974,8 +3974,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
 SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
-# >>> diario_key PRECISA SER YYYYMMDD (é isso que upsert_tab_diario faz strptime("%Y%m%d"))
-# >>> quando a entrada foi DATA, você já tem aba_yyyymmdd (dia útil de trabalho)
+# >>> diario_key PRECISA SER YYYYMMDD
 if not aba_yyyymmdd and entrada and "L20" in entrada:
     import re
     m = re.search(r"L(\d{8})\.pdf", entrada)
@@ -3997,7 +3996,7 @@ url, aba = upsert_tab_diario(
 print("Planilha atualizada:", url)
 print("Aba:", aba)
 
-return url, aba
+    return url, aba
 
 if __name__ == "__main__":
     main()
