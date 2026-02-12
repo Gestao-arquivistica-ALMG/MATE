@@ -3929,39 +3929,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ====================================================================================================================================================================================================
     # ============================================================================================== CALL ================================================================================================
     # ====================================================================================================================================================================================================
-    # --- AJUSTE DE GRID: garante que a aba tem linhas/colunas suficientes para os ranges dos requests ---
-    max_er = 0
-    max_ec = 0
-    for r in reqs:
-        rng = None
-        for k in ("mergeCells", "updateBorders", "setDataValidation", "updateCells", "repeatCell", "addConditionalFormatRule"):
-            if k in r:
-                if "range" in r[k]:
-                    rng = r[k]["range"]
-                    break
-                # conditional format usa "ranges": [ {range}, ... ]
-                if k == "addConditionalFormatRule":
-                    rr = r[k].get("rule", {}).get("ranges", [])
-                    if rr:
-                        rng = rr[0]
-                        break
-
-        if rng is None:
-            continue
-
-        er = rng.get("endRowIndex")
-        ec = rng.get("endColumnIndex")
-        if isinstance(er, int) and er > max_er:
-            max_er = er
-        if isinstance(ec, int) and ec > max_ec:
-            max_ec = ec
-
-    # endRowIndex/endColumnIndex são EXCLUSIVOS (0-based)
-    need_rows = max(ws.row_count, max_er)
-    need_cols = max(ws.col_count, max_ec)
-
-    if need_rows > ws.row_count or need_cols > ws.col_count:
-        ws.resize(rows=need_rows, cols=need_cols)
 
         _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
@@ -3990,6 +3957,40 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             reqs_ok.append(r)
 
         reqs = reqs_ok
+
+        # --- AJUSTE DE GRID: garante que a aba tem linhas/colunas suficientes para os ranges dos requests ---
+        max_er = 0
+        max_ec = 0
+        for r in reqs:
+            rng = None
+            for k in ("mergeCells", "updateBorders", "setDataValidation", "updateCells", "repeatCell", "addConditionalFormatRule"):
+                if k in r:
+                    if "range" in r[k]:
+                        rng = r[k]["range"]
+                        break
+                    # conditional format usa "ranges": [ {range}, ... ]
+                    if k == "addConditionalFormatRule":
+                        rr = r[k].get("rule", {}).get("ranges", [])
+                        if rr:
+                            rng = rr[0]
+                            break
+
+            if rng is None:
+                continue
+
+            er = rng.get("endRowIndex")
+            ec = rng.get("endColumnIndex")
+            if isinstance(er, int) and er > max_er:
+                max_er = er
+            if isinstance(ec, int) and ec > max_ec:
+                max_ec = ec
+
+        # endRowIndex/endColumnIndex são EXCLUSIVOS (0-based)
+        need_rows = max(ws.row_count, max_er)
+        need_cols = max(ws.col_count, max_ec)
+
+        if need_rows > ws.row_count or need_cols > ws.col_count:
+            ws.resize(rows=need_rows, cols=need_cols)
 
         _with_backoff(sh.batch_update, body={"requests": reqs})
 
