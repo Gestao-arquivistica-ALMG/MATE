@@ -1183,7 +1183,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         14: 45, 15: 60, 16: 75, 17: 70, 18: 70, 19: 60, 20: 60,
         21: 60, 22: 60, 23: 60, 24: 60
     }
-    COL_DEFAULT = 60
+    COL_DEFAULT = 90
 
     # ====================================================================================================================================================================================================
     # ============================================================================================= HEIGHTS ==============================================================================================
@@ -1352,7 +1352,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         diario_key: str,                 # YYYYMMDD
         itens: list[tuple[str, str]],
         clear_first: bool = False,
-        default_col_width_px: int = COL_DEFAULT,
+        default_col_width_px: int = 90,
         col_width_overrides: dict[int, int] | None = None,
     ):
         tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
