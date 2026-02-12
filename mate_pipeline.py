@@ -3918,31 +3918,31 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
     _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
-        # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
-        reqs_ok = []
-        for i, r in enumerate(reqs):
-            rng = None
+    # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
+    reqs_ok = []
+    for i, r in enumerate(reqs):
+        rng = None
 
-            for k in ("mergeCells", "updateBorders", "setDataValidation", "repeatCell"):
-                if k in r and "range" in r[k]:
-                    rng = r[k]["range"]
-                    break
+        for k in ("mergeCells", "updateBorders", "setDataValidation", "repeatCell"):
+            if k in r and "range" in r[k]:
+                rng = r[k]["range"]
+                break
 
-            if rng is not None:
-                sr = rng.get("startRowIndex")
-                er = rng.get("endRowIndex")
-                sc = rng.get("startColumnIndex")
-                ec = rng.get("endColumnIndex")
+        if rng is not None:
+            sr = rng.get("startRowIndex")
+            er = rng.get("endRowIndex")
+            sc = rng.get("startColumnIndex")
+            ec = rng.get("endColumnIndex")
 
-                if sr is None or er is None or sc is None or ec is None:
-                    print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
-                    continue
+            if sr is None or er is None or sc is None or ec is None:
+                print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
+                continue
 
-                if er <= sr or ec <= sc:
-                    print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
-                    continue
+            if er <= sr or ec <= sc:
+                print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
+                continue
 
-            reqs_ok.append(r)
+        reqs_ok.append(r)
 
         reqs = reqs_ok
 
