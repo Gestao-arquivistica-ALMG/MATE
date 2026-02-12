@@ -3982,16 +3982,16 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             yyyymmdd = m.group(1)
             aba_yyyymmdd = proximo_dia_util(yyyymmdd)
 
-diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
+    diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
 
-url, aba = upsert_tab_diario(
-    spreadsheet_url_or_id=(spreadsheet_url_or_id or SPREADSHEET),
-    diario_key=diario_key,
-    itens=itens,
-    clear_first=False,
-    default_col_width_px=COL_DEFAULT,
-    col_width_overrides=COL_OVERRIDES
-)
+    url, aba = upsert_tab_diario(
+        spreadsheet_url_or_id=(spreadsheet_url_or_id or SPREADSHEET),
+        diario_key=diario_key,
+        itens=itens,
+        clear_first=False,
+        default_col_width_px=COL_DEFAULT,
+        col_width_overrides=COL_OVERRIDES
+    )
 
 print("Planilha atualizada:", url)
 print("Aba:", aba)
