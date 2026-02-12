@@ -368,14 +368,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         s = re.sub(r"[ \t]+", " ", s).strip()
         return s
 
-
     def primeira_pagina_num(linhas: list[str], fallback: int) -> int:
         for ln in linhas[:220]:
             m = RE_PAG.search(ln)
             if m:
                 return int(m.group(1))
         return fallback
-
 
     @lru_cache(maxsize=20000)
     def compact_key(s: str) -> str:
@@ -384,7 +382,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         u = "".join(ch for ch in u if unicodedata.category(ch) != "Mn")
         return re.sub(r"[^0-9A-Z]", "", u)
 
-
     # ---- TOP detection (robusta) ----
     RE_HEADER_LIXO = re.compile(
         r"(DI[ÁA]RIO\s+DO\s+LEGISLATIVO|www\.almg\.gov\.br|"
@@ -392,7 +389,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         r"\bP[ÁA]GINA\s+\d+\b)",
         re.IGNORECASE
     )
-
 
     def _linha_relevante(s: str) -> bool:
         s = limpa_linha(s)
@@ -410,7 +406,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             if _linha_relevante(prev):
                 return False
         return True
-
 
     # ---- helper: matching por janela (1–3 linhas) ----
     def win_keys(linhas: list[str], i: int, w: int) -> str:
