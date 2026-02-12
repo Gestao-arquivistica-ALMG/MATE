@@ -3997,6 +3997,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     
     return url, aba
 
-if __name__ == "__main__":
-main()
+    if __name__ == "__main__":
+    main()
 
