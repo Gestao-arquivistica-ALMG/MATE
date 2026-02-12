@@ -3916,7 +3916,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================== CALL ================================================================================================
     # ====================================================================================================================================================================================================
 
-    _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
+_with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
     # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
     reqs_ok = []
@@ -3998,5 +3998,5 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     return url, aba
 
 if __name__ == "__main__":
-    main()
+main()
 
