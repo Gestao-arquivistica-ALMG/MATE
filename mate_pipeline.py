@@ -1369,7 +1369,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         sheet_id = ws.id
 
         # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
-        MIN_ROWS = 22
+        MIN_ROWS = 20
         MIN_COLS = 25
 
         if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
@@ -1398,10 +1398,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         start_extra_row = 9 + itens_len
 
         footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
-        rows_needed = 9 + itens_len + len(extras) + footer_rows - 1
+        rows_needed = 9 + itens_len + extras_len + footer_rows - 1
         cols_needed = 25
 
-        MIN_ROWS = 1
+        MIN_ROWS = 20
         MIN_COLS = 25
 
         rows_target = max(ws.row_count, rows_needed + 1, MIN_ROWS)
