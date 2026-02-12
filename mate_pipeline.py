@@ -1569,7 +1569,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         extra_start = start_extra_row
         extra_end   = start_extra_row + len(extras) - 1   # última linha 1-based dos EXTRAS
 
-
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
         # ====================================================================================================================================================================================================
@@ -3944,27 +3943,37 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
-        # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
+        # --- SANITIZAÇÃO FINAL: remove ranges inválidos ---
         reqs_ok = []
         for i, r in enumerate(reqs):
             # tenta extrair um range padrão, se existir
             rng = None
+            kind = None
             for k in ("mergeCells", "updateBorders", "setDataValidation"):
                 if k in r and "range" in r[k]:
                     rng = r[k]["range"]
+                    kind = k
                     break
 
             if rng is not None:
                 sr = rng.get("startRowIndex"); er = rng.get("endRowIndex")
                 sc = rng.get("startColumnIndex"); ec = rng.get("endColumnIndex")
 
+                # range incompleto
                 if sr is None or er is None or sc is None or ec is None:
                     print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
                     continue
 
+                # range vazio/invertido
                 if er <= sr or ec <= sc:
                     print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
                     continue
+
+                # >>> CORREÇÃO: mergeCells não pode ser 1x1 (uma única célula)
+                if kind == "mergeCells":
+                    if (er - sr) * (ec - sc) < 2:
+                        print(f"[req {i}] merge 1x1 R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
+                        continue
 
             reqs_ok.append(r)
 
