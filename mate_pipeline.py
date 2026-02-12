@@ -3916,89 +3916,89 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================== CALL ================================================================================================
     # ====================================================================================================================================================================================================
 
-    _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
+        _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
-    # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
-    reqs_ok = []
-    for i, r in enumerate(reqs):
-        rng = None
+        # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
+        reqs_ok = []
+        for i, r in enumerate(reqs):
+            rng = None
 
-        for k in ("mergeCells", "updateBorders", "setDataValidation", "repeatCell"):
-            if k in r and "range" in r[k]:
-                rng = r[k]["range"]
-                break
+            for k in ("mergeCells", "updateBorders", "setDataValidation", "repeatCell"):
+                if k in r and "range" in r[k]:
+                    rng = r[k]["range"]
+                    break
 
-        if rng is not None:
-            sr = rng.get("startRowIndex")
-            er = rng.get("endRowIndex")
-            sc = rng.get("startColumnIndex")
-            ec = rng.get("endColumnIndex")
+            if rng is not None:
+                sr = rng.get("startRowIndex")
+                er = rng.get("endRowIndex")
+                sc = rng.get("startColumnIndex")
+                ec = rng.get("endColumnIndex")
 
-            if sr is None or er is None or sc is None or ec is None:
-                print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
-                continue
+                if sr is None or er is None or sc is None or ec is None:
+                    print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
+                    continue
 
-            if er <= sr or ec <= sc:
-                print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
-                continue
+                if er <= sr or ec <= sc:
+                    print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
+                    continue
 
-        reqs_ok.append(r)
+            reqs_ok.append(r)
 
-    reqs = reqs_ok
+        reqs = reqs_ok
 
-    from gspread.exceptions import APIError
-    import re
-    import json
+        from gspread.exceptions import APIError
+        import re
+        import json
 
-    try:
-        _with_backoff(sh.batch_update, body={"requests": reqs})
-    except APIError as e:
-        msg = str(e)
-        m = re.search(r"Invalid requests\[(\d+)\]", msg)
+        try:
+            _with_backoff(sh.batch_update, body={"requests": reqs})
+        except APIError as e:
+            msg = str(e)
+            m = re.search(r"Invalid requests\[(\d+)\]", msg)
 
-        if m:
-            bad = int(m.group(1))
-            print(f"\n=== BAD REQUEST IDX: {bad} ===")
-            if 0 <= bad < len(reqs):
-                print(json.dumps(reqs[bad], ensure_ascii=False, indent=2)[:12000])
+            if m:
+                bad = int(m.group(1))
+                print(f"\n=== BAD REQUEST IDX: {bad} ===")
+                if 0 <= bad < len(reqs):
+                    print(json.dumps(reqs[bad], ensure_ascii=False, indent=2)[:12000])
+                else:
+                    print(f"Índice {bad} fora do array reqs (len={len(reqs)})")
             else:
-                print(f"Índice {bad} fora do array reqs (len={len(reqs)})")
-        else:
-            print("\n=== APIError sem índice de request ===")
-            print(msg)
+                print("\n=== APIError sem índice de request ===")
+                print(msg)
 
-        raise
+            raise
 
-    return sh.url, ws.title
+        return sh.url, ws.title
 
 
-SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
+    SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
-# >>> diario_key PRECISA SER YYYYMMDD
-if not aba_yyyymmdd and entrada and "L20" in entrada:
-    import re
-    m = re.search(r"L(\d{8})\.pdf", entrada)
-    if m:
-        yyyymmdd = m.group(1)
-        aba_yyyymmdd = proximo_dia_util(yyyymmdd)
+    # >>> diario_key PRECISA SER YYYYMMDD
+    if not aba_yyyymmdd and entrada and "L20" in entrada:
+        import re
+        m = re.search(r"L(\d{8})\.pdf", entrada)
+        if m:
+            yyyymmdd = m.group(1)
+            aba_yyyymmdd = proximo_dia_util(yyyymmdd)
 
-diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
+    diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
 
-url, aba = upsert_tab_diario(
-    spreadsheet_url_or_id=(spreadsheet_url_or_id or SPREADSHEET),
-    diario_key=diario_key,
-    itens=itens,
-    clear_first=False,
-    default_col_width_px=COL_DEFAULT,
-    col_width_overrides=COL_OVERRIDES
-)
+    url, aba = upsert_tab_diario(
+        spreadsheet_url_or_id=(spreadsheet_url_or_id or SPREADSHEET),
+        diario_key=diario_key,
+        itens=itens,
+        clear_first=False,
+        default_col_width_px=COL_DEFAULT,
+        col_width_overrides=COL_OVERRIDES
+    )
 
-print("Planilha atualizada:", url)
-print("Aba:", aba)
+    print("Planilha atualizada:", url)
+    print("Aba:", aba)
 
-return url, aba
+    return url, aba
 
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()
 
 
