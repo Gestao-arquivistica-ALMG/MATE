@@ -3969,7 +3969,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
             raise
 
-            return sh.url, ws.title
+return sh.url, ws.title
 
     SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
