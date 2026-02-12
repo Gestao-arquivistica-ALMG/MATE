@@ -1411,6 +1411,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         rows_needed = 9 + itens_len + extras_len + footer_rows - 1
         cols_needed = 25
 
+        # +1 linha técnica (1px) no final (sempre)
+        rows_target = max(rows_needed, MIN_ROWS)
+        cols_target = max(cols_needed, MIN_COLS)
+
         # >>> determinístico: encolhe e cresce para ficar EXATAMENTE do tamanho calculado
         _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
 
