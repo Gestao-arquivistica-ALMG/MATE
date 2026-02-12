@@ -3916,44 +3916,49 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================== CALL ================================================================================================
     # ====================================================================================================================================================================================================
 
-    _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
+        _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
-    # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
-    reqs_ok = []
-    for i, r in enumerate(reqs):
-        rng = None
+        # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
+        reqs_ok = []
+        for i, r in enumerate(reqs):
+            # tenta extrair um range padrão, se existir
+            rng = None
+            for k in ("mergeCells", "updateBorders", "setDataValidation"):
+                if k in r and "range" in r[k]:
+                    rng = r[k]["range"]
+                    break
 
-        for k in ("mergeCells", "updateBorders", "setDataValidation", "repeatCell"):
-            if k in r and "range" in r[k]:
-                rng = r[k]["range"]
-                break
+            if rng is not None:
+                sr = rng.get("startRowIndex"); er = rng.get("endRowIndex")
+                sc = rng.get("startColumnIndex"); ec = rng.get("endColumnIndex")
 
-        if rng is not None:
-            sr = rng.get("startRowIndex")
-            er = rng.get("endRowIndex")
-            sc = rng.get("startColumnIndex")
-            ec = rng.get("endColumnIndex")
+                if sr is None or er is None or sc is None or ec is None:
+                    print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
+                    continue
 
-            if sr is None or er is None or sc is None or ec is None:
-                print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
-                continue
+                if er <= sr or ec <= sc:
+                    print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
+                    continue
 
-            if er <= sr or ec <= sc:
-                print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
-                continue
+            reqs_ok.append(r)
 
-        reqs_ok.append(r)
+        reqs = reqs_ok
+
+        _with_backoff(sh.batch_update, body={"requests": reqs})
+
+        return sh.url, ws.title
+
 
     SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
-    # >>> diario_key PRECISA SER YYYYMMDD
+    # >>> diario_key PRECISA SER YYYYMMDD (é isso que upsert_tab_diario faz strptime("%Y%m%d"))
+    # >>> quando a entrada foi DATA, você já tem aba_yyyymmdd (dia útil de trabalho)
     if not aba_yyyymmdd and entrada and "L20" in entrada:
         import re
         m = re.search(r"L(\d{8})\.pdf", entrada)
         if m:
             yyyymmdd = m.group(1)
             aba_yyyymmdd = proximo_dia_util(yyyymmdd)
-
     diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
 
     url, aba = upsert_tab_diario(
@@ -3967,6 +3972,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
     print("Planilha atualizada:", url)
     print("Aba:", aba)
+    
+    return url, aba
 
 if __name__ == "__main__":
     main()
