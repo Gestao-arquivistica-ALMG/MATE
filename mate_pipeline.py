@@ -1567,7 +1567,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # range total dos EXTRAS (row 1-based -> grid 0-based endIndex exclusivo)
         extra_start = start_extra_row
-        extra_end   = start_extra_row + len(extras)
+        extra_end   = start_extra_row + len(extras) - 1   # última linha 1-based dos EXTRAS
+
 
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
