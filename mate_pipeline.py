@@ -1395,7 +1395,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
 
         itens_len = len(itens) if itens else 0
-        start_extra_row = 10 + itens_len
+        start_extra_row = 9 + itens_len + (1 if itens_len == 0 else 0)
 
         footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
         rows_needed = 9 + itens_len + len(extras) + footer_rows - 1
