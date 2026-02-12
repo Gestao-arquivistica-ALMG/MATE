@@ -2238,6 +2238,15 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # ----------------------------------------------------------------------------------------------------------
         pre_footer_row = footer_start - 1  # 1-based
 
+        # --- BASE (aba inteira): fonte/tamanho/alinhamento (vale mesmo sem OUTs) ---
+        reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": rows_target, "startColumnIndex": 0, "endColumnIndex": 25},
+            "cell": {"userEnteredFormat": {
+                "horizontalAlignment": "CENTER",
+                "verticalAlignment": "MIDDLE",
+                "textFormat": {"fontFamily": "Inconsolata", "fontSize": 8, "bold": False}
+            }},
+            "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat)"}})
+
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": pre_footer_row - 1, "endRowIndex": pre_footer_row, "startColumnIndex": 2, "endColumnIndex": 3},
             "cell": {"userEnteredFormat": {"horizontalAlignment": "LEFT", "verticalAlignment": "MIDDLE"}},
             "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment)"}})
