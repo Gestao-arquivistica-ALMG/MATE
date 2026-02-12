@@ -2118,7 +2118,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         reqs.append({"updateCells": {
                 "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 2,  "endColumnIndex": 3},  # C
-                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/";IMAGE("https://yt3.ggpht.com/ytc/AKedOLS-fgkzGxYUBgBejVblA1CLhE69pbiZyoH7spcNRQ=s900-c-k-c0x00ffffff-no-rj";4;125;150))'}}]}],
+                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/";IMAGE("https://yt3.ggpht.com/ytc/AKedOLS-fgkzGxYUBgBejVblA1CLhE69pbiZyoH7spcNRQ=s900-c-k-c0x00ffffff-no-rj";4;112;125))'}}]}],
                 "fields": "userEnteredValue"}})
 
         reqs.append({"updateCells": {
