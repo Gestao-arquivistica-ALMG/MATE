@@ -2077,14 +2077,15 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             extra_end = TEMPLATE_END_ROW  # força base
         # se tiver OUTs, extra_end já veio correto do bloco de extras
 
-        # EXTRA: extra_end é "end exclusivo" (1-based) -> footer começa na próxima linha
-        footer_start = extra_end
-        footer_rows  = 9
-        footer_end   = footer_start + footer_rows
+        # EXTRA: extra_end é "fim" (1-based) -> footer começa na PRÓXIMA linha
+        footer_start = extra_end + 1
+
+        footer_rows = 9
+        footer_end  = footer_start + footer_rows - 1
 
         # garante que a planilha tenha linhas suficientes pro footer existir
         if ws.row_count < footer_end:
-          _with_backoff(ws.resize, rows=footer_end)
+            _with_backoff(ws.resize, rows=footer_end)
 
         r  = footer_start
         r1 = footer_start + 1
