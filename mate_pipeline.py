@@ -1273,7 +1273,7 @@ def upsert_tab_diario(
     diario_key: str,                 # YYYYMMDD
     itens: list[tuple[str, str]],
     clear_first: bool = False,
-    default_col_width_px: int = 90,
+    default_col_width_px: int = COL_DEFAULT,
     col_width_overrides: dict[int, int] | None = None,
 ):
     tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
