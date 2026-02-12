@@ -2069,10 +2069,22 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================ FOOTER ==============================================================================================
     # ====================================================================================================================================================================================================
 
+        # Se NÃO houver OUTs, ancora o footer após o template fixo (até a linha 21 no layout atual)
+        # (isso evita depender de extra_end gerado por OUT)
+        TEMPLATE_END_ROW = 21  # 1-based: ajuste só se você mudar o template fixo
+
+        if not extras_out:
+            extra_end = TEMPLATE_END_ROW  # força base
+        # se tiver OUTs, extra_end já veio correto do bloco de extras
+
         # EXTRA: extra_end é "end exclusivo" (1-based) -> footer começa na próxima linha
         footer_start = extra_end
         footer_rows  = 9
         footer_end   = footer_start + footer_rows
+
+        # garante que a planilha tenha linhas suficientes pro footer existir
+        if ws.row_count < footer_end:
+          _with_backoff(ws.resize, rows=footer_end)
 
         r  = footer_start
         r1 = footer_start + 1
@@ -2237,15 +2249,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # ------------------------------------------------- STYLES -------------------------------------------------
         # ----------------------------------------------------------------------------------------------------------
         pre_footer_row = footer_start - 1  # 1-based
-
-        # --- BASE (aba inteira): fonte/tamanho/alinhamento (vale mesmo sem OUTs) ---
-        reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": rows_target, "startColumnIndex": 0, "endColumnIndex": 25},
-            "cell": {"userEnteredFormat": {
-                "horizontalAlignment": "CENTER",
-                "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Inconsolata", "fontSize": 8, "bold": False}
-            }},
-            "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment,textFormat)"}})
 
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": pre_footer_row - 1, "endRowIndex": pre_footer_row, "startColumnIndex": 2, "endColumnIndex": 3},
             "cell": {"userEnteredFormat": {"horizontalAlignment": "LEFT", "verticalAlignment": "MIDDLE"}},
