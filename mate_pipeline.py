@@ -2081,7 +2081,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         footer_start = extra_end + 1
 
         footer_rows = 9
-        footer_end  = footer_start + footer_rows - 1
+        footer_end  = footer_start + footer_rows
 
         # garante grid suficiente para TUDO que vem depois (inclusive bordas A31:Y31)
         rows_needed = max(rows_target, footer_end, 31)  # 31 por causa do caso A31:Y31
