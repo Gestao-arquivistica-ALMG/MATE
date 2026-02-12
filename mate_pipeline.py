@@ -1368,7 +1368,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         sheet_id = ws.id
 
         # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
-        MIN_ROWS = 20
+        MIN_ROWS = 1
         MIN_COLS = 25
 
         if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
