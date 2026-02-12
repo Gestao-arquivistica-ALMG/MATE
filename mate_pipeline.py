@@ -1260,103 +1260,103 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 # ====================================================================================================================================================================================================
 # ============================================================================================ FUNCTIONS =============================================================================================
 # ====================================================================================================================================================================================================
-    from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 
-    def aba_key_from_diario_key(diario_key: str) -> str:
-        d = datetime.strptime(diario_key, "%Y%m%d").date()
-        if d.weekday() == 5:  # sábado -> segunda
-            d += timedelta(days=2)
-        return d.strftime("%Y%m%d")
+def aba_key_from_diario_key(diario_key: str) -> str:
+    d = datetime.strptime(diario_key, "%Y%m%d").date()
+    if d.weekday() == 5:  # sábado -> segunda
+        d += timedelta(days=2)
+    return d.strftime("%Y%m%d")
 
-    def upsert_tab_diario(
-        spreadsheet_url_or_id: str,
-        diario_key: str,                 # YYYYMMDD
-        itens: list[tuple[str, str]],
-        clear_first: bool = False,
-        default_col_width_px: int = COL_DEFAULT,
-        col_width_overrides: dict[int, int] | None = None,
-    ):
-        tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
-        sh = gc.open_by_url(spreadsheet_url_or_id) if spreadsheet_url_or_id.startswith("http") else gc.open_by_key(spreadsheet_url_or_id)
+def upsert_tab_diario(
+    spreadsheet_url_or_id: str,
+    diario_key: str,                 # YYYYMMDD
+    itens: list[tuple[str, str]],
+    clear_first: bool = False,
+    default_col_width_px: int = COL_DEFAULT,
+    col_width_overrides: dict[int, int] | None = None,
+):
+    tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
+    sh = gc.open_by_url(spreadsheet_url_or_id) if spreadsheet_url_or_id.startswith("http") else gc.open_by_key(spreadsheet_url_or_id)
 
-        # cria/abre aba
-        try:
-            ws = sh.worksheet(tab_name)
-        except gspread.WorksheetNotFound:
-            ws = sh.add_worksheet(title=tab_name, rows=max(30, 20 + len(itens)), cols=25)
-            _with_backoff(ws.update_index, 1)
+    # cria/abre aba
+    try:
+        ws = sh.worksheet(tab_name)
+    except gspread.WorksheetNotFound:
+        ws = sh.add_worksheet(title=tab_name, rows=max(30, 20 + len(itens)), cols=25)
+        _with_backoff(ws.update_index, 1)
 
-        sheet_id = ws.id
+    sheet_id = ws.id
 
-        # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
-        MIN_ROWS = 20
-        MIN_COLS = 25
+    # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
+    MIN_ROWS = 20
+    MIN_COLS = 25
 
-        if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
-            _with_backoff(ws.resize, rows=max(ws.row_count, MIN_ROWS), cols=max(ws.col_count, MIN_COLS))
+    if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
+        _with_backoff(ws.resize, rows=max(ws.row_count, MIN_ROWS), cols=max(ws.col_count, MIN_COLS))
 
-        # resize da planilha (linhas e colunas) — agora considera EXTRAS também
-        extras = [
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"; "REUNIÕES DE PLENÁRIO")'],
-            ["", ""],
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
-            ["", ""],
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
-            ["-", "-"],
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/login/login.jsp"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
-            ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://webmail.almg.gov.br/"; "CADASTRO DE E-MAILS")'],
-            ["-", "DROPDOWN_4"],   # <- linha do dropdown 4 (coluna C)
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://consulta-brs.almg.gov.br/brs/"; "IMPLANTAÇÃO DE TEXTOS")'],
-            ["", '=SUM(INDIRECT("B"&ROW());INDIRECT("E"&ROW());INDIRECT("F"&ROW());INDIRECT("G"&ROW()))'],   # <- linha da implantação de textos
-        ]
+    # resize da planilha (linhas e colunas) — agora considera EXTRAS também
+    extras = [
+        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"; "REUNIÕES DE PLENÁRIO")'],
+        ["", ""],
+        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
+        ["", ""],
+        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
+        ["-", "-"],
+        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/login/login.jsp"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
+        ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
+        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://webmail.almg.gov.br/"; "CADASTRO DE E-MAILS")'],
+        ["-", "DROPDOWN_4"],   # <- linha do dropdown 4 (coluna C)
+        ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://consulta-brs.almg.gov.br/brs/"; "IMPLANTAÇÃO DE TEXTOS")'],
+        ["", '=SUM(INDIRECT("B"&ROW());INDIRECT("E"&ROW());INDIRECT("F"&ROW());INDIRECT("G"&ROW()))'],   # <- linha da implantação de textos
+    ]
 
-        # o que realmente vai aparecer na planilha (troca DROPDOWN_x por "-")
-        extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
+    # o que realmente vai aparecer na planilha (troca DROPDOWN_x por "-")
+    extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
 
-        def _trim_trailing_blank_rows(rows):
-            r = rows[:]
-            while r and all(str(x).strip() == "" for x in r[-1]):
-                r.pop()
-            return r
+    def _trim_trailing_blank_rows(rows):
+        r = rows[:]
+        while r and all(str(x).strip() == "" for x in r[-1]):
+            r.pop()
+        return r
 
-        extras_out = _trim_trailing_blank_rows(extras_out)
-        extras_len = len(extras_out)
+    extras_out = _trim_trailing_blank_rows(extras_out)
+    extras_len = len(extras_out)
 
-        itens_len = len(itens) if itens else 0
-        start_extra_row = 9 + itens_len
+    itens_len = len(itens) if itens else 0
+    start_extra_row = 9 + itens_len
 
-        footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas (visíveis)
+    footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas (visíveis)
 
-        # rows_needed = última linha VISÍVEL necessária (1-based)
-        rows_needed = 9 + itens_len + extras_len + footer_rows - 1
-        cols_needed = 25
+    # rows_needed = última linha VISÍVEL necessária (1-based)
+    rows_needed = 9 + itens_len + extras_len + footer_rows - 1
+    cols_needed = 25
 
-        # +1 linha técnica (1px) no final (sempre)
-        rows_target = max(rows_needed + 1, MIN_ROWS)
-        cols_target = max(cols_needed, MIN_COLS)
+    # +1 linha técnica (1px) no final (sempre)
+    rows_target = max(rows_needed + 1, MIN_ROWS)
+    cols_target = max(cols_needed, MIN_COLS)
 
-        # >>> determinístico: encolhe e cresce para ficar EXATAMENTE do tamanho calculado
-        _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
+    # >>> determinístico: encolhe e cresce para ficar EXATAMENTE do tamanho calculado
+    _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
 
-        # última linha visível (1-based) = antes da técnica
-        VIS_LAST_ROW_1BASED = rows_target - 1
+    # última linha visível (1-based) = antes da técnica
+    VIS_LAST_ROW_1BASED = rows_target - 1
 
-        # linha técnica (1px)
-        _with_backoff(sh.batch_update, {
-            "requests": [{
-                "updateDimensionProperties": {
-                    "range": {
-                        "sheetId": sheet_id,
-                        "dimension": "ROWS",
-                        "startIndex": rows_target - 1,  # 0-based
-                        "endIndex": rows_target
-                    },
-                    "properties": {"pixelSize": 1},
-                    "fields": "pixelSize"
-                }
-            }]
-        })
+    # linha técnica (1px)
+    _with_backoff(sh.batch_update, {
+        "requests": [{
+            "updateDimensionProperties": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "dimension": "ROWS",
+                    "startIndex": rows_target - 1,  # 0-based
+                    "endIndex": rows_target
+                },
+                "properties": {"pixelSize": 1},
+                "fields": "pixelSize"
+            }
+        }]
+    })
 
     # ====================================================================================================================================================================================================
     # ============================================================================================ FUNCTIONS =============================================================================================
