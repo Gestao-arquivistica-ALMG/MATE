@@ -1398,7 +1398,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         start_extra_row = 9 + itens_len
 
         footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
-        rows_needed = 9 + itens_len + extras_len + footer_rows - 1
+        rows_needed = 9 + itens_len + len(extras) + footer_rows - 1
         cols_needed = 25
 
         MIN_ROWS = 20
