@@ -2078,7 +2078,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # se tiver OUTs, extra_end já veio correto do bloco de extras
 
         # EXTRA: extra_end é "fim" (1-based) -> footer começa na PRÓXIMA linha
-        footer_start = extra_end - 1
+        footer_start = extra_end + 1
 
         footer_rows = 9
         footer_end  = footer_start + footer_rows - 1
