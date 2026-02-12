@@ -1183,7 +1183,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         14: 45, 15: 60, 16: 75, 17: 70, 18: 70, 19: 60, 20: 60,
         21: 60, 22: 60, 23: 60, 24: 60
     }
-    COL_DEFAULT = 90
+    COL_DEFAULT = 60
 
     # ====================================================================================================================================================================================================
     # ============================================================================================= HEIGHTS ==============================================================================================
@@ -1336,9 +1336,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             }
         }
 
-# ====================================================================================================================================================================================================
-# ============================================================================================ FUNCTIONS =============================================================================================
-# ====================================================================================================================================================================================================
+
+    # ====================================================================================================================================================================================================
+    # ============================================================================================ FUNCTIONS =============================================================================================
+    # ====================================================================================================================================================================================================
     from datetime import datetime, timedelta
 
     def aba_key_from_diario_key(diario_key: str) -> str:
@@ -1352,7 +1353,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         diario_key: str,                 # YYYYMMDD
         itens: list[tuple[str, str]],
         clear_first: bool = False,
-        default_col_width_px: int = 90,
+        default_col_width_px: int = COL_DEFAULT,
         col_width_overrides: dict[int, int] | None = None,
     ):
         tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
@@ -1368,7 +1369,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         sheet_id = ws.id
 
         # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
-        MIN_ROWS = 10
+        MIN_ROWS = 22
         MIN_COLS = 25
 
         if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
@@ -1393,42 +1394,31 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # o que realmente vai aparecer na planilha (troca DROPDOWN_x por "-")
         extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
 
-        def _trim_trailing_blank_rows(rows):
-            r = rows[:]
-            while r and all(str(x).strip() == "" for x in r[-1]):
-                r.pop()
-            return r
-
-        extras_out = _trim_trailing_blank_rows(extras_out)
-        extras_len = len(extras_out)
-
         itens_len = len(itens) if itens else 0
         start_extra_row = 9 + itens_len
 
-        footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas (visíveis)
-
-        # rows_needed = última linha VISÍVEL necessária (1-based)
-        rows_needed = 9 + itens_len + extras_len + footer_rows - 1
+        footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
+        rows_needed = 9 + itens_len + len(extras) + footer_rows - 1
         cols_needed = 25
 
-        # +1 linha técnica (1px) no final (sempre)
-        rows_target = max(rows_needed, MIN_ROWS)
-        cols_target = max(cols_needed, MIN_COLS)
+        MIN_ROWS = 22
+        MIN_COLS = 25
 
-        # >>> determinístico: encolhe e cresce para ficar EXATAMENTE do tamanho calculado
+        rows_target = max(ws.row_count, rows_needed + 1, MIN_ROWS)
+        cols_target = max(ws.col_count, cols_needed, MIN_COLS)
+
         _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
 
-        # última linha visível (1-based) = antes da técnica
-        VIS_LAST_ROW_1BASED = rows_target - 1
+        VIS_LAST_ROW_1BASED = rows_target - 1  # última linha "visível" (a última é técnica 1px)
 
-        # linha técnica (1px)
+        # linha técnica (1px) — NÃO usa reqs aqui (reqs ainda não existe neste ponto)
         _with_backoff(sh.batch_update, {
             "requests": [{
                 "updateDimensionProperties": {
                     "range": {
                         "sheetId": sheet_id,
                         "dimension": "ROWS",
-                        "startIndex": rows_target - 1,  # 0-based
+                        "startIndex": rows_target - 1,
                         "endIndex": rows_target
                     },
                     "properties": {"pixelSize": 1},
@@ -1567,7 +1557,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # range total dos EXTRAS (row 1-based -> grid 0-based endIndex exclusivo)
         extra_start = start_extra_row
-        extra_end   = start_extra_row + len(extras) - 1   # última linha 1-based dos EXTRAS
+        extra_end   = start_extra_row + len(extras)
 
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
@@ -3828,11 +3818,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         if itens:
             data2.append({"range": f"'{tab_name}'!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
 
-        if extras_out:
-            data2.append({
-                "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
-                "values": extras_out
-            })
+        data2.append({
+            "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
+            "values": extras_out
+        })
 
         ALVOS = (
             "REQUERIMENTOS DE COMISSÃO",
@@ -3943,37 +3932,27 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         _with_backoff(ws.batch_update, data_extra_E, value_input_option="USER_ENTERED")
 
-        # --- SANITIZAÇÃO FINAL: remove ranges inválidos ---
+        # --- SANITIZAÇÃO FINAL: remove mergeCells com intervalo vazio ---
         reqs_ok = []
         for i, r in enumerate(reqs):
             # tenta extrair um range padrão, se existir
             rng = None
-            kind = None
             for k in ("mergeCells", "updateBorders", "setDataValidation"):
                 if k in r and "range" in r[k]:
                     rng = r[k]["range"]
-                    kind = k
                     break
 
             if rng is not None:
                 sr = rng.get("startRowIndex"); er = rng.get("endRowIndex")
                 sc = rng.get("startColumnIndex"); ec = rng.get("endColumnIndex")
 
-                # range incompleto
                 if sr is None or er is None or sc is None or ec is None:
                     print(f"[req {i}] range incompleto -> REMOVIDO: {rng}")
                     continue
 
-                # range vazio/invertido
                 if er <= sr or ec <= sc:
                     print(f"[req {i}] inválido R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
                     continue
-
-                # >>> CORREÇÃO: mergeCells não pode ser 1x1 (uma única célula)
-                if kind == "mergeCells":
-                    if (er - sr) * (ec - sc) < 2:
-                        print(f"[req {i}] merge 1x1 R{sr}:{er} C{sc}:{ec} -> REMOVIDO")
-                        continue
 
             reqs_ok.append(r)
 
