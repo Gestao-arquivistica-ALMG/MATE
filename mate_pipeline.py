@@ -1363,7 +1363,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         try:
             ws = sh.worksheet(tab_name)
         except gspread.WorksheetNotFound:
-            ws = sh.add_worksheet(title=tab_name, rows=max(20, 20 + len(itens)), cols=25)
+            ws = sh.add_worksheet(title=tab_name, rows=1, cols=25)
             _with_backoff(ws.update_index, 1)
 
         sheet_id = ws.id
