@@ -1367,33 +1367,9 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         sheet_id = ws.id
 
+        # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
+        MIN_ROWS = 10
         MIN_COLS = 25
-
-        # se você quer SEMPRE sem sobra, MIN_ROWS não pode forçar lixo
-        # (se precisar de mínimo por merge, isso tem que ser garantido em outra lógica)
-        rows_target = rows_needed + 1   # +1 só para a linha técnica (1px)
-        cols_target = max(cols_needed, MIN_COLS)
-
-        _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
-
-        # última visível = antes da técnica
-        VIS_LAST_ROW_1BASED = rows_target - 1
-
-        # linha técnica (1px)
-        _with_backoff(sh.batch_update, {
-            "requests": [{
-                "updateDimensionProperties": {
-                    "range": {
-                        "sheetId": sheet_id,
-                        "dimension": "ROWS",
-                        "startIndex": rows_target - 1,
-                        "endIndex": rows_target
-                    },
-                    "properties": {"pixelSize": 1},
-                    "fields": "pixelSize"
-                }
-            }]
-        })
 
         if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
             _with_backoff(ws.resize, rows=max(ws.row_count, MIN_ROWS), cols=max(ws.col_count, MIN_COLS))
@@ -1436,7 +1412,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         cols_needed = 25
 
         # +1 linha técnica (1px) no final (sempre)
-        rows_target = max(rows_needed + 1, MIN_ROWS)
+        rows_target = max(rows_needed, MIN_ROWS)
         cols_target = max(cols_needed, MIN_COLS)
 
         # >>> determinístico: encolhe e cresce para ficar EXATAMENTE do tamanho calculado
