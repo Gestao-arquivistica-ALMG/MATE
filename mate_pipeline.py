@@ -3946,30 +3946,30 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         reqs = reqs_ok
 
-        from gspread.exceptions import APIError
-        import re
-        import json
+            from gspread.exceptions import APIError
+            import re
+            import json
 
-        try:
-            _with_backoff(sh.batch_update, body={"requests": reqs})
-        except APIError as e:
-            msg = str(e)
-            m = re.search(r"Invalid requests\[(\d+)\]", msg)
+            try:
+                _with_backoff(sh.batch_update, body={"requests": reqs})
+            except APIError as e:
+                msg = str(e)
+                m = re.search(r"Invalid requests\[(\d+)\]", msg)
 
-            if m:
-                bad = int(m.group(1))
-                print(f"\n=== BAD REQUEST IDX: {bad} ===")
-                if 0 <= bad < len(reqs):
-                    print(json.dumps(reqs[bad], ensure_ascii=False, indent=2)[:12000])
+                if m:
+                    bad = int(m.group(1))
+                    print(f"\n=== BAD REQUEST IDX: {bad} ===")
+                    if 0 <= bad < len(reqs):
+                        print(json.dumps(reqs[bad], ensure_ascii=False, indent=2)[:12000])
+                    else:
+                        print(f"Índice {bad} fora do array reqs (len={len(reqs)})")
                 else:
-                    print(f"Índice {bad} fora do array reqs (len={len(reqs)})")
-            else:
-                print("\n=== APIError sem índice de request ===")
-                print(msg)
+                    print("\n=== APIError sem índice de request ===")
+                    print(msg)
 
-            raise
+                raise
 
-            return sh.url, ws.title
+                return sh.url, ws.title
 
     SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
 
