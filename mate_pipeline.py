@@ -1394,20 +1394,20 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # o que realmente vai aparecer na planilha (troca DROPDOWN_x por "-")
         extras_out = [[b, ("-" if str(c).startswith("DROPDOWN_") else c)] for b, c in extras]
 
-    def _trim_trailing_blank_rows(rows: list[list[str]]):
-        r = rows[:]
-        while r and all(str(x).strip() == "" for x in r[-1]):
-            r.pop()
-        return r
+        def _trim_trailing_blank_rows(rows: list[list[str]]):
+            r = rows[:]
+            while r and all(str(x).strip() == "" for x in r[-1]):
+                r.pop()
+            return r
 
-    extras_out = _trim_trailing_blank_rows(extras_out)
-    extras_len = len(extras_out)
+        extras_out = _trim_trailing_blank_rows(extras_out)
+        extras_len = len(extras_out)
 
         itens_len = len(itens) if itens else 0
         start_extra_row = 9 + itens_len
 
         footer_rows = 9  # RODAPÉ: quantidade de linhas reservadas
-        rows_needed = 9 + itens_len + extras_len + footer_rows - 1
+        rows_needed = 9 + itens_len + extras_out + footer_rows - 1
         cols_needed = 25
 
         MIN_ROWS = 20
