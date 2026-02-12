@@ -3996,7 +3996,5 @@ url, aba = upsert_tab_diario(
 print("Planilha atualizada:", url)
 print("Aba:", aba)
 
-return url, aba
-
 if __name__ == "__main__":
     main()
