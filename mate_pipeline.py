@@ -3819,7 +3819,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             data2.append({"range": f"'{tab_name}'!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
 
         data2.append({
-            "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
+            "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out)}",
             "values": extras_out
         })
 
