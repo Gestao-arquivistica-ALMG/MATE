@@ -1401,11 +1401,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         rows_needed = 9 + itens_len + len(extras) + footer_rows - 1
         cols_needed = 25
 
-        MIN_ROWS = 22
+        MIN_ROWS = 20
         MIN_COLS = 25
 
-        rows_target = max(ws.row_count, rows_needed + 1)
-        cols_target = max(ws.col_count, cols_needed, MIN_COLS)
+        rows_target = max(ws.row_count, rows_needed)
+        cols_target = max(ws.col_count, cols_needed)
 
         _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
 
