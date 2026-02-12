@@ -3993,8 +3993,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         col_width_overrides=COL_OVERRIDES
     )
 
-print("Planilha atualizada:", url)
-print("Aba:", aba)
+    print("Planilha atualizada:", url)
+    print("Aba:", aba)
 
 if __name__ == "__main__":
     main()
