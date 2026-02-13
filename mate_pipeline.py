@@ -310,7 +310,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     aba_yyyymmdd = None  # data da ABA (trabalho), quando a entrada for DATA
     aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
     yyyymmdd = None  # fallback seguro p/ diario_key quando entrada não for DATA
-
+    diario = None
+    
     if not entrada:
         if not _COLAB:
             raise SystemExit("Entrada vazia fora do Colab. Informe data, URL ou caminho.")
@@ -333,7 +334,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     else:
         # Entrada é DATA (ou palavra-chave / dia da semana)
         yyyymmdd = normalizar_data(entrada)          # data do Diário (PDF)
-        aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data de TRABALHO (ABA)
+        aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data do TRABALHO (ABA)
+        diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)      # data de Diário (PLANILHA)
 
         yyyy = yyyymmdd[:4]
         url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"   # monta URL sem re-normalizar
@@ -2773,7 +2775,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("T5", [["EXPRESSÕES DE BUSCA"]])
         add("C5", [[ '=HYPERLINK("https://docs.google.com/document/d/1lftfl3SAfJPMdIKYSjATffe-Tvc9qfoLodfGK-f3sLU/edit";"MATE - MATÉRIAS EM TRAMITAÇÃO")' ]])
         add("G5", [[ '=HYPERLINK("https://writer.zoho.com/writer/open/fgoh367779094842247dd8313f9c7714f452a";"CONFERÊNCIA")' ]])
-        add("B6", [[f'=TEXT(DATE({yyyy};{mm};{dd});"dd/mm/yyyy")']])
+        add("B6", [[f'=TEXT(DATEVALUE("{diario}");"dd/mm/yyyy")']])
         add("C6", [["DIÁRIO DO EXECUTIVO"]])
         add("B7", [["-"]])
 
