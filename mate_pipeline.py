@@ -333,8 +333,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         yyyy = yyyymmdd[:4]
         url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"   # monta URL sem re-normalizar
 
-        print(f"URL montada: {url}")
-        print(f"Aba (trabalho) yyyymmdd: {aba_yyyymmdd}")
+        print(f"URL: {url}")
+        print(f"Diário do Legislativo: {aba_yyyymmdd}")
 
         pdf_path = baixar_pdf_por_url(url)
         if not pdf_path:
@@ -357,7 +357,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     else:
         aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
 
-    print("Aba FINAL (Sheets):", aba)
+    print("Aba (Planilha):", aba)
 
     # ================================================================================================
     # ---- 3) Extração e detecção de títulos ----
