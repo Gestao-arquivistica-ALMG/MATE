@@ -3900,7 +3900,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             })
 
             reqs.append(req_font(sheet_id, f"C{impl_row + 1}:I{impl_row + 1}", fg_hex="#CC0000"))
-            reqs.append({"repeatCell": {"range": a1_to_grid(f"C{impl_row}:C{impl_row}") | {"sheetId": sheet_id},"cell": {"userEnteredFormat": {"horizontalAlignment": "LEFT"}},"fields": "userEnteredFormat.horizontalAlignment"}})
+            reqs.append(req_repeat_cell(sheet_id,f"C{impl_row}:C{impl_row}",{"horizontalAlignment": "LEFT"}))
 
         body2 = {"valueInputOption": "USER_ENTERED", "data": data2}
         _with_backoff(sh.values_batch_update, body2)
