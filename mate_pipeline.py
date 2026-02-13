@@ -339,7 +339,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"   # monta URL sem re-normalizar
 
         print(f"URL: {url}")
-        print(f"Diário do Legislativo: {aba_yyyymmdd}")
+        print(f"Data: {aba_yyyymmdd}")
 
         pdf_path = baixar_pdf_por_url(url)
         if not pdf_path:
