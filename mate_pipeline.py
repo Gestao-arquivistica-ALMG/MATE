@@ -283,7 +283,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         print("Digite a data do Diário em DDMMYYYY (ex: 06012026).")
         print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
         print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
-        entrada = input("Data/URL/caminho: ").strip()
+        entrada = input("Data/URL/Upload: ").strip()
     else:
         entrada = str(entrada_override).strip()
 
