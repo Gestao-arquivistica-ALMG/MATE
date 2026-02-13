@@ -2751,14 +2751,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         def add(a1, values):
             data.append({"range": f"'{tab_name}'!{a1}", "values": values})
 
-        def two_business_days_before(d):
-            n = 2
-            while n > 0:
-                d -= timedelta(days=1)
-                if d.weekday() < 5:
-                    n -= 1
-            return d
-
         add("A5:B5", [[f"=DATE({yyyy};{mm};{dd})", ""]])
         add("A1", [[ '=HYPERLINK("https://www.almg.gov.br/home/index.html";IMAGE("https://sisap.almg.gov.br/banner.png";4;43;110))' ]])
         add("C1", [["GERÊNCIA DE GESTÃO ARQUIVÍSTICA"]])
