@@ -2204,7 +2204,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         reqs.append({"updateCells": {
                 "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 21, "endColumnIndex": 22},  # V
-                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://dspace.almg.gov.br/server/api/core/bitstreams/7cd591b0-1a2c-41cc-9341-78919e827df1/content";IMAGE("https://media.istockphoto.com/vectors/flag-map-of-the-brazilian-state-of-minas-gerais-vector-id1248541649?k=20&m=1248541649&s=170667a&w=0&h=V8Ky8c8rddLPjphovytIJXaB6NlMF7dt-ty-2ZJF5Wc=";4;130;125))'}}]}],
+                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://dspace.almg.gov.br/server/api/core/bitstreams/7cd591b0-1a2c-41cc-9341-78919e827df1/content";IMAGE("https://www.aracruz.es.leg.br/imagens/PORTLETREGIMENTOINTERNO.png/image_preview";4;130;125))'}}]}],
                 "fields": "userEnteredValue"}})
 
         reqs.append({"updateCells": {
@@ -2214,7 +2214,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         reqs.append({"updateCells": {
                 "range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r3, "startColumnIndex": 0,  "endColumnIndex": 1},  # A
-                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/";IMAGE("https://intra.almg.gov.br/.content/imagens/logo-intra.svg";4;22;86))'}}]}],
+                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/";IMAGE("https://intra.almg.gov.br/.content/imagens/logo-intra.svg";4;20;70))'}}]}],
                 "fields": "userEnteredValue"}})
 
         reqs.append({"updateCells": {
