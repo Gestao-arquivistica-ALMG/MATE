@@ -1447,7 +1447,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # alturas
         for rh in ROW_HEIGHTS:
             if rh[0] == "default":
-                reqs.append(req_dim_rows(sheet_id, 0, ws.row_count, rh[1]))
+                reqs.append(req_dim_rows(sheet_id, 0, rows_target, rh[1]))
             else:
                 start, end, px = rh
                 reqs.append(req_dim_rows(sheet_id, start, end, px))
