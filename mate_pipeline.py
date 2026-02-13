@@ -2276,8 +2276,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r6, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # LEO
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r7 - 1, "endRowIndex": r7, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # VINÍCIUS
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r8 - 1, "endRowIndex": r8, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # WELDER
-        reqs.append(req_merge(sheet_id, f"J6:O{extra_end}")) # COLUNAS J:O
 
+        for r in range(6, extra_end + 1):   # COLUNAS J:O
+    reqs.append(req_merge(sheet_id, f"J{r}:O{r}"))
+    
         # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         # ----------------------------------------------------------------------------------------------- STYLES -----------------------------------------------------------------------------------------------
         # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
