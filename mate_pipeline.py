@@ -274,7 +274,7 @@ print("EXEMPLOS:")
 print("- 19122026 ou 191226 ou 19/12/2026")
 print("- hoje, ontem, anteontem")
 print("- terça, quarta, quinta, sexta, sábado")
-print("- Cole uma URL completa ou um caminho local.")
+print("- URL completa ou um caminho local.")
 print("Se deixar vazio, você poderá fazer upload.\n")
 
 def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
