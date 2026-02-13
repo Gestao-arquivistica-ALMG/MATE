@@ -1404,12 +1404,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         MIN_ROWS = 22
         MIN_COLS = 25
 
-        
+        rows_target = max(ws.row_count, rows_needed + 1, MIN_ROWS)
         cols_target = max(ws.col_count, cols_needed, MIN_COLS)
 
-        _with_backoff(ws.resize, cols=cols_target)
+        _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
 
-        
+        VIS_LAST_ROW_1BASED = rows_target - 1  # última linha "visível" (a última é técnica 1px)
 
         # linha técnica (1px) — NÃO usa reqs aqui (reqs ainda não existe neste ponto)
         _with_backoff(sh.batch_update, {
@@ -1418,8 +1418,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                     "range": {
                         "sheetId": sheet_id,
                         "dimension": "ROWS",
-                        
-                        
+                        "startIndex": rows_target - 1,
+                        "endIndex": rows_target
                     },
                     "properties": {"pixelSize": 1},
                     "fields": "pixelSize"
@@ -1452,7 +1452,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 start, end, px = rh
                 reqs.append(req_dim_rows(sheet_id, start, end, px))
 
-
         # larguras
         reqs.append(req_dim_cols(sheet_id, 0, 25, default_col_width_px))
         ow = col_width_overrides or COL_OVERRIDES
@@ -1480,7 +1479,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 "range": {
                     "sheetId": sheet_id,
                     "startRowIndex": 0,
-                    
+                    "endRowIndex": rows_target,
                     "startColumnIndex": 0,
                     "endColumnIndex": 25
                 }
@@ -2071,7 +2070,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         footer_end  = footer_start + footer_rows - 1
 
         # garante grid suficiente para TUDO que vem depois (inclusive bordas A31:Y31)
-        rows_needed = max(footer_end, 31)  # 31 por causa do caso A31:Y31
+        rows_needed = max(rows_target, footer_end, 31)  # 31 por causa do caso A31:Y31
         if ws.row_count < rows_needed:
             _with_backoff(ws.resize, rows=rows_needed)
 
