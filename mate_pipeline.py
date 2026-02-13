@@ -270,7 +270,7 @@ def baixar_pdf_por_url(url: str) -> str | None:
         return None
 
 print("Digite a data do Diário do Legislativo.")
-print("Exemplos:")
+print("EXEMPLOS:")
 print("- 19122026 ou 191226 ou 19/12/2026")
 print("- hoje, ontem, anteontem")
 print("- terça, quarta, quinta, sexta, sábado")
