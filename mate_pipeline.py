@@ -2738,7 +2738,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("A1", [[ '=HYPERLINK("https://www.almg.gov.br/home/index.html";IMAGE("https://sisap.almg.gov.br/banner.png";4;43;110))' ]])
         add("C1", [["GERÊNCIA DE GESTÃO ARQUIVÍSTICA"]])
         add("Q1", [["DATAS"]])
-        add("G1", [['=HYPERLINK("https://intra.almg.gov.br/export/sites/default/a-assembleia/calendarios/calendario_2023.pdf";'
+        add("G1", [['=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/index.html?lq=&reloaded=&q=&di=&df=&tema=direcionamento-estrategico/";'
             'IMAGE("https://media.istockphoto.com/vectors/flag-map-of-the-brazilian-state-of-minas-gerais-vector-id1248541649?k=20&m=1248541649&s=170667a&w=0&h=V8Ky8c8rddLPjphovytIJXaB6NlMF7dt-ty-2ZJF5Wc="))']])
         add("H1", [['=HYPERLINK("https://www.almg.gov.br/atividade_parlamentar/plenario/index.html";''IMAGE("https://www.protestoma.com.br/images/noticia-id_255.jpg";4;27;42))']])
         add("H3", [['=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/";''IMAGE("https://www.ouvidoriageral.mg.gov.br/images/noticias/2019/dezembro/foto_almg.jpg";4;27;42))']])
