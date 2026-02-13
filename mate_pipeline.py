@@ -2084,7 +2084,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         footer_end  = footer_start + footer_rows - 1
 
         # garante grid suficiente para TUDO que vem depois (inclusive bordas A31:Y31)
-        rows_needed = max(rows_target, footer_end, 31)  # 31 por causa do caso A31:Y31
+        rows_needed = max(rows_target, footer_end)
         if ws.row_count < rows_needed:
             _with_backoff(ws.resize, rows=rows_needed)
 
@@ -3987,7 +3987,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # endRowIndex/endColumnIndex são EXCLUSIVOS (0-based)
         need_rows = max_er
-        need_cols = max(ws.col_count, max_ec)
+        need_cols = max(ws  .col_count, max_ec)
 
         if need_rows > ws.row_count  or need_cols > ws.col_count:
             ws.resize(rows=need_rows, cols=need_cols)
