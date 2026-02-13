@@ -1275,7 +1275,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         (f"P6:P{rows_needed}", {"left":   ("SOLID", "THIN_BLACK")}),
         (f"C6:D{rows_needed}", {"right":  ("SOLID_MEDIUM", "BLACK")}),
         (f"S1:S{rows_needed}", {"right":  ("SOLID_MEDIUM", "BLACK")}),
-        (f"Y:Y", {"right": ("SOLID_MEDIUM", "BLACK")}),
+        (f"Y1:Y", {"right": ("SOLID_MEDIUM", "BLACK")}),
     ]
 
     # ====================================================================================================================================================================================================
