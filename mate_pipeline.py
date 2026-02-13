@@ -1363,7 +1363,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         try:
             ws = sh.worksheet(tab_name)
         except gspread.WorksheetNotFound:
-            ws = sh.add_worksheet(title=tab_name, rows=1, cols=25)
+            ws = sh.add_worksheet(title=tab_name, rows=max(20, 20 + len(itens)), cols=25)
             _with_backoff(ws.update_index, 1)
 
         sheet_id = ws.id
@@ -1407,7 +1407,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         rows_target = max(ws.row_count, rows_needed + 1, MIN_ROWS)
         cols_target = max(ws.col_count, cols_needed, MIN_COLS)
 
-        _with_backoff(ws.resize, rows=rows_needed, cols=cols_target)
+        _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
 
         VIS_LAST_ROW_1BASED = rows_target - 1  # última linha "visível" (a última é técnica 1px)
 
@@ -1557,7 +1557,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # range total dos EXTRAS (row 1-based -> grid 0-based endIndex exclusivo)
         extra_start = start_extra_row
-        extra_end   = start_extra_row + len(extras) - 1
+        extra_end   = start_extra_row + len(extras)
 
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
