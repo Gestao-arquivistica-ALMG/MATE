@@ -269,8 +269,10 @@ def baixar_pdf_por_url(url: str) -> str | None:
         print("Erro:", e)
         return None
 
-
-print("Digite a data do Diário em DDMMYYYY (ex: 06012026).")
+print("Digite a data do Diário do Legislativo.")
+print("Exemplos:")
+print("19122026 ou 191226 ou 19/12/2026")
+print("hoje, ontem, anteontem ou terça, quarta, quinta, sexta, sábado")
 print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
 print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
 
@@ -280,10 +282,13 @@ def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
 def main(entrada_override=None, spreadsheet_url_or_id=None):
     # Se veio override, não pede input
     if entrada_override is None:
-        print("Digite a data do Diário em DDMMYYYY (ex: 06012026).")
+        print("Digite a data do Diário do Legislativo.")
+        print("Exemplos:")
+        print("19122026 ou 191226 ou 19/12/2026")
+        print("hoje, ontem, anteontem ou terça, quarta, quinta, sexta, sábado")
         print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
         print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
-        entrada = input("Data/URL/Upload: ").strip()
+        entrada = input("Data/URL/Upload:").strip()
     else:
         entrada = str(entrada_override).strip()
 
