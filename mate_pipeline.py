@@ -1452,6 +1452,20 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 start, end, px = rh
                 reqs.append(req_dim_rows(sheet_id, start, end, px))
 
+        # linha técnica (1px) — mantém a linha extra invisível (depois das alturas)
+        reqs.append({
+            "updateDimensionProperties": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "dimension": "ROWS",
+                    "startIndex": rows_target - 1,
+                    "endIndex": rows_target
+                },
+                "properties": {"pixelSize": 1},
+                "fields": "pixelSize"
+            }
+        })
+
         # larguras
         reqs.append(req_dim_cols(sheet_id, 0, 25, default_col_width_px))
         ow = col_width_overrides or COL_OVERRIDES
