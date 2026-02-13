@@ -338,12 +338,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data de Trabalho (ABA)
         diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)      # data de Diário (PLANILHA)
 
-        # --- DIÁRIO - 2 dias úteis ---
-        import datetime as dt
 
-        dl_date = dt.datetime.strptime(yyyymmdd, "%Y%m%d").date()
-        dmenos2_date = two_business_days_before(dl_date)
-        dmenos2 = f"{dmenos2_date.day}/{dmenos2_date.month}/{dmenos2_date.year}"
 
         yyyy = yyyymmdd[:4]
         url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"   # monta URL sem re-normalizar
