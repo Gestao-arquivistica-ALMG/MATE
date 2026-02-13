@@ -2062,6 +2062,16 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             for req in _checkbox_req(sheet_id, 7, rr, default_checked=False):  # 7 = H
                 reqs.append(req)
 
+        # OVERRIDE: checkbox H6/H8 com o mesmo tamanho dos outros (fonte 6)
+        for r in (6, 8):
+            reqs.append(req_repeat_cell(sheet_id, f"H{r}:H{r}", {
+                "textFormat": {
+                    "fontFamily": "Inconsolata",
+                    "fontSize": 6,
+                    "foregroundColor": rgb_hex_to_api("#cc0000"),
+                }
+            }))
+
         # ---------------------------------------------------------------------------------------
         # OVERRIDES (imediatamente após STYLES) — pra não ser sobrescrito
         # - H (itens/OUTs): Inconsolata 8 vermelho
@@ -2077,8 +2087,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # ITENS (OUTs): H=8, I=6
         if end_items_row >= start_items_row:
-            reqs.append(req_text(sheet_id, f"H6:H{end_items_row}", "Inconsolata", 8, "#cc0000"))
-            reqs.append(req_text(sheet_id, f"I6:I{end_items_row}", "Inconsolata", 6, "#cc0000"))
+            reqs.append(req_text(sheet_id, f"H{start_items_row}:H{end_items_row}", "Inconsolata", 8, "#cc0000"))
+            reqs.append(req_text(sheet_id, f"I{start_items_row}:I{end_items_row}", "Inconsolata", 6, "#cc0000"))
 
         # EXTRAS: H=6 (só pra manter os checkboxes dos extras pequenos e vermelhos)
         if extra_end_row >= start_extra_row:
