@@ -365,6 +365,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     else:
         aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
 
+    print("Diário:", diário)
     print("Planilha:", aba)
 
     # ================================================================================================
