@@ -1411,6 +1411,22 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         VIS_LAST_ROW_1BASED = rows_target - 1  # última linha "visível" (a última é técnica 1px)
 
+        # linha técnica (1px) — NÃO usa reqs aqui (reqs ainda não existe neste ponto)
+        _with_backoff(sh.batch_update, {
+            "requests": [{
+                "updateDimensionProperties": {
+                    "range": {
+                        "sheetId": sheet_id,
+                        "dimension": "ROWS",
+                        "startIndex": rows_target - 2,
+                        "endIndex": rows_target
+                    },
+                    "properties": {"pixelSize": 1},
+                    "fields": "pixelSize"
+                }
+            }]
+        })
+
         # ====================================================================================================================================================================================================
         # ============================================================================================ REQUESTS ==============================================================================================
         # ====================================================================================================================================================================================================
