@@ -1409,7 +1409,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         _with_backoff(ws.resize, cols=cols_target)
 
-        VIS_LAST_ROW_1BASED = rows_target - 1  # última linha "visível" (a última é técnica 1px)
+        
 
         # linha técnica (1px) — NÃO usa reqs aqui (reqs ainda não existe neste ponto)
         _with_backoff(sh.batch_update, {
