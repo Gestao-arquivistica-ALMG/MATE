@@ -2655,7 +2655,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "right": {"style": "SOLID", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}},
             "bottom": {"style": "SOLID_MEDIUM", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
 
-        reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r - 1, "endRowIndex": r8, "startColumnIndex": 4, "endColumnIndex": 5},
+        reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r, "endRowIndex": r8, "startColumnIndex": 4, "endColumnIndex": 5},
             "left": {"style": "SOLID", "color": {"red": 0.0, "green": 0.0, "blue": 0.0}}}})
 
         reqs.append({"updateBorders": {"range": {"sheetId": sheet_id, "startRowIndex": r, "endRowIndex": r8, "startColumnIndex": 17, "endColumnIndex": 18},
