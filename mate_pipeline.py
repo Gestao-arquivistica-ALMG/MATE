@@ -2253,26 +2253,22 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://ead.almg.gov.br/moodle/";IMAGE("https://ead.almg.gov.br/moodle/pluginfile.php/2/course/section/288/servidor_ALMG.png?time=1657626782411"))'}}]}],
                 "fields": "userEnteredValue"}})
 
-        # ---------------------------------------------------------------------------------------
-        # ---------------------------------------- MERGES ----------------------------------------
-        # ---------------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------- MERGES -----------------------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r2, "startColumnIndex": 0, "endColumnIndex": 1}, "mergeType": "MERGE_ALL"}})  # CALENDAR A
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r2, "startColumnIndex": 1, "endColumnIndex": 2}, "mergeType": "MERGE_ALL"}})  # PHONE B
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r5, "startColumnIndex": 0, "endColumnIndex": 2}, "mergeType": "MERGE_ALL"}})  # INTRA A:B
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r8, "startColumnIndex": 0, "endColumnIndex": 1}, "mergeType": "MERGE_ALL"}})  # AGENDA A
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r8, "startColumnIndex": 1, "endColumnIndex": 2}, "mergeType": "MERGE_ALL"}})  # GGA B
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 2, "endColumnIndex": 4}, "mergeType": "MERGE_ALL"}})  # ALMG C:D
-
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 8,  "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # CONFERÊNCIA (título)
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 12, "endColumnIndex": 15}, "mergeType": "MERGE_ALL"}})  # PROPOSIÇÕES (título)
-
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 15, "endColumnIndex": 17}, "mergeType": "MERGE_ALL"}})  # REGIMENTO
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 17, "endColumnIndex": 19}, "mergeType": "MERGE_ALL"}})  # CONST. ESTADUAL
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 19, "endColumnIndex": 21}, "mergeType": "MERGE_ALL"}})  # CONST. FEDERAL
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 21, "endColumnIndex": 23}, "mergeType": "MERGE_ALL"}})  # REGIMENTO (img)
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r8, "startColumnIndex": 23, "endColumnIndex": 25}, "mergeType": "MERGE_ALL"}})  # CONST. ESTADUAL (img)
-
-        # blocos de nomes (I:J)
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r2, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # ALINE
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r3, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # ANDRÉ
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r4 - 1, "endRowIndex": r4, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # DIOGO
@@ -2280,66 +2276,51 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r6 - 1, "endRowIndex": r6, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # LEO
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r7 - 1, "endRowIndex": r7, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # VINÍCIUS
         reqs.append({"mergeCells": {"range": {"sheetId": sheet_id, "startRowIndex": r8 - 1, "endRowIndex": r8, "startColumnIndex": 8, "endColumnIndex": 10}, "mergeType": "MERGE_ALL"}})  # WELDER
-
         reqs.append(req_merge(sheet_id, f"J6:O{extra_end}")) # COLUNAS J:O
 
-        # ----------------------------------------------------------------------------------------------------------
-        # ------------------------------------------------- STYLES -------------------------------------------------
-        # ----------------------------------------------------------------------------------------------------------
-        pre_footer_row = footer_start - 1  # 1-based
-
-        reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": pre_footer_row - 1, "endRowIndex": pre_footer_row, "startColumnIndex": 2, "endColumnIndex": 3},
+        # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------- STYLES -----------------------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": extra_end, "endRowIndex": extra_end, "startColumnIndex": 2, "endColumnIndex": 3},
             "cell": {"userEnteredFormat": {"horizontalAlignment": "LEFT", "verticalAlignment": "MIDDLE"}},
             "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r - 1, "endRowIndex": r8, "startColumnIndex": 2, "endColumnIndex": 3},
             "cell": {"userEnteredFormat": {"horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE", "backgroundColor": {"red": 0.953, "green": 0.953, "blue": 0.953}}},
             "fields": "userEnteredFormat(horizontalAlignment,verticalAlignment,backgroundColor)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r5 - 1, "startColumnIndex": 0, "endColumnIndex": 2},
             "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.9764706, "green": 0.7960784, "blue": 0.6117647}}},
             "fields": "userEnteredFormat(backgroundColor)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r6 - 1, "startColumnIndex": 0, "endColumnIndex": 2},
             "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.988, "green": 0.820, "blue": 0.800}}},
             "fields": "userEnteredFormat(backgroundColor)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 4, "endColumnIndex": 6},
             "cell": {"userEnteredFormat": {
                 "backgroundColor": {"red": 0.6, "green": 0.0, "blue": 0.0},
                 "horizontalAlignment": "CENTER",
                 "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Vidaloka", "fontSize": 8, "bold": True, "foregroundColor": {"red": 0.85, "green": 0.67, "blue": 0.10}}
-            }},
+                "textFormat": {"fontFamily": "Vidaloka", "fontSize": 8, "bold": True, "foregroundColor": {"red": 0.85, "green": 0.67, "blue": 0.10}}}},
             "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 6, "endColumnIndex": 11},
             "cell": {"userEnteredFormat": {
                 "backgroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0},
                 "horizontalAlignment": "CENTER",
                 "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Vidaloka", "fontSize": 7, "bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}
-            }},
+                "textFormat": {"fontFamily": "Vidaloka", "fontSize": 7, "bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}}},
             "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 11, "endColumnIndex": 15},
             "cell": {"userEnteredFormat": {
                 "backgroundColor": {"red": 0.9019608, "green": 0.5686275, "blue": 0.21960788},
                 "horizontalAlignment": "CENTER",
                 "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Vidaloka", "fontSize": 7, "bold": True, "foregroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0}}
-            }},
+                "textFormat": {"fontFamily": "Vidaloka", "fontSize": 7, "bold": True, "foregroundColor": {"red": 0.0, "green": 0.0, "blue": 0.0}}}},
             "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r1, "endRowIndex": r8, "startColumnIndex": 11, "endColumnIndex": 15},
             "cell": {"userEnteredFormat": {
                 "backgroundColor": {"red": 1.0, "green": 0.949, "blue": 0.8},
                 "horizontalAlignment": "CENTER",
                 "verticalAlignment": "MIDDLE",
-                "textFormat": {"fontFamily": "Special Elite", "fontSize": 8, "bold": True, "foregroundColor": {"red": 0.6, "green": 0.0, "blue": 0.0}}
-            }},
+                "textFormat": {"fontFamily": "Special Elite", "fontSize": 8, "bold": True, "foregroundColor": {"red": 0.6, "green": 0.0, "blue": 0.0}}}},
             "fields": "userEnteredFormat(backgroundColor,horizontalAlignment,verticalAlignment,textFormat)"}})
-
         reqs.append({"repeatCell": {"range": {"sheetId": sheet_id, "startRowIndex": r2 - 1, "endRowIndex": r8, "startColumnIndex": 4, "endColumnIndex": 5},
             "cell": {"userEnteredFormat": {"backgroundColor": {"red": 0.741, "green": 0.741, "blue": 0.741}, "horizontalAlignment": "RIGHT", "verticalAlignment": "MIDDLE",
                     "textFormat": {"fontFamily": "Boogaloo", "fontSize": 8, "bold": False}}},
