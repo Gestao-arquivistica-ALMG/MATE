@@ -1404,7 +1404,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         MIN_ROWS = 22
         MIN_COLS = 25
 
-        rows_target = max(ws.row_count, rows_needed, MIN_ROWS)
+        rows_target = max(rows_needed + 1, MIN_ROWS)
         cols_target = max(ws.col_count, cols_needed, MIN_COLS)
 
         _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
