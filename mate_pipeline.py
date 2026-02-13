@@ -1418,8 +1418,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                     "range": {
                         "sheetId": sheet_id,
                         "dimension": "ROWS",
-                        "startIndex": rows_target - 1,
-                        "endIndex": rows_target
+                        
+                        
                     },
                     "properties": {"pixelSize": 1},
                     "fields": "pixelSize"
@@ -1480,7 +1480,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 "range": {
                     "sheetId": sheet_id,
                     "startRowIndex": 0,
-                    "endRowIndex": rows_target,
+                    
                     "startColumnIndex": 0,
                     "endColumnIndex": 25
                 }
@@ -2071,7 +2071,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         footer_end  = footer_start + footer_rows - 1
 
         # garante grid suficiente para TUDO que vem depois (inclusive bordas A31:Y31)
-        rows_needed = max(rows_target, footer_end, 31)  # 31 por causa do caso A31:Y31
+        rows_needed = max(footer_end, 31)  # 31 por causa do caso A31:Y31
         if ws.row_count < rows_needed:
             _with_backoff(ws.resize, rows=rows_needed)
 
