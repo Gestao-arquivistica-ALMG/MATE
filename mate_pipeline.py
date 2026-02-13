@@ -1373,7 +1373,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         MIN_COLS = 25
 
         if ws.row_count < MIN_ROWS or ws.col_count < MIN_COLS:
-            _with_backoff(ws.resize, rows=max(rows_needed + 1, MIN_ROWS), cols=max(ws.col_count, MIN_COLS))
+            _with_backoff(ws.resize, rows=max(ws.row_count, MIN_ROWS), cols=max(ws.col_count, MIN_COLS))
 
         # resize da planilha (linhas e colunas) — agora considera EXTRAS também
         extras = [
