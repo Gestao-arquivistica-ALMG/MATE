@@ -2214,7 +2214,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         reqs.append({"updateCells": {
                 "range": {"sheetId": sheet_id, "startRowIndex": r3 - 1, "endRowIndex": r3, "startColumnIndex": 0,  "endColumnIndex": 1},  # A
-                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/";IMAGE("https://intra.almg.gov.br/.content/imagens/logo-intra.svg";4;2;75))'}}]}],
+                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/";IMAGE("https://intra.almg.gov.br/.content/imagens/logo-intra.svg";4;20;75))'}}]}],
                 "fields": "userEnteredValue"}})
 
         reqs.append({"updateCells": {
