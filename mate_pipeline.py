@@ -284,11 +284,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # Se veio override, não pede input
     if entrada_override is None:
         print("Digite a data do Diário do Legislativo.")
-        print("Exemplos:")
-        print("19122026 ou 191226 ou 19/12/2026")
-        print("hoje, ontem, anteontem ou terça, quarta, quinta, sexta, sábado")
-        print("Alternativas: cole uma URL completa (https://...) ou um caminho local.")
-        print("Se deixar vazio (no Colab), você poderá fazer upload.\n")
+        print("EXEMPLOS:")
+        print("- 19122026 ou 191226 ou 19/12/2026")
+        print("- hoje, ontem ou anteontem")
+        print("- terça, quarta, quinta, sexta ou sábado")
+        print("- URL ou caminho local")
+        print("Se deixar vazio, você poderá fazer upload.\n")
         entrada = input("Data/URL/Upload:").strip()
     else:
         entrada = str(entrada_override).strip()
