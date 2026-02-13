@@ -2747,7 +2747,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("I3", [['=HYPERLINK("https://www.almg.gov.br/consulte/arquivo_diario_legislativo/index.html";'
             'IMAGE("https://www.almg.gov.br/favicon.ico";4;25;25))']])
         add("J1", [['=HYPERLINK("https://consulta-brs.almg.gov.br/brs/";''IMAGE("https://t4.ftcdn.net/jpg/04/70/40/23/360_F_470402339_5FVE7b1Z2DNI7bATV5a27FGATt6yxcEz.jpg"))']])
-        add("J3", [['=HYPERLINK("https://silegis.almg.gov.br/silegismg/login/login.jsp";IMAGE("https://silegis.almg.gov.br/silegismg/assets/logotipo.png"))']])
+        add("J3", [['=HYPERLINK("https://silegis.almg.gov.br/silegismg/#/processos";IMAGE("https://silegis.almg.gov.br/silegismg/assets/logotipo.png"))']])
         add("K1", [[ '=HYPERLINK("https://webmail.almg.gov.br/";IMAGE("https://images.vexels.com/media/users/3/140138/isolated/lists/88e50689fa3280c748d000aaf0bad480-icone-redondo-de-email-1.png"))' ]])
         add("K3", [[ '=HYPERLINK("https://sites.google.com/view/gga-gdi-almg/manuais-e-delibera%C3%A7%C3%B5es#h.no8oprc5oego";IMAGE("http://anthillonline.com/wp-content/uploads/2021/03/mate-logo.jpg";4;65;50))' ]])
         add("L1", [[ '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/projetos-de-lei/";IMAGE("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Tram-Logo.svg/2048px-Tram-Logo.svg.png";4;23;23))' ]])
