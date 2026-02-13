@@ -3820,7 +3820,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             {"range": f"'{tab_name}'!W2", "values": [['=TEXT(Q2;"dd mm yyyy")']]},
             {"range": f"'{tab_name}'!W3", "values": [['=IFERROR(QUERY(C6:G13;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO - EDIÇÃO EXTRA.*\'";0);"SEM EXTRA")']]},
             {"range": f"'{tab_name}'!W4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'dd mm yyyy\'");"")']]},
-            {"range": f"'{tab_name}'!X3", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'dd mm yyyy\'");"")']]},
+            {"range": f"'{tab_name}'!X3", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'d m yyyy\'");"")']]},
             {"range": f"'{tab_name}'!X4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"dd/MM/yyyy");"")']]},
             {"range": f"'{tab_name}'!Y2", "values": [["REUNIÃO"]]},
             {"range": f"'{tab_name}'!Y3", "values": [["EXTRA"]]},
