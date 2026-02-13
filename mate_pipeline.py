@@ -342,7 +342,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
     # ? TRATAMENTO DEFINITIVO DE DL INEXISTENTE
     if pdf_path is None:
-        print("? Diário inexistente para a data informada. Execução encerrada.")
+        print("? Diário do Legislativo inexistente para a data informada. Execução encerrada.")
         raise SystemExit
 
     pdf_path = str(pdf_path)
@@ -357,7 +357,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     else:
         aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
 
-    print("Aba (Planilha):", aba)
+    print("Google Planilhas:", aba)
 
     # ================================================================================================
     # ---- 3) Extração e detecção de títulos ----
