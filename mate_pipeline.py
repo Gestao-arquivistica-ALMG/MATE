@@ -2756,7 +2756,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("M3", [[ '=HYPERLINK("https://stl.almg.gov.br/login.jsp";IMAGE("https://media-exp1.licdn.com/dms/image/C510BAQHc4JZB3kDHoQ/company-logo_200_200/0/1519865605418?e=2147483647&v=beta&t=dE29KDkLy-qxYmZ3TVE95zPf8_PeoMr7YJBQehJbFg8";4;24;28))' ]])
         add("N1", [[ '=HYPERLINK("https://docs.google.com/spreadsheets/d/1kJmtsWxoMtBKeMeO0Aex4IrIULRMeyf6yl3UgqatNGs/edit#gid=1276994968";IMAGE("https://cdn-icons-png.flaticon.com/512/3767/3767084.png";4;23;23))' ]])
         add("N3", [[ '=HYPERLINK("https://webdrive.almg.gov.br/index.php/login";IMAGE("https://upload.wikimedia.org/wikipedia/en/6/61/WebDrive.png";4;22;22))' ]])
-        add("O1", [[ '=HYPERLINK("https://www.youtube.com/c/assembleiamg";IMAGE("https://cdn.pixabay.com/photo/2021/02/16/06/00/youtube-logo-6019878_960_720.png";4;20;28))' ]])
+        add("O1", [[ '=HYPERLINK("https://www.youtube.com/c/assembleiamg";IMAGE("https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/960px-YouTube_full-color_icon_%282017%29.svg.png";4;20;28))' ]])
         add("O3", [[ '=HYPERLINK("https://atom.almg.gov.br/index.php/";IMAGE("https://atom.almg.gov.br/favicon.ico";4;20;20))' ]])
         add("P1", [[ '=IMAGE("https://img2.gratispng.com/20180422/slw/kisspng-computer-icons-dice-desktop-wallpaper-clip-art-5adc2023a35a45.9466329215243755876691.jpg")' ]])
         add("P2", [["LEGISLATIVO"]])
