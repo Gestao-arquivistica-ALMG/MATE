@@ -3828,7 +3828,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================= TÍTULOS ==============================================================================================
     # ====================================================================================================================================================================================================
         data2 = []
-        data2.append({"range": f"'{tab_name}'!B8:C8", "values": [[tab_name, "DIÁRIO DO LEGISLATIVO"]]})
+        data2.append({"range": f"'{tab_name}'!B8:C8", "values": [[diario, "DIÁRIO DO LEGISLATIVO"]]})
 
         if itens:
             data2.append({"range": f"'{tab_name}'!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
