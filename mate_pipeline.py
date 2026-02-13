@@ -362,7 +362,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     else:
         aba = yyyymmdd_to_ddmmyyyy(datetime.now(TZ_BR).strftime("%Y%m%d"))
 
-    print("Google Planilhas:", aba)
+    print("Planilha:", aba)
 
     # ================================================================================================
     # ---- 3) Extração e detecção de títulos ----
@@ -4032,7 +4032,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     )
 
     print("Planilha atualizada:", url)
-    print("Aba da Planilha:", aba)
+    print("Aba:", aba)
     
     return url, aba
 
