@@ -312,7 +312,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
     yyyymmdd = None  # fallback seguro p/ diario_key quando entrada não for DATA
     diario = None
-    
+        
     if not entrada:
         if not _COLAB:
             raise SystemExit("Entrada vazia fora do Colab. Informe data, URL ou caminho.")
@@ -335,8 +335,13 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     else:
         # Entrada é DATA (ou palavra-chave / dia da semana)
         yyyymmdd = normalizar_data(entrada)          # data do Diário (PDF)
-        aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data do TRABALHO (ABA)
+        aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data de Trabalho (ABA)
         diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)      # data de Diário (PLANILHA)
+
+        # --- DIÁRIO - 2 dias úteis ---
+        dl_date = datetime.strptime(yyyymmdd, "%Y%m%d").date()
+        dmenos2_date = two_business_days_before(dl_date)
+        dmenos2 = f"{dmenos2_date.day}/{dmenos2_date.month}/{dmenos2_date.year}"
 
         yyyy = yyyymmdd[:4]
         url = f"{URL_BASE}/{yyyy}/L{yyyymmdd}.pdf"   # monta URL sem re-normalizar
@@ -2780,10 +2785,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("B6", [[f'=TEXT(DATEVALUE("{diario}");"dd/mm/yyyy")']])
         add("C6", [["DIÁRIO DO EXECUTIVO"]])
         add("B7", [["-"]])
-
-        dl_date = datetime(yyyy, mm, dd).date()
-        dmenos2_date = two_business_days_before(dl_date)
-        dmenos2 = f"{dmenos2_date.day}/{dmenos2_date.month}/{dmenos2_date.year}"
         add("E8:G8", [[dmenos2]])
 
         add(f"A6:A{footer_start - 1}", [['''=IFS(
