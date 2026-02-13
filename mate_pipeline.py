@@ -1418,7 +1418,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                     "range": {
                         "sheetId": sheet_id,
                         "dimension": "ROWS",
-                        "startIndex": rows_target - 2,
+                        "startIndex": rows_target,
                         "endIndex": rows_target
                     },
                     "properties": {"pixelSize": 1},
