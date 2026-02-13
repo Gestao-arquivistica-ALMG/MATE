@@ -2768,7 +2768,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("T5", [["EXPRESSÕES DE BUSCA"]])
         add("C5", [[ '=HYPERLINK("https://docs.google.com/document/d/1lftfl3SAfJPMdIKYSjATffe-Tvc9qfoLodfGK-f3sLU/edit";"MATE - MATÉRIAS EM TRAMITAÇÃO")' ]])
         add("G5", [[ '=HYPERLINK("https://writer.zoho.com/writer/open/fgoh367779094842247dd8313f9c7714f452a";"CONFERÊNCIA")' ]])
-        add("B6", [[f'=TEXT(DATE({yyyy};{mm};{dd});"dd/mm/yyyy")']])
+        add("B6", [[f'=TEXT(DATE({diario_yyyy};{diario_mm};{diario_dd});"dd/mm/yyyy")']])
         add("C6", [["DIÁRIO DO EXECUTIVO"]])
         add("B7", [["-"]])
 
