@@ -4027,7 +4027,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     )
 
     print("Planilha atualizada:", url)
-    print("Aba:", aba)
+    print("Aba da Planilha:", aba)
     
     return url, aba
 
