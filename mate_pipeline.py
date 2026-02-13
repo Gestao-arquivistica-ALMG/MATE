@@ -3986,10 +3986,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 max_ec = ec
 
         # endRowIndex/endColumnIndex são EXCLUSIVOS (0-based)
-        need_rows = max(ws.row_count, max_er)
+        need_rows = max_er
         need_cols = max(ws.col_count, max_ec)
 
-        if need_rows > ws.row_count or need_cols > ws.col_count:
+        if need_rows > ws.row_count  or need_cols > ws.col_count:
             ws.resize(rows=need_rows, cols=need_cols)
 
         _with_backoff(sh.batch_update, body={"requests": reqs})
