@@ -934,30 +934,43 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         else:
             itens.append((intervalo, label_out))
 
-    # ---- DEBUG se não achou nada ----
-    if not itens:
+    # ---- DEBUG controlado se não achou nada ----
+    DEBUG_SEM_OUTS = False        # coloque True apenas quando quiser investigar
+    DEBUG_MAX_PAGS = 10           # limite de páginas a varrer
+    DEBUG_MAX_LINHAS = 50         # limite de linhas a imprimir
+
+    if not itens and DEBUG_SEM_OUTS:
+
         achados = []
-        for pi, p in enumerate(reader.pages[:50]):
+
+        for pi, p in enumerate(reader.pages[:DEBUG_MAX_PAGS]):
             t = p.extract_text() or ""
+
             for raw in t.splitlines():
                 ln = limpa_linha(raw)
                 if not ln:
                     continue
+
                 if re.search(
                     r"(TRAMITA|APRESENTA|RECEB|REQUER|LEI|MANIFEST|ATA|MATERIA\s+ADMIN|QUESTAO|RESOLU|ERRAT|EMEND|SUBSTIT|ACORDO|PARECER|CORRESP|OFIC|COMUNIC)",
                     ln,
                     re.IGNORECASE,
                 ):
                     achados.append(f"p{pi+1}: {ln} || compact={compact_key(ln)}")
-            if len(achados) >= 400:
+
+                if len(achados) >= DEBUG_MAX_LINHAS:
+                    break
+
+            if len(achados) >= DEBUG_MAX_LINHAS:
                 break
 
-        print("\n=== DEBUG (amostra de linhas candidatas) ===")
-        for x in achados[:400]:
+        print(f"\n=== DEBUG (amostra limitada a {len(achados)} linhas) ===")
+        for x in achados:
             print(x)
 
         print("Nenhum título de interesse encontrado. Prosseguindo com aba sem OUTs.")
-        itens = []
+
+    itens = itens or []
 
     # PARTE 1B ===================================================================================================================================================================================
     # ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
