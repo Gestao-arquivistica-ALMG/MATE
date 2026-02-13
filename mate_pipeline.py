@@ -3914,11 +3914,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                         "strict": True}}
             })
 
-            reqs.append(req_font(sheet_id, f"E{impl_row + 1}", fg_hex="#D32F2F"))
-            reqs.append(req_font(sheet_id, f"F{impl_row + 1}", fg_hex="#D32F2F"))
-            reqs.append(req_font(sheet_id, f"G{impl_row + 1}", fg_hex="#D32F2F"))
-            reqs.append(req_font(sheet_id, f"H{impl_row + 1}", fg_hex="#D32F2F"))
-            reqs.append(req_font(sheet_id, f"I{impl_row + 1}", fg_hex="#D32F2F"))
+            reqs.append(req_font(sheet_id, f"E{impl_row + 1}:I{impl_row + 1}", fg_hex="#CC0000"))
 
         body2 = {"valueInputOption": "USER_ENTERED", "data": data2}
         _with_backoff(sh.values_batch_update, body2)
