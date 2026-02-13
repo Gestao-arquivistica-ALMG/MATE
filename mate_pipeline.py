@@ -1404,7 +1404,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         MIN_ROWS = 22
         MIN_COLS = 25
 
-        rows_target = max(ws.row_count)
+        rows_target = max(ws.row_count, rows_needed + 1, MIN_ROWS)
         cols_target = max(ws.col_count, cols_needed, MIN_COLS)
 
         _with_backoff(ws.resize, rows=rows_target, cols=cols_target)
@@ -1447,10 +1447,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         # alturas
         for rh in ROW_HEIGHTS:
             if rh[0] == "default":
-                reqs.append(req_dim_rows(sheet_id, 0, rows_target, rh[1]))
+                reqs.append(req_dim_rows(sheet_id, 0, ws.row_count, rh[1]))
             else:
                 start, end, px = rh
                 reqs.append(req_dim_rows(sheet_id, start, end, px))
+
 
         # larguras
         reqs.append(req_dim_cols(sheet_id, 0, 25, default_col_width_px))
