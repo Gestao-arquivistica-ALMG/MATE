@@ -1594,11 +1594,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             and (start_extra_row + i) not in dropdown_rows
         ]
 
-        # range total dos EXTRAS (row 1-based -> grid 0-based endIndex exclusivo)
-        extra_start = start_extra_row
-        extra_end   = start_extra_row + len(extras) -1
-
-        # Fonte Roboto Mono SOMENTE nos títulos do bloco EXTRAS (coluna C)
+        # Fonte Roboto Mono SOMENTE nos títulos do bloco EXTRAS (aplica em C:D porque a linha é mesclada)
         extra_title_rows = [
             start_extra_row + i
             for i, row in enumerate(extras)
@@ -1617,7 +1613,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                         "startRowIndex": r0,
                         "endRowIndex": r0 + 1,
                         "startColumnIndex": 2,  # C
-                        "endColumnIndex": 3
+                        "endColumnIndex": 4     # até D (exclusivo)
                     },
                     "cell": {
                         "userEnteredFormat": {
@@ -1627,6 +1623,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                     "fields": "userEnteredFormat.textFormat.fontFamily"
                 }
             })
+
 
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
