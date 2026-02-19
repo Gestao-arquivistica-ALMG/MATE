@@ -2698,7 +2698,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
             "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^LANÇAMENTOS DE TRAMITAÇÃO")'}]},
-                "format": {"backgroundColor": {"red": 32/255, "green": 18/255, "blue": 77/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
+                "format": {"backgroundColor": {"red": 32/255, "green": 18/255, "blue": 77/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True, "fontFamily": "Roboto Mono"}}}},
             "index": 5}})
 
         reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
