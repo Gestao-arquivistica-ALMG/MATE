@@ -1599,13 +1599,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         extra_end   = start_extra_row + len(extras) -1
 
         # Fonte Roboto Mono SOMENTE nos títulos do bloco EXTRAS (coluna C)
-        # (mesma seleção de MERGE_TITLES; ignora DROPDOWNs e linhas "-")
         extra_title_rows = [
             start_extra_row + i
             for i, row in enumerate(extras)
             if (
                 (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
-                and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
                 and any(t in str(row[1]).upper() for t in MERGE_TITLES)
             )
         ]
