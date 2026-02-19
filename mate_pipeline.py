@@ -1598,36 +1598,37 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         extra_start = start_extra_row
         extra_end   = start_extra_row + len(extras) -1
 
-        # -----------------------------
-        # Fonte Roboto Mono SOMENTE nos títulos (coluna C)
-        # - Títulos internos (itens): C9:C(8+itens_len)
-        # - Títulos principais (extras): somente linhas cujo texto em C é título (não "-", não vazio, não DROPDOWN)
-        # -----------------------------
+        # Fonte Roboto Mono SOMENTE nos títulos do bloco EXTRAS (coluna C)
+        # (mesma seleção de MERGE_TITLES; ignora DROPDOWNs e linhas "-")
+        extra_title_rows = [
+            start_extra_row + i
+            for i, row in enumerate(extras)
+            if (
+                (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
+                and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
+                and any(t in str(row[1]).upper() for t in MERGE_TITLES)
+            )
+        ]
 
-        # 1) Títulos internos do Diário (itens)
-        if itens_len > 0:
-            reqs.append(req_repeat_cell(
-                sheet_id,
-                f"C9:C{8 + itens_len}",
-                {"textFormat": {"fontFamily": "Roboto Mono"}}
-            ))
-
-        # 2) Títulos principais (extras) — coluna C apenas, ignorando linhas técnicas
-        for i, row in enumerate(extras):
-            c_raw = row[1] if len(row) > 1 else ""
-            c_raw = "" if c_raw is None else str(c_raw)
-
-            if c_raw in ("", "-"):
-                continue
-            if c_raw.startswith("DROPDOWN_"):
-                continue
-
-            r = start_extra_row + i  # 1-based
-            reqs.append(req_repeat_cell(
-                sheet_id,
-                f"C{r}:C{r}",
-                {"textFormat": {"fontFamily": "Roboto Mono"}}
-            ))
+        for r in extra_title_rows:
+            r0 = r - 1  # 0-based
+            reqs.append({
+                "repeatCell": {
+                    "range": {
+                        "sheetId": sheet_id,
+                        "startRowIndex": r0,
+                        "endRowIndex": r0 + 1,
+                        "startColumnIndex": 2,  # C
+                        "endColumnIndex": 3
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "textFormat": {"fontFamily": "Roboto Mono"}
+                        }
+                    },
+                    "fields": "userEnteredFormat.textFormat.fontFamily"
+                }
+            })
 
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
