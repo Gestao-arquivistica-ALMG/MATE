@@ -1598,6 +1598,37 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         extra_start = start_extra_row
         extra_end   = start_extra_row + len(extras) -1
 
+        # -----------------------------
+        # Fonte Roboto Mono SOMENTE nos títulos (coluna C)
+        # - Títulos internos (itens): C9:C(8+itens_len)
+        # - Títulos principais (extras): somente linhas cujo texto em C é título (não "-", não vazio, não DROPDOWN)
+        # -----------------------------
+
+        # 1) Títulos internos do Diário (itens)
+        if itens_len > 0:
+            reqs.append(req_repeat_cell(
+                sheet_id,
+                f"C9:C{8 + itens_len}",
+                {"textFormat": {"fontFamily": "Roboto Mono"}}
+            ))
+
+        # 2) Títulos principais (extras) — coluna C apenas, ignorando linhas técnicas
+        for i, row in enumerate(extras):
+            c_raw = row[1] if len(row) > 1 else ""
+            c_raw = "" if c_raw is None else str(c_raw)
+
+            if c_raw in ("", "-"):
+                continue
+            if c_raw.startswith("DROPDOWN_"):
+                continue
+
+            r = start_extra_row + i  # 1-based
+            reqs.append(req_repeat_cell(
+                sheet_id,
+                f"C{r}:C{r}",
+                {"textFormat": {"fontFamily": "Roboto Mono"}}
+            ))
+
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
         # ====================================================================================================================================================================================================
