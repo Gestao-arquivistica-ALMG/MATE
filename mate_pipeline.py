@@ -109,7 +109,9 @@ NAO_EXPEDIENTE_2026 = set()
 # FERIADOS (círculo)
 NAO_EXPEDIENTE_2026 |= {
     date(2026, 1, 1),
+    date(2026, 2, 16),
     date(2026, 2, 17),
+    date(2026, 2, 18),
     date(2026, 6, 4),
     date(2026, 9, 7),
     date(2026, 10, 12),
