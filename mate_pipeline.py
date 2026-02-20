@@ -1421,7 +1421,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
             ["", ""],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
-            ["-", "-"],
+            ["-", "DROPWDOWN_8"],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/#/processos"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
             ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://webmail.almg.gov.br/"; "CADASTRO DE E-MAILS")'],
@@ -1558,7 +1558,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             start_extra_row + i
             for i, row in enumerate(extras)
             if (
-                (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
+                (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4", "DROPDOWN_8")
                 and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
                 and any(t in str(row[1]).upper() for t in MERGE_TITLES)
             )
@@ -1579,7 +1579,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             start_extra_row + i
             for i, row in enumerate(extras)
             if (
-                (row[1] if len(row) > 1 else "") in ("DROPDOWN_2", "DROPDOWN_4")
+                (row[1] if len(row) > 1 else "") in ("DROPDOWN_2", "DROPDOWN_4", "DROPDOWN_8")
                 or (row[2] if len(row) > 2 else "") == "DROPDOWN_3"
             )
         ]
@@ -1601,7 +1601,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         # Fonte Roboto Mono SOMENTE nos títulos do bloco EXTRAS (coluna C)
         extra_title_rows = [start_extra_row + i for i, row in enumerate(extras)
-            if ((row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")and any(t in str(row[1]).upper() for t in MERGE_TITLES))]
+            if ((row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4", "DROPDOWN_8")and any(t in str(row[1]).upper() for t in MERGE_TITLES))]
 
         for r in extra_title_rows:
             r0 = r - 1  # 0-based
@@ -2049,6 +2049,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
                 reqs.append(_dv_req(3, r, LISTA_DROPDOWN_3))
                 reqs.append(_cf_req(3, r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
+
+            if c == "DROPDOWN_8":
+                reqs.append(_dv_req(3, r, LISTA_DROPDOWN_8))
+                reqs.append(_cf_req(3, r, bg_hex="#f2e6cf", fg_hex="#865a32", index=0))
+                reqs.append(_cf_left_of_c_req(r, bg_hex="#f2e6cf", fg_hex="#865a32", index=0))
 
             elif c == "DROPDOWN_4":
                 reqs.append(_dv_req(2, r, LISTA_DROPDOWN_4))
@@ -3956,7 +3961,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             start_extra_row + i
             for i, row in enumerate(extras)
             if (
-            (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4")
+            (row[1] if len(row) > 1 else "") not in ("-", "", "DROPDOWN_2", "DROPDOWN_4", "DROPDOWN_8")
             and (row[2] if len(row) > 2 else "") != "DROPDOWN_3"
             and "IMPLANTAÇÃO DE TEXTOS" not in (row[1] if len(row) > 1 else ""))]
 
