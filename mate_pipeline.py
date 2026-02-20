@@ -2102,6 +2102,16 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 }
             }))
 
+        # OVERRIDE: checkbox H6/H8 com o mesmo tamanho dos outros (fonte 6)
+        for r in (6, 8):
+            reqs.append(req_repeat_cell(sheet_id, f"C{r}:D{r}", {
+                "textFormat": {
+                    "fontFamily": "Roboto Mono",
+                    "fontSize": 8,
+                    "foregroundColor": rgb_hex_to_api("#cc0000"),
+                }
+            }))
+
         # ---------------------------------------------------------------------------------------
         # OVERRIDES (imediatamente após STYLES) — pra não ser sobrescrito
         # - H (itens/OUTs): Inconsolata 8 vermelho
