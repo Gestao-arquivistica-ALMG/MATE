@@ -1421,7 +1421,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
             ["", ""],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
-            ["-", "DROPDOWN_8"],
+            ["-", "-"],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/#/processos"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
             ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://webmail.almg.gov.br/"; "CADASTRO DE E-MAILS")'],
