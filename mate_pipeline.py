@@ -3901,6 +3901,18 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 "values": [["-"]]
             })
 
+        # acha linha do DROPDOWN_8 (para setar D com "-")
+        dd8_row = next(
+            (start_extra_row + i for i, (_b, c) in enumerate(extras) if c == "DROPDOWN_8"),
+            None
+        )
+
+        if dd8_row is not None:
+            data2.append({
+                "range": f"'{tab_name}'!D{dd8_row}",
+                "values": [["-"]]
+            })
+
         # IMPLANTAÇÃO DE TEXTOS (mantém)
         impl_row = next(
             (start_extra_row + i for i, (_b, c) in enumerate(extras)
