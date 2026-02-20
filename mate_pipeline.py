@@ -1551,7 +1551,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "REQUERIMENTOS DE COMISSÃO",
             "LANÇAMENTOS DE TRAMITAÇÃO",
             "CADASTRO DE E-MAILS",
-            "IMPLANTAÇÃO DE TEXTOS",
         )
 
         extra_merge_rows = [
