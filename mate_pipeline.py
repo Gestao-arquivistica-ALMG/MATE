@@ -2063,26 +2063,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 for req in _checkbox_req(sheet_id, 7, r, default_checked=False):  # 7 = H
                     reqs.append(req)
 
-                # fonte Roboto Mono só no título (C:D)
-                r0 = r - 1  # 0-based
-                reqs.append({
-                    "repeatCell": {
-                        "range": {
-                            "sheetId": sheet_id,
-                            "startRowIndex": r0,
-                            "endRowIndex": r0 + 1,
-                            "startColumnIndex": 2,  # C
-                            "endColumnIndex": 5     # até D (exclusivo)
-                        },
-                        "cell": {
-                            "userEnteredFormat": {
-                                "textFormat": {"fontFamily": "Roboto Mono"}
-                            }
-                        },
-                        "fields": "userEnteredFormat.textFormat.fontFamily"
-                    }
-                })
-
         # styles
         for a1, mini in STYLES:
             reqs.append(req_repeat_cell(sheet_id, a1, _mini_to_user_fmt(mini)))
@@ -2102,15 +2082,20 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 }
             }))
 
-        # OVERRIDE: checkbox H6/H8 com o mesmo tamanho dos outros (fonte 6)
+        # OVERRIDE: Roboto Mono só no título (C:D)
+
+        TITLE_FMT = {
+            "textFormat": {
+                "fontFamily": "Roboto Mono",
+                "fontSize": 8,
+            }
+        }
+        # títulos do topo (mantém os seus)
         for r in (6, 8):
-            reqs.append(req_repeat_cell(sheet_id, f"C{r}:D{r}", {
-                "textFormat": {
-                    "fontFamily": "Roboto Mono",
-                    "fontSize": 8,
-                    "foregroundColor": rgb_hex_to_api("#cc0000"),
-                }
-            }))
+            reqs.append(req_repeat_cell(sheet_id, f"C{r}:D{r}", TITLE_FMT))
+        # títulos do EXTRAS (os que você já identifica corretamente)
+        for r in extra_merge_rows:
+            reqs.append(req_repeat_cell(sheet_id, f"C{r}:D{r}", TITLE_FMT))
 
         # ---------------------------------------------------------------------------------------
         # OVERRIDES (imediatamente após STYLES) — pra não ser sobrescrito
