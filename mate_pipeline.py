@@ -12,6 +12,7 @@
 import re
 import csv
 import os
+import tempfile
 import hashlib
 import urllib.request
 import unicodedata
@@ -26,21 +27,22 @@ from pypdf import PdfReader
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
 
 URL_BASE = "https://diariolegislativo.almg.gov.br"
-CACHE_DIR = "/content/pdfs_cache"
+
+# CACHE: Colab usa /content; Streamlit usa /tmp (gravável)
+try:
+    from google.colab import files  # type: ignore
+    _COLAB = True
+except Exception:
+    _COLAB = False
+
+CACHE_DIR = "/content/pdfs_cache" if _COLAB else os.path.join(tempfile.gettempdir(), "mate_cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 # ================================================================================================
 # ---- 2) Entrada: DATA (DDMMYYYY) -> URL do Diário (ou URL/caminho direto) ----
 # ================================================================================================
 
-try:
-    from google.colab import files
-    _COLAB = True
-except Exception:
-    _COLAB = False
-
 TZ_BR = ZoneInfo("America/Sao_Paulo")
-
 
 # --------------------------------------------------------------------------------
 # NÃO-EXPEDIENTE (FERIADOS + RECESSOS) — usado para calcular a ABA (dia útil de trabalho)
@@ -55,45 +57,35 @@ def _intervalo_datas(inicio: date, fim: date) -> set[date]:
         d += timedelta(days=1)
     return out
 
-
 # --- 2025 (conforme lista oficial "FERIADOS E RECESSOS DE 2025" enviada) ---
 NAO_EXPEDIENTE_2025 = {
     date(2025, 1, 1),   # Confraternização Universal
-
     # Março
     date(2025, 3, 3),   # Recesso
     date(2025, 3, 4),   # Carnaval
     date(2025, 3, 5),   # Recesso – Cinzas
-
     # Abril
     date(2025, 4, 17),  # Recesso
     date(2025, 4, 18),  # Paixão de Cristo
     date(2025, 4, 21),  # Tiradentes
-
     # Maio
     date(2025, 5, 1),   # Dia do Trabalho
     date(2025, 5, 2),   # Recesso
-
     # Junho
     date(2025, 6, 19),  # Corpus Christi
     date(2025, 6, 20),  # Recesso
-
     # Agosto
     date(2025, 8, 15),  # Assunção de Nossa Senhora
-
     # Setembro
     date(2025, 9, 7),   # Independência do Brasil
-
     # Outubro
     date(2025, 10, 12), # Nossa Senhora Aparecida
     date(2025, 10, 30), # Dia do Servidor Público
-
     # Novembro
     date(2025, 11, 2),  # Finados
     date(2025, 11, 15), # Proclamação da República
     date(2025, 11, 20), # Dia Nacional de Zumbi e da Consciência Negra
     date(2025, 11, 21), # Recesso
-
     # Dezembro
     date(2025, 12, 8),  # Nossa Senhora da Conceição
     date(2025, 12, 24), # Recesso
@@ -105,7 +97,6 @@ NAO_EXPEDIENTE_2025 = {
 
 # --- 2026 (conforme calendário enviado; feriados + recessos tratados como não-expediente) ---
 NAO_EXPEDIENTE_2026 = set()
-
 # FERIADOS (círculo)
 NAO_EXPEDIENTE_2026 |= {
     date(2026, 1, 1),
@@ -120,7 +111,6 @@ NAO_EXPEDIENTE_2026 |= {
     date(2026, 11, 20),
     date(2026, 12, 25),
 }
-
 # RECESSOS (retângulo)
 NAO_EXPEDIENTE_2026 |= {
     date(2026, 2, 18),
@@ -130,12 +120,10 @@ NAO_EXPEDIENTE_2026 |= {
 }
 NAO_EXPEDIENTE_2026 |= _intervalo_datas(date(2026, 12, 7), date(2026, 12, 31))
 
-
 NAO_EXPEDIENTE_POR_ANO = {
     2025: NAO_EXPEDIENTE_2025,
     2026: NAO_EXPEDIENTE_2026,
 }
-
 
 def proximo_dia_util(yyyymmdd: str) -> str:
     """
@@ -282,7 +270,7 @@ print("Se deixar vazio, você poderá fazer upload.\n")
 def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
     return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
 
-def main(entrada_override=None, spreadsheet_url_or_id=None):
+def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", sa_info=None):
     # Se veio override, não pede input
     if entrada_override is None:
         print("Digite a data do Diário do Legislativo.")
@@ -295,6 +283,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         entrada = input("Data/URL/Upload:").strip()
     else:
         entrada = str(entrada_override).strip()
+
+    gc = get_gspread_client(auth_mode, sa_info)
 
     import re
 
@@ -1003,12 +993,24 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
     import time, random
     import gspread
-    from google.colab import auth
-    from google.auth import default
+    def get_gspread_client(auth_mode: str, sa_info: dict | None = None):
+        if auth_mode == "colab":
+            from google.colab import auth
+            from google.auth import default
+            auth.authenticate_user()
+            creds, _ = default(scopes=["https://www.googleapis.com/auth/spreadsheets"])
+            return gspread.authorize(creds)
 
-    auth.authenticate_user()
-    creds, _ = default(scopes=["https://www.googleapis.com/auth/spreadsheets"])
-    gc = gspread.authorize(creds)
+        if auth_mode == "service_account":
+            from google.oauth2.service_account import Credentials
+            creds = Credentials.from_service_account_info(
+                sa_info,
+                scopes=["https://www.googleapis.com/auth/spreadsheets"],
+            )
+            return gspread.authorize(creds)
+
+        raise ValueError("auth_mode inválido")
+
     SHEET_ID = None
 
     def rgb_hex_to_api(hex_str: str):
@@ -1384,6 +1386,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         return d.strftime("%Y%m%d")
 
     def upsert_tab_diario(
+        gc,
         spreadsheet_url_or_id: str,
         diario_key: str,                 # YYYYMMDD
         itens: list[tuple[str, str]],
@@ -2767,7 +2770,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         data = []
 
         def add(a1, values):
-            data.append({"range": f"'{tab_name}'!{a1}", "values": values})
+            data.append({"range": f"{tab_name}!{a1}", "values": values})
 
         add("A5:B5", [[f"=DATE({yyyy};{mm};{dd})", ""]])
         add("A1", [[ '=HYPERLINK("https://www.almg.gov.br/home/index.html";IMAGE("https://sisap.almg.gov.br/banner.png";4;43;110))' ]])
@@ -3819,29 +3822,29 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================= DATAS ===============================================================================================
     # ====================================================================================================================================================================================================
         data += [
-            {"range": f"'{tab_name}'!Q2", "values": [["=B6"]]},
-            {"range": f"'{tab_name}'!Q3", "values": [["=TODAY()"]]},
-            {"range": f"'{tab_name}'!Q4", "values": [['=QUERY(C6:G8;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO.*\'";0)']]},
-            {"range": f"'{tab_name}'!S2", "values": [['=TEXT(Q2;"\'dd\' \'mm\' \'yyyy\'")']]},
-            {"range": f"'{tab_name}'!S3", "values": [['=TEXT(Q3;"\'d\' \'MM\' yyyy")']]},
-            {"range": f"'{tab_name}'!S4", "values": [['=TEXT(Q4;"\'dd\' \'mm\' \'yyyy\'")']]},
-            {"range": f"'{tab_name}'!T2", "values": [['=TEXT(Q2;"\'d\' \'m\' \'yyyy\'")']]},
-            {"range": f"'{tab_name}'!T3", "values": [['=TEXT(Q3;"\'d\' \'m\' \'yyyy\'")']]},
-            {"range": f"'{tab_name}'!T4", "values": [['=TEXT(Q4;"\'d\' \'m\' \'yyyy\'")']]},
-            {"range": f"'{tab_name}'!U2", "values": [['=TEXT(Q2;"yyyymmdd")']]},
-            {"range": f"'{tab_name}'!U3", "values": [['=TEXT(Q3;"yyyymmdd")']]},
-            {"range": f"'{tab_name}'!U4", "values": [['=TEXT(Q4;"yyyymmdd")']]},
-            {"range": f"'{tab_name}'!V2", "values": [['=TEXT(Q2;"yyyy-mm-dd")']]},
-            {"range": f"'{tab_name}'!V3", "values": [['=TEXT(Q3;"yyyy-mm-dd")']]},
-            {"range": f"'{tab_name}'!V4", "values": [['=TEXT(Q4;"yyyy-mm-dd")']]},
-            {"range": f"'{tab_name}'!W2", "values": [['=TEXT(Q2;"dd mm yyyy")']]},
-            {"range": f"'{tab_name}'!W3", "values": [['=IFERROR(QUERY(C6:G13;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO - EDIÇÃO EXTRA.*\'";0);"SEM EXTRA")']]},
-            {"range": f"'{tab_name}'!W4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'dd mm yyyy\'");"")']]},
-            {"range": f"'{tab_name}'!X3", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'d m yyyy\'");"")']]},
-            {"range": f"'{tab_name}'!X4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"dd/MM/yyyy");"")']]},
-            {"range": f"'{tab_name}'!Y2", "values": [["REUNIÃO"]]},
-            {"range": f"'{tab_name}'!Y3", "values": [["EXTRA"]]},
-            {"range": f"'{tab_name}'!Y4", "values": [["RQC"]]},
+            {"range": f"{tab_name}!Q2", "values": [["=B6"]]},
+            {"range": f"{tab_name}!Q3", "values": [["=TODAY()"]]},
+            {"range": f"{tab_name}!Q4", "values": [['=QUERY(C6:G8;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO.*\'";0)']]},
+            {"range": f"{tab_name}!S2", "values": [['=TEXT(Q2;"\'dd\' \'mm\' \'yyyy\'")']]},
+            {"range": f"{tab_name}!S3", "values": [['=TEXT(Q3;"\'d\' \'MM\' yyyy")']]},
+            {"range": f"{tab_name}!S4", "values": [['=TEXT(Q4;"\'dd\' \'mm\' \'yyyy\'")']]},
+            {"range": f"{tab_name}!T2", "values": [['=TEXT(Q2;"\'d\' \'m\' \'yyyy\'")']]},
+            {"range": f"{tab_name}!T3", "values": [['=TEXT(Q3;"\'d\' \'m\' \'yyyy\'")']]},
+            {"range": f"{tab_name}!T4", "values": [['=TEXT(Q4;"\'d\' \'m\' \'yyyy\'")']]},
+            {"range": f"{tab_name}!U2", "values": [['=TEXT(Q2;"yyyymmdd")']]},
+            {"range": f"{tab_name}!U3", "values": [['=TEXT(Q3;"yyyymmdd")']]},
+            {"range": f"{tab_name}!U4", "values": [['=TEXT(Q4;"yyyymmdd")']]},
+            {"range": f"{tab_name}!V2", "values": [['=TEXT(Q2;"yyyy-mm-dd")']]},
+            {"range": f"{tab_name}!V3", "values": [['=TEXT(Q3;"yyyy-mm-dd")']]},
+            {"range": f"{tab_name}!V4", "values": [['=TEXT(Q4;"yyyy-mm-dd")']]},
+            {"range": f"{tab_name}!W2", "values": [['=TEXT(Q2;"dd mm yyyy")']]},
+            {"range": f"{tab_name}!W3", "values": [['=IFERROR(QUERY(C6:G13;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO - EDIÇÃO EXTRA.*\'";0);"SEM EXTRA")']]},
+            {"range": f"{tab_name}!W4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'dd mm yyyy\'");"")']]},
+            {"range": f"{tab_name}!X3", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"\'d m yyyy\'");"")']]},
+            {"range": f"{tab_name}!X4", "values": [['=IFERROR(TEXT(QUERY(B6:G33;"SELECT B WHERE C MATCHES \'REQUERIMENTOS DE COMISSÃO\'";0);"dd/MM/yyyy");"")']]},
+            {"range": f"{tab_name}!Y2", "values": [["REUNIÃO"]]},
+            {"range": f"{tab_name}!Y3", "values": [["EXTRA"]]},
+            {"range": f"{tab_name}!Y4", "values": [["RQC"]]},
         ]
 
         # EXECUTA O BLOCO PRINCIPAL
@@ -3852,13 +3855,13 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     # ============================================================================================= TÍTULOS ==============================================================================================
     # ====================================================================================================================================================================================================
         data2 = []
-        data2.append({"range": f"'{tab_name}'!B8:C8", "values": [[diario, "DIÁRIO DO LEGISLATIVO"]]})
+        data2.append({"range": f"{tab_name}!B8:C8", "values": [[diario, "DIÁRIO DO LEGISLATIVO"]]})
 
         if itens:
-            data2.append({"range": f"'{tab_name}'!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
+            data2.append({"range": f"{tab_name}!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
 
         data2.append({
-            "range": f"'{tab_name}'!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
+            "range": f"{tab_name}!B{start_extra_row}:C{start_extra_row + len(extras_out) - 1}",
             "values": extras_out
         })
 
@@ -3881,7 +3884,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         for r in extra_rows_c_is_dash:
             data2.append({
-            "range": f"'{tab_name}'!E{r}:I{r}",
+            "range": f"{tab_name}!E{r}:I{r}",
             "values": [["-","-","-","-","-"]]})
 
         # acha linha do DROPDOWN_2 (para setar D com "-")
@@ -3892,7 +3895,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         if dd2_row is not None:
             data2.append({
-                "range": f"'{tab_name}'!D{dd2_row}",
+                "range": f"{tab_name}!D{dd2_row}",
                 "values": [["-"]]
             })
 
@@ -3904,7 +3907,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
         if dd8_row is not None:
             data2.append({
-                "range": f"'{tab_name}'!D{dd8_row}",
+                "range": f"{tab_name}!D{dd8_row}",
                 "values": [["-"]]
             })
 
@@ -3916,17 +3919,17 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         )
 
         if impl_row is not None:
-            data2.append({"range": f"'{tab_name}'!E{impl_row}", "values": [["..."]]})
+            data2.append({"range": f"{tab_name}!E{impl_row}", "values": [["..."]]})
 
             # linha filha (logo abaixo)
             data2.append({
-                "range": f"'{tab_name}'!E{impl_row + 1}:I{impl_row + 1}",
+                "range": f"{tab_name}!E{impl_row + 1}:I{impl_row + 1}",
                 "values": [["?","?","?","-",False]]
             })
 
             # linha do título
             data2.append({
-                "range": f"'{tab_name}'!E{impl_row}:G{impl_row}",
+                "range": f"{tab_name}!E{impl_row}:G{impl_row}",
                 "values": [["TEXTOS", "EMENDAS", "PARECERES"]]
             })
 
@@ -4058,6 +4061,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
 
     url, aba = upsert_tab_diario(
+        gc,
         spreadsheet_url_or_id=(spreadsheet_url_or_id or SPREADSHEET),
         diario_key=diario_key,
         itens=itens,
