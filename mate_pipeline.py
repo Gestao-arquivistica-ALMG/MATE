@@ -2063,6 +2063,26 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                 for req in _checkbox_req(sheet_id, 7, r, default_checked=False):  # 7 = H
                     reqs.append(req)
 
+                # fonte Roboto Mono só no título (C:D)
+                r0 = r - 1  # 0-based
+                reqs.append({
+                    "repeatCell": {
+                        "range": {
+                            "sheetId": sheet_id,
+                            "startRowIndex": r0,
+                            "endRowIndex": r0 + 1,
+                            "startColumnIndex": 2,  # C
+                            "endColumnIndex": 4     # até D (exclusivo)
+                        },
+                        "cell": {
+                            "userEnteredFormat": {
+                                "textFormat": {"fontFamily": "Roboto Mono"}
+                            }
+                        },
+                        "fields": "userEnteredFormat.textFormat.fontFamily"
+                    }
+                })
+
         # styles
         for a1, mini in STYLES:
             reqs.append(req_repeat_cell(sheet_id, a1, _mini_to_user_fmt(mini)))
@@ -2076,7 +2096,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         for r in (6, 8):
             reqs.append(req_repeat_cell(sheet_id, f"H{r}:H{r}", {
                 "textFormat": {
-                    "fontFamily": "Roboto Mono",
+                    "fontFamily": "Inconsolata",
                     "fontSize": 6,
                     "foregroundColor": rgb_hex_to_api("#cc0000"),
                 }
