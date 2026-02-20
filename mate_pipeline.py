@@ -2088,6 +2088,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "textFormat": {
                 "fontFamily": "Roboto Mono",
                 "fontSize": 8,
+                "underline": False,
             }
         }
         # títulos do topo (mantém os seus)
