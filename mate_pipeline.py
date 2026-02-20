@@ -2801,7 +2801,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         add("P2", [["LEGISLATIVO"]])
         add("P3", [["ATUAL"]])
         add("P4", [["ATA"]])
-        add("D5", [["#"]])
         add("E5", [["IMPLANTAÇÃO"]])
         add("J5", [["PROPOSIÇÕES"]])
         add("T5", [["EXPRESSÕES DE BUSCA"]])
