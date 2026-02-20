@@ -2072,7 +2072,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
                             "startRowIndex": r0,
                             "endRowIndex": r0 + 1,
                             "startColumnIndex": 2,  # C
-                            "endColumnIndex": 4     # até D (exclusivo)
+                            "endColumnIndex": 5     # até D (exclusivo)
                         },
                         "cell": {
                             "userEnteredFormat": {
