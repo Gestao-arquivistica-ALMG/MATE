@@ -1599,7 +1599,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         for r in extra_title_rows:
             r0 = r - 1  # 0-based
             reqs.append({"repeatCell": {"range": {"sheetId": sheet_id,"startRowIndex": 0,"endRowIndex": 30,"startColumnIndex": 2,"endColumnIndex": 4},
-                    "cell": {"userEnteredFormat": {"textFormat": {"fontFamily": "Roboto Mono"},"verticalAlignment": "MIDDLE"}},"fields": "userEnteredFormat.textFormat.fontFamily"}})
+                    "cell": {"userEnteredFormat": {"textFormat": {"fontFamily": "Roboto Mono"},"verticalAlignment": "MIDDLE"}},"fields": "userEnteredFormat.textFormat.fontFamily.verticalAlignment"}})
 
         # ====================================================================================================================================================================================================
         # ============================================================================================ DROPDOWNS =============================================================================================
