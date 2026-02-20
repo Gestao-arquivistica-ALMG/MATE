@@ -1264,7 +1264,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         ("C1:F4", {"bg": "DARK_RED_1", "h": "CENTER", "v": "MIDDLE", "wrap": "CLIP", "font": "Oregano", "size": 29, "bold": True, "fg": "WHITE"}),
         ("C5", {"font": "Vidaloka", "size": 15, "bold": True, "underline": False, "fg": "WHITE"}),
         ("D5", {"font": "Vidaloka", "size": 12, "bold": True, "fg": "WHITE"}),
-        ("E5:I5", {"font": "Fredericka The Great", "size": 12, "bold": True, "fg": "WHITE"}),
+        ("E5:I5", {"font": "Frederick the Great", "size": 12, "bold": True, "fg": "WHITE"}),
         ("G5:I5", {"font": "Vidaloka", "size": 14, "bold": True, "underline": False, "fg": "WHITE"}),
         ("J5:O5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE"}),
         ("T5:Y5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE"}),
