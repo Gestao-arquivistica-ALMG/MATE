@@ -1551,6 +1551,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "REQUERIMENTOS DE COMISSÃO",
             "LANÇAMENTOS DE TRAMITAÇÃO",
             "CADASTRO DE E-MAILS",
+            "IMPLANTAÇÃO DE TEXTOS",
         )
 
         extra_merge_rows = [
@@ -2083,14 +2084,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             }))
 
         # OVERRIDE: Roboto Mono só no título (C:D)
-
-        TITLE_FMT = {
-            "textFormat": {
-                "fontFamily": "Roboto Mono",
-                "fontSize": 8,
-                "underline": False,
-            }
-        }
+        TITLE_FMT = {"textFormat": {"fontFamily": "Roboto Mono","fontSize": 8,"underline": False,}}
         # títulos do topo (mantém os seus)
         for r in (6, 8):
             reqs.append(req_repeat_cell(sheet_id, f"C{r}:D{r}", TITLE_FMT))
