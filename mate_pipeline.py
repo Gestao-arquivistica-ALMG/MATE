@@ -4065,7 +4065,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
     )
 
     print("Planilha:", url)
-    print("Aba:", aba)
     
     return url, aba
 
