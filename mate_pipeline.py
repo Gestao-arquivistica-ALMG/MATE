@@ -2076,7 +2076,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         for r in (6, 8):
             reqs.append(req_repeat_cell(sheet_id, f"H{r}:H{r}", {
                 "textFormat": {
-                    "fontFamily": "Inconsolata",
+                    "fontFamily": "Roboto Mono",
                     "fontSize": 6,
                     "foregroundColor": rgb_hex_to_api("#cc0000"),
                 }
