@@ -2051,7 +2051,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
             elif c == "DROPDOWN_8":
                 reqs.append(_dv_req(3, r, LISTA_DROPDOWN_8))
-                reqs.append(_cf_req(3, r, bg_hex="#f2e6cf", fg_hex="#865a32", index=0))
 
             elif c == "DROPDOWN_4":
                 reqs.append(_dv_req(2, r, LISTA_DROPDOWN_4))
