@@ -2051,6 +2051,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
             elif c == "DROPDOWN_8":
                 reqs.append(_dv_req(3, r, LISTA_DROPDOWN_8))
+                reqs.append(req_repeat_cell(sheet_id,f"D{r}:D{r}",{"horizontalAlignment": "LEFT"}))
 
             elif c == "DROPDOWN_4":
                 reqs.append(_dv_req(2, r, LISTA_DROPDOWN_4))
