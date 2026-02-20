@@ -1421,7 +1421,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
             ["", ""],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
-            ["-", "-"],
+            ["-", "DROPDOWN_8"],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/#/processos"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
             ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://webmail.almg.gov.br/"; "CADASTRO DE E-MAILS")'],
@@ -1869,6 +1869,20 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
             "2015",
         ]
 
+        LISTA_DROPDOWN_8 = [
+            "-",
+            "APROVADOS",
+            "RECEBIDOS",
+            "RECEBIDOS E APROVADOS",
+            "ADIADOS",
+            "REJEITADOS",
+            "RELATÓRIO",
+            "RELATORIA",
+            "REITERADOS",
+            "RETIRADOS",
+            "PREJUDICADOS",
+        ]
+
         def _dv_req(col0: int, row1: int, values_list: list[str], strict: bool = True):
             return {
                 "setDataValidation": {
@@ -2035,6 +2049,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
                 reqs.append(_dv_req(3, r, LISTA_DROPDOWN_3))
                 reqs.append(_cf_req(3, r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
+
+            if c == "DROPDOWN_8":
+                reqs.append(_dv_req(2, r, LISTA_DROPDOWN_8))
+                reqs.append(_cf_req(2, r, bg_hex="#f2e6cf", fg_hex="#865a32", index=0))
+                reqs.append(_cf_left_of_c_req(r, bg_hex="#f2e6cf", fg_hex="#865a32", index=0))
 
             elif c == "DROPDOWN_4":
                 reqs.append(_dv_req(2, r, LISTA_DROPDOWN_4))
