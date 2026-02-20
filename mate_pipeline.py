@@ -914,8 +914,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
 
     eventos = _eventos_filtrados
 
-    print("EVENTOS:", len(eventos))
-
     # ---- 4) intervalos ----
     total_pag_fisica = len(reader.pages)
     itens = []
@@ -4066,7 +4064,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None):
         col_width_overrides=COL_OVERRIDES
     )
 
-    print("Planilha atualizada:", url)
+    print("Planilha:", url)
     print("Aba:", aba)
     
     return url, aba
