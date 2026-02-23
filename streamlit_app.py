@@ -61,13 +61,13 @@ with st.form("form_mate"):
 
     st.write("")
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="small")
 
     with col1:
-        rodar = st.form_submit_button("🚀 Gerar", use_container_width=True)
+        rodar = st.button("🚀 Gerar", use_container_width=True, type="primary")
 
     with col2:
-        limpar = st.form_submit_button("🧹 Limpar", use_container_width=True)
+        limpar = st.button("🧹 Limpar", use_container_width=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
