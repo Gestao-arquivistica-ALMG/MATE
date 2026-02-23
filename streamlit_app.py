@@ -17,7 +17,7 @@ st.markdown("""
 
 /* Limita largura da página */
 .block-container {
-    max-width: 720px;
+    max-width: 520px;
     padding-top: 3rem;
     padding-bottom: 2rem;
     margin: auto;
@@ -57,21 +57,21 @@ with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     entrada = st.text_input(
-        "Data / Palavra / URL do Diário\n
-        EXEMPLOS:\n
-        - 19122026 ou 191226 ou 19/12/2026\n
-        - hoje, ontem, anteontem\n
-        - terça, quarta, quinta, sexta, sábado\n
-        - URL completa ou um caminho local."
-        print("Digite a data do Diário do Legislativo.")
+        """Data / Palavra / URL do Diário
 
+    EXEMPLOS:
+    - 19122026 ou 191226 ou 19/12/2026
+    - hoje, ontem, anteontem
+    - terça, quarta, quinta, sexta, sábado
+    - URL completa ou caminho local
+    """,
         placeholder="Ex: 12/02/2026 ou https://...",
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="small")
 
     with col1:
-        rodar = st.button("🚀 Gerar planilha", use_container_width=True, type="primary")
+        rodar = st.button("🚀 Gerar", use_container_width=True, type="primary")
 
     with col2:
         limpar = st.button("🧹 Limpar", use_container_width=True)
