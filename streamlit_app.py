@@ -47,6 +47,8 @@ st.markdown('<div class="subtitle">MATE - MATÉRIAS EM TRAMITAÇÃO</div>', unsa
 with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
+with st.form("form_mate"):
+    
     entrada = st.text_input(
         """Informe uma data do Diário do Legislativo
 
