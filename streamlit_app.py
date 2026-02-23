@@ -57,7 +57,14 @@ with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     entrada = st.text_input(
-        "Data / Palavra / URL do Diário",
+        "Data / Palavra / URL do Diário"
+        "EXEMPLOS:"
+        "- 19122026 ou 191226 ou 19/12/2026"
+        "- hoje, ontem, anteontem"
+        "- terça, quarta, quinta, sexta, sábado"
+        "- URL completa ou um caminho local.",
+        print("Digite a data do Diário do Legislativo.")
+
         placeholder="Ex: 12/02/2026 ou https://...",
     )
 
