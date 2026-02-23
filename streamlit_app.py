@@ -2,7 +2,7 @@ import streamlit as st
 from mate_pipeline import main
 
 st.set_page_config(page_title="MATE", layout="centered")
-st.title("MATE — Assembleia Inteligente")
+st.title("MATE.IA")
 
 entrada = st.text_input("Data (DDMMYYYY), palavra (hoje/ontem/sabado), URL ou caminho")
 
