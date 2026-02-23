@@ -140,7 +140,7 @@ if st.session_state["job_error"] is not None:
     st.error("Erro ao processar.")
     st.exception(st.session_state["job_error"])
     
-    with st.status("Processando Diário...", expanded=True) as status:
+    with st.status("Processando Diário do Legislativo...", expanded=True) as status:
         try:
             url, aba = main(
                 entrada_override=entrada.strip(),
