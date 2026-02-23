@@ -58,6 +58,7 @@ with st.container():
 
     entrada = st.text_input(
         """Informe uma data do Diário do Legislativo
+
     - 19122026 ou 191226 ou 19/12/2026
     - hoje, ontem, anteontem
     - terça, quarta, quinta, sexta, sábado
