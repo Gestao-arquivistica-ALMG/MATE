@@ -35,6 +35,8 @@ try:
 except Exception:
     _COLAB = False
 
+import tempfile
+
 CACHE_DIR = "/content/pdfs_cache" if _COLAB else os.path.join(tempfile.gettempdir(), "mate_cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -232,7 +234,7 @@ def _parece_pdf(caminho: str) -> bool:
 def baixar_pdf_por_url(url: str) -> str | None:
     import requests
 
-    local = "/content/tmp_diario.pdf"
+    local = os.path.join(CACHE_DIR, "tmp_diario.pdf")
 
     try:
         r = requests.get(url, timeout=30, allow_redirects=True)
