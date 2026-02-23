@@ -8,7 +8,7 @@ entrada = st.text_input("Digite a data do Diário do Legislativo.")
 
 col1, col2 = st.columns([1, 1])
 with col1:
-    rodar = st.button("OK", type="primary")
+    rodar = st.button("Gerar planilha", type="primary")
 with col2:
     limpar = st.button("Limpar")
 
