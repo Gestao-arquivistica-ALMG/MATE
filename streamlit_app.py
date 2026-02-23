@@ -123,4 +123,4 @@ if rodar:
 
     except Exception as e:
         st.error("Erro ao processar.")
-        st.exception(e) 
+        st.exception(e)
