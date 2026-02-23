@@ -57,7 +57,7 @@ with st.container():
         placeholder="Ex: 19/02/2026 ou https://...",
     )
 
-    st.write("A aba criada será equivalente ao primeiro dia útil subsequente ao DL.")
+    st.write("")
 
     col1, col2 = st.columns(2, gap="small")
 
