@@ -57,7 +57,7 @@ with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     entrada = st.text_input(
-        """Data / Palavra / URL do Diário
+        """Data / Palavra / URL do Diário do Legislativo
 
     EXEMPLOS:
     - 19122026 ou 191226 ou 19/12/2026
