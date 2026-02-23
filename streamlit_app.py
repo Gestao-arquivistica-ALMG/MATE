@@ -47,27 +47,27 @@ st.markdown('<div class="subtitle">MATE - MATÉRIAS EM TRAMITAÇÃO</div>', unsa
 with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
-with st.form("form_mate"):
-    
-    entrada = st.text_input(
-        """Informe uma data do Diário do Legislativo
+    with st.form("form_mate", clear_on_submit=False):
 
-    - 19122026 ou 191226 ou 19/12/2026
-    - hoje, ontem, anteontem
-    - terça, quarta, quinta, sexta, sábado
-    """,
-        placeholder="Ex: 19/02/2026 ou https://...",
-    )
+        entrada = st.text_input(
+            """Informe uma data do Diário do Legislativo
 
-    st.write("")
+- 19122026 ou 191226 ou 19/12/2026
+- hoje, ontem, anteontem
+- terça, quarta, quinta, sexta, sábado
+""",
+            placeholder="Ex: 19/02/2026 ou https://...",
+        )
 
-    col1, col2 = st.columns(2, gap="small")
+        st.write("")
 
-    with col1:
-        rodar = st.button("🚀 Gerar", use_container_width=True, type="primary")
+        col1, col2 = st.columns(2, gap="small")
 
-    with col2:
-        limpar = st.button("🧹 Limpar", use_container_width=True)
+        with col1:
+            rodar = st.form_submit_button("🚀 Gerar", use_container_width=True, type="primary")
+
+        with col2:
+            limpar = st.form_submit_button("🧹 Limpar", use_container_width=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
