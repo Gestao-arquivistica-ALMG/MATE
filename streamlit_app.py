@@ -4,13 +4,13 @@ from mate_pipeline import main
 st.set_page_config(page_title="MATE", layout="centered")
 st.title("MATE.IA")
 
-entrada = st.text_input("Digite a data do Diário do Legislativo.")
+entrada = st.text_input("Digite a data do Diário do Legislativo.", key="entrada")
 
 col1, col2 = st.columns([1, 1])
 with col1:
-    rodar = st.button("Gerar planilha", type="primary")
+    rodar = st.button("Gerar planilha", type="primary", key="rodar")
 with col2:
-    limpar = st.button("Limpar")
+    limpar = st.button("Limpar", key="limpar")
 
 if limpar:
     st.session_state.clear()
