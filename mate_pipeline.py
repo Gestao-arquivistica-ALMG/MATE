@@ -270,6 +270,28 @@ print("Se deixar vazio, você poderá fazer upload.\n")
 def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
     return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
 
+    import time, random
+    import gspread
+    def get_gspread_client(auth_mode: str, sa_info: dict | None = None):
+        if auth_mode == "colab":
+            from google.colab import auth
+            from google.auth import default
+            auth.authenticate_user()
+            creds, _ = default(scopes=["https://www.googleapis.com/auth/spreadsheets"])
+            return gspread.authorize(creds)
+
+        if auth_mode == "service_account":
+            from google.oauth2.service_account import Credentials
+            creds = Credentials.from_service_account_info(
+                sa_info,
+                scopes=["https://www.googleapis.com/auth/spreadsheets"],
+            )
+            return gspread.authorize(creds)
+
+        raise ValueError("auth_mode inválido")
+
+    SHEET_ID = None
+
 def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", sa_info=None):
     # Se veio override, não pede input
     if entrada_override is None:
@@ -284,7 +306,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     else:
         entrada = str(entrada_override).strip()
 
-    gc = get_gspread_client(auth_mode, sa_info)
+    gc = globals()["get_gspread_client"](auth_mode, sa_info)
 
     import re
 
@@ -990,28 +1012,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     # PARTE 1B ===================================================================================================================================================================================
     # ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
     # ====================================================================================================================================================================================================
-
-    import time, random
-    import gspread
-    def get_gspread_client(auth_mode: str, sa_info: dict | None = None):
-        if auth_mode == "colab":
-            from google.colab import auth
-            from google.auth import default
-            auth.authenticate_user()
-            creds, _ = default(scopes=["https://www.googleapis.com/auth/spreadsheets"])
-            return gspread.authorize(creds)
-
-        if auth_mode == "service_account":
-            from google.oauth2.service_account import Credentials
-            creds = Credentials.from_service_account_info(
-                sa_info,
-                scopes=["https://www.googleapis.com/auth/spreadsheets"],
-            )
-            return gspread.authorize(creds)
-
-        raise ValueError("auth_mode inválido")
-
-    SHEET_ID = None
 
     def rgb_hex_to_api(hex_str: str):
         h = hex_str.lstrip("#")
