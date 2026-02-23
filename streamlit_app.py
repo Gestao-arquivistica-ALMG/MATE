@@ -99,7 +99,7 @@ if rodar:
         st.stop()
 
     try:
-        with st.spinner("Processando Diário..."):
+        with st.spinner("Processando Diário do Legislativo..."):
             url, aba = main(
                 entrada_override=entrada_clean,
                 spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
