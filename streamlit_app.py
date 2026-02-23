@@ -63,7 +63,6 @@ with st.container():
     - 19122026 ou 191226 ou 19/12/2026
     - hoje, ontem, anteontem
     - terça, quarta, quinta, sexta, sábado
-    - URL completa ou caminho local
     """,
         placeholder="Ex: 12/02/2026 ou https://...",
     )
