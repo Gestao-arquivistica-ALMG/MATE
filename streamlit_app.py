@@ -11,40 +11,31 @@ st.set_page_config(
 # ================= ESTILO =================
 st.markdown("""
 <style>
-.main {
-    background-color: #f5f7fa;
-}
 
-/* Limita largura da página */
+/* Remove o padding superior padrão do Streamlit */
 .block-container {
-    max-width: 520px;
-    padding-top: 3rem;
+    padding-top: 1rem !important;
     padding-bottom: 2rem;
+    max-width: 600px;
     margin: auto;
 }
 
-/* Título */
+/* Título principal */
 .title {
-    font-size: 36px;
+    font-size: 34px;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 5px;
+    margin-bottom: 0.2rem;  /* reduz espaço abaixo */
 }
 
 /* Subtítulo */
 .subtitle {
     text-align: center;
     color: #6b7280;
-    margin-bottom: 30px;
+    margin-top: 0;
+    margin-bottom: 1rem;  /* reduz espaço antes do input */
 }
 
-/* Card */
-.card {
-    background: white;
-    padding: 2rem;
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
 </style>
 """, unsafe_allow_html=True)
 
