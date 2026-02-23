@@ -50,7 +50,7 @@ st.markdown("""
 
 # ================= HEADER =================
 st.markdown('<div class="title">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Automação do Diário do Legislativo</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">MATE - MATÉRIAS EM TRAMITAÇÃO</div>', unsafe_allow_html=True)
 
 # ================= CARD =================
 with st.container():
