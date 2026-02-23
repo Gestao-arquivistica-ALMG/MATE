@@ -66,6 +66,8 @@ with st.container():
         placeholder="Ex: 12/02/2026 ou https://...",
     )
 
+    st.write("Digite a data do Diário do Legislativo.")
+
     col1, col2 = st.columns(2, gap="small")
 
     with col1:
