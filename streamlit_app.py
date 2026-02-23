@@ -32,7 +32,8 @@ if rodar:
 
         st.success("Concluído.")
         st.write("Aba:", aba)
-        st.write("Data:", diário)
+        st.write("Data:", diario)
+
         st.link_button("Abrir planilha", url)
 
     except Exception as e:
