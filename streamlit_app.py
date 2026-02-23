@@ -95,7 +95,7 @@ if limpar:
     st.rerun()
 
 if rodar:
-    entrada_clean = normalize_entrada(entrada)
+    entrada_clean = (entrada or "").strip()
 
     if not entrada_clean.strip():
         st.warning("Informe uma data, palavra ou URL.")
