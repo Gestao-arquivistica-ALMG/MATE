@@ -104,7 +104,7 @@ if rodar:
     st.info(f"DEBUG: entrada enviada = {entrada_clean!r}")
 
     try:
-        with st.status("Processando Diário...", expanded=True) as status:
+        with st.status("Processando Diário do Legislativo...", expanded=True) as status:
             status.write("Checkpoint 1: antes do main()")
 
             url, aba = main(
