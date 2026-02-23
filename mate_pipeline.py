@@ -215,6 +215,7 @@ def normalizar_data(entrada: str) -> str:
     datetime.strptime(yyyymmdd, "%Y%m%d")
     return yyyymmdd
 
+    print("ENTRADA RECEBIDA:", repr(entrada))
 
 def montar_url_diario(data_in: str) -> str:
     yyyymmdd = normalizar_data(data_in)
