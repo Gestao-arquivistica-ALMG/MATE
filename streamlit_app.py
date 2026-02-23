@@ -49,7 +49,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================= HEADER =================
-st.markdown('<div class="title">MATE.IA</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Automação do Diário do Legislativo</div>', unsafe_allow_html=True)
 
 # ================= CARD =================
