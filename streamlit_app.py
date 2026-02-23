@@ -10,32 +10,42 @@ st.set_page_config(
 
 # ================= ESTILO =================
 st.markdown("""
-    <style>
-    .main {
-        background-color: #f5f7fa;
-    }
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-    }
-    .title {
-        font-size: 42px;
-        font-weight: 700;
-        text-align: center;
-        color: #1f2937;
-    }
-    .subtitle {
-        text-align: center;
-        color: #6b7280;
-        margin-bottom: 40px;
-    }
-    .card {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0px 4px 20px rgba(0,0,0,0.05);
-    }
-    </style>
+<style>
+.main {
+    background-color: #f5f7fa;
+}
+
+/* Limita largura da página */
+.block-container {
+    max-width: 720px;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+    margin: auto;
+}
+
+/* Título */
+.title {
+    font-size: 36px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+/* Subtítulo */
+.subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 30px;
+}
+
+/* Card */
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+</style>
 """, unsafe_allow_html=True)
 
 # ================= HEADER =================
