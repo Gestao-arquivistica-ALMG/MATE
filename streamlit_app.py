@@ -53,7 +53,9 @@ with st.container():
             """Informe uma data do Diário do Legislativo
 
 - 19122026 ou 191226 ou 19/12/2026
+
 - hoje, ontem, anteontem
+
 - terça, quarta, quinta, sexta, sábado
 """,
             placeholder="Ex: 19/02/2026 ou https://...",
