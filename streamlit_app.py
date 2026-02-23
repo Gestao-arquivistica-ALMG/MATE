@@ -52,42 +52,6 @@ div[data-baseweb="input"] > div {
     unsafe_allow_html=True,
 )
 
-# ================= NORMALIZAÇÃO DE ENTRADA =================
-def normalize_entrada(s: str) -> str:
-    s = (s or "").strip()
-
-    # se for URL/caminho, ou palavra (hoje/ontem/etc), não mexe
-    if "://" in s or s.lower() in {"hoje", "ontem", "anteontem", "terça", "terca", "quarta", "quinta", "sexta", "sábado", "sabado"}:
-        return s
-
-    # dd/mm/aaaa  | dd-mm-aaaa | dd.mm.aaaa  -> ddmmaaaa
-    m = re.fullmatch(r"(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})", s)
-    if m:
-        d = int(m.group(1))
-        mo = int(m.group(2))
-        y = int(m.group(3))
-        return f"{d:02d}{mo:02d}{y:04d}"
-
-    # dd/mm/aa -> ddmm20aa  (ex: 21/2/26 -> 21022026)
-    m = re.fullmatch(r"(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2})", s)
-    if m:
-        d = int(m.group(1))
-        mo = int(m.group(2))
-        yy = int(m.group(3))
-        return f"{d:02d}{mo:02d}{2000+yy:04d}"
-
-    # já veio como 6 dígitos (ddmmaa) -> ddmm20aa
-    if re.fullmatch(r"\d{6}", s):
-        d = int(s[0:2]); mo = int(s[2:4]); yy = int(s[4:6])
-        return f"{d:02d}{mo:02d}{2000+yy:04d}"
-
-    # já veio como 8 dígitos (ddmmaaaa)
-    if re.fullmatch(r"\d{8}", s):
-        return s
-
-    return s
-
-
 # ================= HEADER =================
 st.markdown('<div class="title">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">MATE - MATÉRIAS EM TRAMITAÇÃO</div>', unsafe_allow_html=True)
@@ -137,8 +101,12 @@ if rodar:
         st.warning("Informe uma data, palavra ou URL.")
         st.stop()
 
+    st.info(f"DEBUG: entrada enviada = {entrada_clean!r}")
+
     try:
-        with st.spinner("Processando Diário..."):
+        with st.status("Processando Diário...", expanded=True) as status:
+            status.write("Checkpoint 1: antes do main()")
+
             url, aba = main(
                 entrada_override=entrada_clean,
                 spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
@@ -146,10 +114,13 @@ if rodar:
                 sa_info=st.secrets["gcp_service_account"],
             )
 
+            status.write("Checkpoint 2: depois do main()")
+            status.update(label="Concluído ✅", state="complete", expanded=False)
+
         st.success("Concluído.")
         st.write("Aba:", aba)
         st.link_button("Abrir planilha", url, use_container_width=True)
 
     except Exception as e:
         st.error("Erro ao processar.")
-        st.exception(e)
+        st.exception(e) 
