@@ -270,8 +270,8 @@ print("Se deixar vazio, você poderá fazer upload.\n")
 def yyyymmdd_to_ddmmyyyy(yyyymmdd: str) -> str:
     return f"{yyyymmdd[6:8]}/{yyyymmdd[4:6]}/{yyyymmdd[0:4]}"
 
-    import time, random
-    import gspread
+import time, random
+import gspread
 
  def get_gspread_client(auth_mode: str, sa_info: dict | None = None):
   if auth_mode == "colab":
