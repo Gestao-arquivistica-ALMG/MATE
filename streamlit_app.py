@@ -1,28 +1,79 @@
 import streamlit as st
 from mate_pipeline import main
 
-st.set_page_config(page_title="MATE", layout="centered")
-st.title("MATE.IA")
+# ================= CONFIG =================
+st.set_page_config(
+    page_title="MATE",
+    page_icon="🧠",
+    layout="wide",
+)
 
-entrada = st.text_input("Digite a data do Diário do Legislativo.", key="entrada")
+# ================= ESTILO =================
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f5f7fa;
+    }
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .title {
+        font-size: 42px;
+        font-weight: 700;
+        text-align: center;
+        color: #1f2937;
+    }
+    .subtitle {
+        text-align: center;
+        color: #6b7280;
+        margin-bottom: 40px;
+    }
+    .card {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0px 4px 20px rgba(0,0,0,0.05);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-col1, col2 = st.columns([1, 1])
-with col1:
-    rodar = st.button("Gerar planilha", type="primary", key="rodar")
-with col2:
-    limpar = st.button("Limpar", key="limpar")
+# ================= HEADER =================
+st.markdown('<div class="title">MATE.IA</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Automação do Diário do Legislativo</div>', unsafe_allow_html=True)
 
+# ================= CARD =================
+with st.container():
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+
+    entrada = st.text_input(
+        "Data / Palavra / URL do Diário",
+        placeholder="Ex: 12/02/2026 ou https://...",
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        rodar = st.button("🚀 Gerar planilha", use_container_width=True, type="primary")
+
+    with col2:
+        limpar = st.button("🧹 Limpar", use_container_width=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ================= LÓGICA =================
 if limpar:
     st.session_state.clear()
     st.rerun()
 
 if rodar:
+
     if not entrada.strip():
-        st.error("Informe uma data/palavra/URL/caminho.")
+        st.warning("⚠️ Informe uma data, palavra ou URL.")
         st.stop()
 
-    try:
-        with st.spinner("Processando..."):
+    with st.status("Processando Diário...", expanded=True) as status:
+        try:
             url, aba = main(
                 entrada_override=entrada.strip(),
                 spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
@@ -30,11 +81,14 @@ if rodar:
                 sa_info=st.secrets["gcp_service_account"],
             )
 
-        st.success("Concluído.")
-        st.write("Aba:", aba)
+            status.update(label="Concluído com sucesso ✅", state="complete")
 
-        st.link_button("Abrir planilha", url)
+            st.success("Planilha gerada com sucesso.")
+            st.info(f"Aba criada: **{aba}**")
 
-    except Exception as e:
-        st.error("Erro ao processar.")
-        st.exception(e)
+            st.link_button("📊 Abrir planilha", url, use_container_width=True)
+
+        except Exception as e:
+            status.update(label="Erro no processamento ❌", state="error")
+            st.error("Erro ao processar o Diário.")
+            st.exception(e)
