@@ -339,6 +339,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         print(f"Upload OK: {pdf_path}")
 
     elif entrada.lower().startswith(("http://", "https://")):
+        os.makedirs(CACHE_DIR, exist_ok=True)
         pdf_path = baixar_pdf_por_url(entrada)
         if not pdf_path:
             raise SystemExit("DL não existe (URL não retornou PDF).")
