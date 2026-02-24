@@ -129,6 +129,9 @@ button[kind="secondary"]{
 
 # ================= HEADER ALMG =================
 
+if "menu_open" not in st.session_state:
+    st.session_state.menu_open = False
+    
 st.markdown("""
 <div style='
 display:flex;
@@ -141,7 +144,7 @@ padding:10px 18px;
 border-radius:12px;
 '>
 
-<div style='font-size:35px;color:#cc0000'>☰</div>
+<div id="menu_icon" style='font-size:35px;color:#cc0000; position:relative;'>☰</div>
 
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
@@ -163,6 +166,17 @@ target="_blank" style="text-decoration:none;">
 
 </div>
 """,unsafe_allow_html=True)
+
+# --- BOTÃO MENU (logo abaixo do header) ---
+
+col_menu, col_space = st.columns([1,9])
+
+with col_menu:
+    if st.button("☰", key="menu_btn"):
+        st.session_state.menu_open = True
+
+with col_space:
+    st.write("")
 
 # ================= HEADER =================
 st.markdown(
