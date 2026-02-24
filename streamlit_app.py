@@ -80,6 +80,7 @@ div[data-testid="stForm"] li{
 }
 
 /* Linha dos botões: força ficar em uma linha no mobile */
+/* HEADER (primeiro bloco de colunas): não quebra e NÃO colapsa colunas */
 div[data-testid="stHorizontalBlock"]:first-of-type{
   max-width:560px;
   margin:0 auto 20px auto;
@@ -87,8 +88,24 @@ div[data-testid="stHorizontalBlock"]:first-of-type{
   padding:10px 18px;
   border-radius:12px;
 
+  display:flex !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
+  overflow: visible !important;
+}
+
+/* trava as 3 colunas: [☰] [logo] [ícones] */
+div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(1){
+  flex: 0 0 52px !important;     /* largura fixa pro ☰ */
+  max-width: 52px !important;
+}
+div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(2){
+  flex: 1 1 auto !important;     /* logo ocupa o meio */
+  min-width: 160px !important;   /* evita colapsar */
+}
+div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(3){
+  flex: 0 0 90px !important;     /* largura fixa pros ícones */
+  max-width: 90px !important;
 }
 
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
