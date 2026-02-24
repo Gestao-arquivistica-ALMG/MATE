@@ -247,13 +247,6 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-<span style="
-  color:#cc0000;
-  display:flex;
-  width:45px;height:45px;
-  align-items:center;justify-content:center;
-">☰</span>
-</div>
 
 <a href="?menu=toggle" target="_self" style="
   text-decoration:none;
