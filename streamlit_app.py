@@ -86,7 +86,7 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
 /* 🚀 Gerar (PRIMARY) */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
 button[kind="primary"]{
-  min-width:120px !important;   /* ajuste aqui */
+  min-width:240px !important;   /* ajuste aqui */
   padding:12px 18px !important;
 }
 
@@ -159,7 +159,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     col1, col2 = st.columns([3,1], gap="small")
     with col1:
-        rodar = st.form_submit_button("🚀 Gerar Planilha", type="primary")
+        rodar = st.form_submit_button("🚀 Gerar", type="primary")
     with col2:
         limpar = st.form_submit_button("🧹")
 
