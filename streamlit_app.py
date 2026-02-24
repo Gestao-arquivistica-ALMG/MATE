@@ -288,17 +288,17 @@ target="_blank" style="text-decoration:none;">
 """,unsafe_allow_html=True)
 
 # ================= MENU (OVERLAY NO CORPO) =================
-    # overlay clicável (fecha clicando fora) — sem st.button
-    st.markdown("""
-    <a href="?menu=close" target="_self" id="almg_menu_overlay_link" style="
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.25);
-      z-index:9998;
-      display:block;
-    "></a>
-    """, unsafe_allow_html=True)
-    
+# overlay clicável (fecha clicando fora) — sem st.button
+st.markdown("""
+<a href="?menu=close" target="_self" id="almg_menu_overlay_link" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.25);
+  z-index:9998;
+  display:block;
+"></a>
+""", unsafe_allow_html=True)
+
 if st.session_state.get("menu_open", False):
 
     # 2) drawer (menu) por cima do overlay
