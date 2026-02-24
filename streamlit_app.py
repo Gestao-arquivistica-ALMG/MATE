@@ -75,6 +75,14 @@ border-radius:14px;
 padding:14px;
 }
 
+div[data-testid="stFormSubmitButton"] button{
+min-width:140px;
+}
+
+div[data-testid="stFormSubmitButton"]:nth-child(2) button{
+min-width:60px;
+}
+
 .small-gap{margin-top:10px;}
 
 </style>
