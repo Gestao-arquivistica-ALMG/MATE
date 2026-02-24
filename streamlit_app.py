@@ -173,6 +173,30 @@ button#menu_btn{
   z-index: 9999 !important;
 }
 
+/* garante área clicável */
+div[data-testid="stButton"]:has(> button#menu_btn) > button#menu_btn{
+  width: 50px !important;
+  height: 50px !important;
+}
+
+/* ===== POSIÇÃO REAL DO BOTÃO MENU (NOVO) ===== */
+
+button#menu_btn{
+  position: fixed !important;
+  top:118px !important;                /* ajuste vertical */
+  left:calc(50% - 300px + 26px) !important; /* ajuste horizontal */
+  width:52px !important;
+  height:52px !important;
+  padding:0 !important;
+
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  color:transparent !important;
+
+  z-index:9999 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
