@@ -63,12 +63,6 @@ div[data-testid="stTextInput"] > div{
   background:#f3f4f6 !important;
 }
 
-/* Centraliza e limita a largura do input (barra de digitação) */
-div[data-testid="stForm"] div[data-testid="stTextInput"]{
-  max-width:350px !important;
-  margin:0 auto !important;
-}
-
 /* (opcional) garante que o input interno respeite o wrapper */
 div[data-testid="stForm"] div[data-testid="stTextInput"] input{
   width:100% !important;
@@ -76,7 +70,7 @@ div[data-testid="stForm"] div[data-testid="stTextInput"] input{
 
 /* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
 div[data-testid="stForm"] > div{
-  max-width:350px;
+  max-width:300px;
   margin:0 auto;
 }
 
