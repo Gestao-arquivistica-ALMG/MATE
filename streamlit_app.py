@@ -125,7 +125,6 @@ border-radius:12px;
 target="_blank" style="text-decoration:none;">
 🔍
 </a>
-
 <a href="https://intra.almg.gov.br/"
 target="_blank" style="text-decoration:none;">
 👤
