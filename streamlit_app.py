@@ -203,6 +203,28 @@ button#close_menu_btn{
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
+# --- lê ?menu=... e aplica no session_state ---
+menu_cmd = st.query_params.get("menu")
+if menu_cmd:
+    cmd = str(menu_cmd).lower()
+    if cmd == "toggle":
+        st.session_state.menu_open = not st.session_state.menu_open
+    elif cmd == "open":
+        st.session_state.menu_open = True
+    elif cmd == "close":
+        st.session_state.menu_open = False
+
+    # limpa o query param (compatível com versões diferentes)
+    try:
+        st.query_params.clear()
+    except Exception:
+        try:
+            st.experimental_set_query_params()
+        except Exception:
+            pass
+
+    st.rerun()
+    
 st.markdown("""
 <div id="almg_header" style='
 display:flex;
