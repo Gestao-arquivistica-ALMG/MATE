@@ -100,7 +100,6 @@ div[data-testid="stHorizontalBlock"]:last-of-type
 button[kind="secondary"]{
   min-width:40px !important;
   padding:8px 0 !important;
-  align-items:center;
   justify-content: flex-start !important;
 }
 
@@ -188,22 +187,11 @@ button#close_menu_btn{
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([1, 9], gap="small")
-
 with c1:
-    if st.button("☰", key="btn_menu_toggle"):
-        st.session_state.menu_open = not st.session_state.menu_open
-        st.rerun()
-
-with c2:
     st.markdown(
         """
         <div style="display:flex; align-items:center; justify-content:space-between; height:45px;">
-          <a href="https://www.almg.gov.br/" target="_blank">
-            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;">
-          </a>
-
+         <a href="?menu=toggle" target="_self" style="text-decoration:none;"><img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:36px;"></a>
           <div style="display:flex; align-items:center; gap:10px; font-size:26px;">
             <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
             <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
