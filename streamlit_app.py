@@ -140,13 +140,20 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([5,2,5])
+    btn1, btn2 = st.columns([2,1], gap="small")
 
-    with col1:
-        rodar = st.form_submit_button("🚀 Gerar", type="primary")
+    with btn1:
+        rodar = st.form_submit_button(
+            "🚀 Gerar",
+            type="primary",
+            use_container_width=False
+        )
 
-    with col3:
-        limpar = st.form_submit_button("🧹")
+    with btn2:
+        limpar = st.form_submit_button(
+            "🧹",
+            use_container_width=False
+        )
 
 # ================= EXECUÇÃO =================
 if limpar:
