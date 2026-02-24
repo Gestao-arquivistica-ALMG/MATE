@@ -65,7 +65,7 @@ div[data-testid="stTextInput"] > div{
 
 /* Centraliza e limita a largura do input (barra de digitação) */
 div[data-testid="stForm"] div[data-testid="stTextInput"]{
-  max-width:420px !important;
+  max-width:350px !important;
   margin:0 auto !important;
 }
 
