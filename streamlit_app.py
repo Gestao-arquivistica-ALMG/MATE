@@ -40,11 +40,8 @@ font-family:Inter;
 margin-bottom:20px;
 }
 
-.card{
-background:white;
-padding:20px;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,0.25);
+.card *{
+background:white !important;
 }
 
 .stButton>button{
