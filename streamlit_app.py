@@ -130,7 +130,8 @@ style="height:45px;">
 <div style='font-size:30px;color:#cc0000'>
 <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
 target="_blank" style="text-decoration:none;">
-<img src="https://silegis.almg.gov.br/silegismg/assets/logotipo.png">
+<img src="https://silegis.almg.gov.br/silegismg/assets/logotipo.png"
+style="height:5px;">
 </a>
 <a href="https://intra.almg.gov.br/"
 target="_blank" style="text-decoration:none;">
