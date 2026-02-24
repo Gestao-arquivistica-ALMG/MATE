@@ -128,23 +128,11 @@ style="height:45px;">
 </div>
 
 <div style='font-size:30px;color:#cc0000'>
-
-<a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
-target="_blank" style="text-decoration:none;">
-🔍
-</a>
-
-&nbsp;&nbsp;
-
-<a href="https://intra.almg.gov.br/"
-target="_blank" style="text-decoration:none;">
-👤
-</a>
-
+🔍 👤
 </div>
 
 </div>
-""", unsafe_allow_html=True)
+""",unsafe_allow_html=True)
 
 # ================= HEADER =================
 st.markdown(
