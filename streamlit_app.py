@@ -80,11 +80,15 @@ div[data-testid="stForm"] li{
 }
 
 /* Linha dos botões: força ficar em uma linha no mobile */
-div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:300px !important;          /* ajuste manual aqui */
-  margin:12px auto 0 0 !important;     /* ajuste manual aqui */
-  flex-wrap:nowrap !important;         /* NÃO quebra */
-  gap:10px !important;                 /* ajuste manual aqui */
+div[data-testid="stHorizontalBlock"]:first-of-type{
+  max-width:560px;
+  margin:0 auto 20px auto;
+  background:white;
+  padding:10px 18px;
+  border-radius:12px;
+
+  flex-wrap: nowrap !important;
+  align-items: center !important;
 }
 
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
