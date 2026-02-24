@@ -247,12 +247,7 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-<a href="#" onclick="
-  const url = new URL(window.location.href);
-  url.searchParams.set('menu','toggle');
-  window.location.search = url.search;
-  return false;
-" style="
+<a href="?menu=toggle" style="
   text-decoration:none;
   color:#cc0000;
   display:flex;
