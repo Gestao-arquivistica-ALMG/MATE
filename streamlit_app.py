@@ -89,7 +89,7 @@ div[data-testid="stFormSubmitButton"] button{
   font-weight:700 !important;
   border-radius:14px !important;
   padding:12px 14px !important;
-  min-width:140px !important;      /* Gerar */
+  min-width:20px !important;      /* Gerar */
 }
 
 /* Segundo botão (🧹) menor */
