@@ -80,7 +80,7 @@ div[data-testid="stForm"] li{
 }
 
 /* Linha dos botões: força ficar em uma linha no mobile */
-/* HEADER (primeiro bloco de colunas): não quebra e NÃO colapsa colunas */
+/* HEADER: 1 linha no mobile, sem vazar */
 div[data-testid="stHorizontalBlock"]:first-of-type{
   max-width:560px;
   margin:0 auto 20px auto;
@@ -91,21 +91,57 @@ div[data-testid="stHorizontalBlock"]:first-of-type{
   display:flex !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  overflow: visible !important;
+  overflow: hidden !important;     /* <- impede vazar */
+  gap: 10px !important;
 }
 
-/* trava as 3 colunas: [☰] [logo] [ícones] */
+/* permite encolher sem sumir */
+div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]{
+  min-width: 0 !important;         /* <- essencial no mobile */
+}
+
+/* ☰ */
 div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(1){
-  flex: 0 0 52px !important;     /* largura fixa pro ☰ */
+  flex: 0 0 52px !important;
   max-width: 52px !important;
 }
+
+/* LOGO (pode encolher) */
 div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(2){
-  flex: 1 1 auto !important;     /* logo ocupa o meio */
-  min-width: 160px !important;   /* evita colapsar */
+  flex: 1 1 0 !important;          /* <- encolhe/expande */
+  overflow: hidden !important;
 }
+
+/* ÍCONES (fixo, mas menor) */
 div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(3){
-  flex: 0 0 90px !important;     /* largura fixa pros ícones */
-  max-width: 90px !important;
+  flex: 0 0 84px !important;
+  max-width: 84px !important;
+}
+
+/* garante que a imagem do logo não estoura */
+div[data-testid="stHorizontalBlock"]:first-of-type img{
+  max-width: 100% !important;
+  height: 45px !important;
+  object-fit: contain !important;
+}
+
+/* mobile: reduz tudo um pouco */
+@media (max-width: 520px){
+  div[data-testid="stHorizontalBlock"]:first-of-type{
+    padding:8px 12px !important;
+    gap: 8px !important;
+  }
+  div[data-testid="stHorizontalBlock"]:first-of-type img{
+    height: 34px !important;
+  }
+  div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(1){
+    flex: 0 0 46px !important;
+    max-width: 46px !important;
+  }
+  div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(3){
+    flex: 0 0 72px !important;
+    max-width: 72px !important;
+  }
 }
 
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
@@ -298,7 +334,7 @@ if st.session_state.get("menu_open", False):
         <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
       </div>
 
-      <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
+      <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
         <a href="https://www.almg.gov.br/a-assembleia/" target="_blank" style="text-decoration:none; color:#111;">A Assembleia</a>
         <a href="https://www.almg.gov.br/atividade-parlamentar/" target="_blank" style="text-decoration:none; color:#111;">Atividade parlamentar</a>
         <a href="https://www.almg.gov.br/participacao/" target="_blank" style="text-decoration:none; color:#111;">Participação</a>
