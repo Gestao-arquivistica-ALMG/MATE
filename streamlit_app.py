@@ -204,7 +204,7 @@ with c1:
     st.markdown(
         """
         <div style="
-            margin-top:-42px;
+            margin-top:-32px;
             display:flex;
             align-items:center;
             justify-content:flex-start;
