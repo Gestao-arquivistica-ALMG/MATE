@@ -132,7 +132,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([2,1,3])
+    col1, col2, col3 = st.columns([3,1,2])
 
     with col1:
         rodar = st.form_submit_button(
