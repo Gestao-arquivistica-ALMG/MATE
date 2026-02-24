@@ -79,7 +79,7 @@ div[data-testid="stForm"] li{
 
 /* Linha dos botões: só a ÚLTIMA linha de colunas dentro do form */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:260px !important;      /* largura do grupo [Gerar][🧹] */
+  max-width:200px !important;      /* largura do grupo [Gerar][🧹] */
   margin:12px 0 0 auto !important; /* centraliza o grupo */
 }
 
@@ -95,7 +95,7 @@ div[data-testid="stFormSubmitButton"] button{
 /* Segundo botão (🧹) menor */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
 div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
-  min-width:60px !important;
+  min-width:20px !important;
   padding:12px 0 !important;
 }
 
