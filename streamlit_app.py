@@ -264,6 +264,26 @@ if params.get("menu") == "open":
 elif params.get("menu") == "close":
     st.session_state.menu_open = False
 
+# ================= MENU (SIDEBAR) =================
+if st.session_state.get("menu_open", False):
+    with st.sidebar:
+        st.markdown("### Navegar em:")
+        st.markdown("---")
+
+        st.markdown("[A Assembleia](https://www.almg.gov.br/a-assembleia/)")
+        st.markdown("[Atividade parlamentar](https://www.almg.gov.br/atividade-parlamentar/)")
+        st.markdown("[Participação](https://www.almg.gov.br/participacao/)")
+        st.markdown("[Comunicação](https://www.almg.gov.br/comunicacao/)")
+        st.markdown("[Serviços](https://www.almg.gov.br/servicos/)")
+        st.markdown("[Transparência](https://www.almg.gov.br/transparencia/)")
+
+        st.markdown("---")
+
+        if st.button("✖ Fechar", use_container_width=True):
+            st.session_state.menu_open = False
+            st.query_params.clear()
+            st.rerun()
+            
 # ================= HEADER =================
 st.markdown(
     '<div class="title" style="font-size:24px; font-weight:1000; font-height:100;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
