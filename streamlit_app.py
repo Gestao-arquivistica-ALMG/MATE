@@ -199,6 +199,20 @@ button#menu_btn{
   z-index:9999 !important;
 }
 
+#almg_menu_drawer_hidden{
+position: fixed;
+left: 0;
+top: 0;
+bottom: 0;
+width:260px;
+background:white;
+padding:20px;
+z-index:9999;
+box-shadow:3px 0 12px rgba(0,0,0,0.2);
+transform:translateX(-100%);
+transition:transform 0.25s ease;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -226,10 +240,11 @@ height:45px;
 display:flex;
 align-items:center;
 justify-content:center;
+font-size:35px;
+line-height:1;
+color:#cc0000;
 '>
-<a href="?menu=open" target="_self" style="text-decoration:none; color:#cc0000; font-size:35px; line-height:1;">
 ☰
-</a>
 </div>
 
 <div>
@@ -252,12 +267,6 @@ target="_blank" style="text-decoration:none;">
 
 </div>
 """,unsafe_allow_html=True)
-
-params = st.query_params
-if params.get("menu") == "open":
-    st.session_state.menu_open = True
-elif params.get("menu") == "close":
-    st.session_state.menu_open = False
 
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
