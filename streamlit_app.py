@@ -119,36 +119,23 @@ button[kind="secondary"]{
 
 .small-gap{ margin-top:10px; }
 
-/* --- Overlay do botão menu (SEM :has) --- */
+/* ===== BOTÃO MENU OVERLAY (ÚNICO E LIMPO) ===== */
 
-/* tira a cara de botão */
-div[data-testid="stButton"] > button{
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-}
-
-/* o menu_btn vira um "overlay" fixo em cima do header */
-div[data-testid="stButton"] > button#menu_btn{
-  position: absolute !important;
-  top:48px !important;   /* sobe/desce */
-  left:calc(50% - 300px + 22px) !important; /* esquerda/direita */
-  width: 45px !important;
-  height: 45px !important;
+/* não mexe em outros botões */
+button#menu_btn{
+  position: fixed !important;
+  top: 118px !important;                    /* ajuste fino */
+  left: calc(50% - 300px + 26px) !important;/* ajuste fino */
+  width: 52px !important;
+  height: 52px !important;
   padding: 0 !important;
-  font-size: 0 !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  color: transparent !important; /* some o texto "menu" */
   z-index: 9999 !important;
-}
-
-/* ===== Overlay do botão menu em cima do ☰ do header ===== */
-
-/* esconde visualmente o botão "menu" */
-div[data-testid="stButton"] > button#menu_btn{
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-  color:transparent !important;    /* some o texto 'menu' */
-  padding:0 !important;
 }
 
 /* ===== MENU OVERLAY (seguro): move SOMENTE o botão #menu_btn ===== */
@@ -173,12 +160,6 @@ button#menu_btn{
 
   color: transparent !important; /* some o texto "menu" */
   z-index: 9999 !important;
-}
-
-/* garante área clicável */
-div[data-testid="stButton"]:has(> button#menu_btn) > button#menu_btn{
-  width: 50px !important;
-  height: 50px !important;
 }
 
 /* ===== POSIÇÃO REAL DO BOTÃO MENU (NOVO) ===== */
@@ -267,6 +248,10 @@ target="_blank" style="text-decoration:none;">
 
 </div>
 """,unsafe_allow_html=True)
+
+# --- BOTÃO MENU REAL (clica e abre, sem query params) ---
+if st.button("menu", key="menu_btn"):
+    st.session_state.menu_open = True
 
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
