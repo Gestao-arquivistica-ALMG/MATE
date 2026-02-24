@@ -92,13 +92,6 @@ div[data-testid="stFormSubmitButton"] button{
   min-width:20px !important;      /* Gerar */
 }
 
-/* Primeiro botão (🚀 Gerar) */
-div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
-div[data-testid="stFormSubmitButton"]:nth-of-type(1) button{
-  min-width:110px !important;
-  padding:12px 18px !important;
-}
-
 /* Segundo botão (🧹) menor */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
 div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
