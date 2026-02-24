@@ -96,7 +96,7 @@ div[data-testid="stFormSubmitButton"] button{
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
 div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
   min-width:20px !important;
-  padding:12px 0 !important;
+  padding:8px 0 !important;
 }
 
 .small-gap{ margin-top:10px; }
