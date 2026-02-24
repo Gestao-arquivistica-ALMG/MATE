@@ -218,9 +218,6 @@ border-radius:12px;
 position:relative;
 '>
 
-<div id="menu_icon" style='font-size:35px;color:#cc0000'>
-</div>
-
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
