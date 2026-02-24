@@ -166,7 +166,9 @@ border-radius:12px;
 position:relative;
 '>
 
-<div id="menu_icon" style='font-size:35px;color:#cc0000'>☰</div>
+<div id="menu_icon" style='font-size:35px;color:#cc0000'>
+<a href="?menu=open" style="text-decoration:none;color:#cc0000;">☰</a>
+</div>
 
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
