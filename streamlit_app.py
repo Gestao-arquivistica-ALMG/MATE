@@ -175,7 +175,7 @@ if rodar:
         st.warning("Informe uma data, palavra ou URL.")
         st.stop()
 
-    st.info(f"DEBUG: entrada enviada = {entrada_clean!r}")
+    st.info(f"DATA = {entrada_clean!r}")
 
     try:
         with st.status("Processando Diário do Legislativo...", expanded=True) as status:
@@ -191,7 +191,7 @@ if rodar:
             status.write("Checkpoint 2: depois do main()")
             status.update(label="Concluído ✅", state="complete", expanded=False)
 
-        st.success("Concluído.")
+        st.success("Aba:", aba)
         st.write("Aba:", aba)
         st.link_button("Abrir planilha", url, use_container_width=True)
 
