@@ -79,10 +79,12 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
-/* Linha dos botões */
+/* Linha dos botões: força ficar em uma linha no mobile */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:300px !important;
-  margin:12px auto 0 0 !important;
+  max-width:300px !important;          /* ajuste manual aqui */
+  margin:12px auto 0 0 !important;     /* ajuste manual aqui */
+  flex-wrap:nowrap !important;         /* NÃO quebra */
+  gap:10px !important;                 /* ajuste manual aqui */
 }
 
 /* 🚀 Gerar (PRIMARY) */
