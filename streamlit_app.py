@@ -188,15 +188,11 @@ if rodar:
 
         set_prog(5,  "Inicializando")
         set_prog(15, "Validando entrada")
+        set_prog(25, "Iniciando processamento")
 
-        set_prog(25, "Autenticando e preparando planilha")
-        # (a autenticação real acontece dentro do main, mas pelo menos dá feedback)
+        # Durante o main: não “congela” no mesmo texto
+        status_text.write("Processando Diário do Legislativo… (pode levar alguns segundos)")
 
-        set_prog(40, "Baixando Diário / carregando PDF")
-        set_prog(60, "Extraindo títulos e itens")
-        set_prog(80, "Gerando aba e aplicando formatação")
-
-        # Etapa “pesada” real
         url, aba = main(
             entrada_override=entrada_clean,
             spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
@@ -204,7 +200,7 @@ if rodar:
             sa_info=st.secrets["gcp_service_account"],
         )
 
-        set_prog(95, "Finalizando")
+        set_prog(90, "Finalizando")
         set_prog(100, "Concluído")
 
         st.success("")
