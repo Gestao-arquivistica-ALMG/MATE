@@ -118,7 +118,7 @@ padding:10px 18px;
 border-radius:12px;
 '>
 
-<div style='font-size:30px;color:#cc0000'>☰</div>
+<div style='font-size:35px;color:#cc0000'>☰</div>
 
 <div>
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
