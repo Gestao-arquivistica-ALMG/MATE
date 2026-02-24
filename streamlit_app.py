@@ -68,6 +68,18 @@ div[data-testid="stFormSubmitButton"] button{
 min-width:140px;
 }
 
+div[data-testid="stHorizontalBlock"]{
+justify-content:center;
+}
+
+div[data-testid="stFormSubmitButton"] button{
+min-width:120px;
+}
+
+div[data-testid="stFormSubmitButton"]:nth-child(2) button{
+min-width:60px;
+}
+
 .stButton>button{
 font-family:Inter;
 font-weight:700;
