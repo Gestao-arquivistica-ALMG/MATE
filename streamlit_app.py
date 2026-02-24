@@ -224,7 +224,7 @@ if menu_cmd:
             pass
 
     st.rerun()
-    
+
 st.markdown("""
 <div id="almg_header" style='
 display:flex;
@@ -279,11 +279,6 @@ target="_blank" style="text-decoration:none;">
 
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
-
-    # overlay invisível (clica fora e fecha)
-    if st.button(" ", key="close_menu_btn"):
-        st.session_state.menu_open = False
-        st.rerun()
 
     # 2) drawer (menu) por cima do overlay
     st.markdown("""
