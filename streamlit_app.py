@@ -182,26 +182,19 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
-        status_text.write("Processando... 0%")
+        status_text.write("Iniciando... 0%")
+        progress_bar.progress(10)
 
-        for i in range(100):
-            progress_bar.progress(i + 1)
-            status_text.write(f"Processando... {i+1}%")
-            time.sleep(0.02)  # simulação
+        # baixar PDF
+        progress_bar.progress(30)
 
-        url, aba = main(
-            entrada_override=entrada_clean,
-            spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
-            auth_mode="service_account",
-            sa_info=st.secrets["gcp_service_account"],
-        )
+        # processar
+        progress_bar.progress(60)
+
+        url, aba = main(...)
 
         progress_bar.progress(100)
-        status_text.write("Concluído 100%")
-
-        st.success("")
-        st.write("Aba:", aba)
-        st.link_button("Abrir planilha", url, use_container_width=True)
+        status_text.write("Concluído")
 
     except Exception as e:
         st.error("Erro ao processar.")
