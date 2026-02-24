@@ -86,21 +86,6 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   gap:8px !important;
 }
 
-@media (max-width: 520px){
-  /* força o header (primeiro bloco de colunas) ficar numa linha */
-  div[data-testid="stHorizontalBlock"]:first-of-type{
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    gap: 6px !important;
-  }
-  /* evita o “min-width” padrão estourar */
-  div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]{
-    min-width: 0 !important;
-  }
-}
-
 /* 🚀 Gerar (PRIMARY) */
   div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
   button[kind="primary"]{
@@ -203,7 +188,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([1, 6, 2], gap="small")
+c1, c2, c3 = st.columns([1, 5, 2], gap="small")
 
 with c1:
     # botão real (sem recarregar por navegação)
