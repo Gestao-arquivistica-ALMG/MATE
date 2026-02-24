@@ -188,7 +188,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([1, 5, 2], gap="small")
+c1, c2, c3 = st.columns([1, 3, 2], gap="small")
 
 with c1:
     # botão real (sem recarregar por navegação)
