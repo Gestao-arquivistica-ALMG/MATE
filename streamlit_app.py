@@ -80,6 +80,12 @@ div[data-testid="stFormSubmitButton"]:nth-child(2) button{
 min-width:60px;
 }
 
+/* Linha dos botões (o último stHorizontalBlock dentro do form) */
+div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
+  max-width: 260px !important;     /* largura do “grupo” [Gerar][🧹] */
+  margin: 12px auto 0 auto !important; /* centraliza o grupo */
+}
+
 .stButton>button{
 font-family:Inter;
 font-weight:700;
@@ -152,20 +158,11 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    btn1, btn2 = st.columns([2,1], gap="small")
-
-    with btn1:
-        rodar = st.form_submit_button(
-            "🚀 Gerar",
-            type="primary",
-            use_container_width=False
-        )
-
-    with btn2:
-        limpar = st.form_submit_button(
-            "🧹",
-            use_container_width=False
-        )
+    col1, col2 = st.columns([3,1], gap="small")
+    with col1:
+        rodar = st.form_submit_button("🚀 Gerar", type="primary")
+    with col2:
+        limpar = st.form_submit_button("🧹")
 
 # ================= EXECUÇÃO =================
 if limpar:
