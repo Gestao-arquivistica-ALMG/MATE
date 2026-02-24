@@ -187,8 +187,38 @@ button#close_menu_btn{
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# container do header (1 linha flex)
+# botão real que alterna o menu (não pode estar "dentro" do HTML)
+toggle = st.button("", key="btn_menu_toggle")
+if toggle:
+    st.session_state.menu_open = not st.session_state.menu_open
+    st.rerun()
+
+# header visual (1 linha flex)
 st.markdown("""
+<style>
+/* esconde o "quadrado" do botão e tira ele do fluxo, mas SÓ o btn_menu_toggle */
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"][aria-label="btn_menu_toggle"]),
+div[data-testid="stButton"]:has(button[data-testid="baseButton-primary"][aria-label="btn_menu_toggle"]),
+div[data-testid="stButton"]:has(button[kind][aria-label="btn_menu_toggle"]){
+  position:absolute !important;
+  width:220px !important;
+  height:40px !important;
+  margin:0 !important;
+  padding:0 !important;
+  z-index:99999 !important;
+}
+
+/* deixa o botão invisível e clicável */
+button[aria-label="btn_menu_toggle"]{
+  width:220px !important;
+  height:40px !important;
+  opacity:0 !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}
+</style>
+
 <div id="almg_header1" style="
   display:flex;
   align-items:center;
@@ -199,9 +229,9 @@ st.markdown("""
   padding:10px 18px;
   border-radius:12px;
   gap:10px;
+  position:relative;
 ">
-  <div id="almg_logo_slot" style="display:flex; align-items:center; gap:10px;">
-    <div id="almg_logo_click_area" style="width:220px; height:40px;"></div>
+  <div style="display:flex; align-items:center; gap:10px;">
     <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:38px;">
   </div>
 
