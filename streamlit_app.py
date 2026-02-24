@@ -21,10 +21,12 @@ background:#b30000;
 
 .block-container{
 max-width:720px;
-margin:30px auto;
+
+/* ↓ aumenta a borda vermelha superior */
+margin:60px auto 30px auto;
+
 padding:22px 22px 26px 22px;
 
-/* >>> container branco que “fecha tudo” <<< */
 background:white;
 border-radius:18px;
 box-shadow:0 10px 30px rgba(0,0,0,0.25);
