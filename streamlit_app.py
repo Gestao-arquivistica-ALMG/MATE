@@ -218,8 +218,22 @@ border-radius:12px;
 position:relative;
 '>
 
-<div id="menu_icon" style='font-size:35px;color:#cc0000'>
-  <a href="?menu=open" style="text-decoration:none; color:#cc0000;">☰</a>
+<div id="menu_icon" style='
+font-size:35px;
+color:#cc0000;
+display:flex;
+align-items:center;
+height:45px;
+'>
+  <a href="?menu=open" style="
+  text-decoration:none;
+  color:#cc0000;
+  display:flex;
+  align-items:center;
+  height:45px;
+  ">
+  ☰
+  </a>
 </div>
 
 <div>
