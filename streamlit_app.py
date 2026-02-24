@@ -63,11 +63,6 @@ div[data-testid="stTextInput"] > div{
   background:#f3f4f6 !important;
 }
 
-/* (opcional) garante que o input interno respeite o wrapper */
-div[data-testid="stForm"] div[data-testid="stTextInput"] input{
-  width:100% !important;
-}
-
 /* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
 div[data-testid="stForm"] > div{
   max-width:340px;
