@@ -67,33 +67,47 @@ padding:14px;
 </style>
 """,unsafe_allow_html=True)
 
-# ================= HEADER ALMG =================
+    # ================= HEADER ALMG =================
 
-st.markdown("""
-<div style='
-display:flex;
-align-items:center;
-justify-content:space-between;
-margin-bottom:20px;
-'>
+    st.markdown("""
+    <div style='
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-<div style='font-size:28px;color:white'>☰</div>
+    background:white;
+    padding:10px 20px;
 
-<div>
-<img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:36px; filter: brightness(0) invert(1);">
-</div>
+    border-bottom:3px solid #cc0000;
+    margin-bottom:35px;
+    '>
 
-<div style='font-size:22px;color:white'>
-🔍 👤
-</div>
+    <div style='font-size:26px;color:#cc0000'>
+    ☰
+    </div>
 
-</div>
-""",unsafe_allow_html=True)
+    <div>
+    <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+    style="height:40px;">
+    </div>
+
+    <div style='font-size:22px;color:#cc0000'>
+    🔍 👤
+    </div>
+
+    </div>
+    """,unsafe_allow_html=True)
 
 # ================= HEADER =================
-st.markdown('<div class="title">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">MATE - MATÉRIAS EM TRAMITAÇÃO</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="title" style="font-size:64px;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="subtitle" style="font-size:18px;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
+    unsafe_allow_html=True
+)
 
 # ================= CARD =================
 with st.container():
