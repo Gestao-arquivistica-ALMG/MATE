@@ -183,79 +183,50 @@ button#close_menu_btn{
 </style>
 """, unsafe_allow_html=True)
 
-# ================= HEADER ALMG (1 coluna) =================
+# ================= HEADER ALMG =================
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# botão real que alterna o menu (não pode estar "dentro" do HTML)
-toggle = st.button("", key="btn_menu_toggle")
-if toggle:
-    st.session_state.menu_open = not st.session_state.menu_open
-    st.rerun()
+# "cabeçalho" feito com layout Streamlit (sem HTML clicável)
+c1, c2 = st.columns([2, 8], gap="small")
 
-# header visual (1 linha flex)
-st.markdown("""
-<style>
-/* esconde o "quadrado" do botão e tira ele do fluxo, mas SÓ o btn_menu_toggle */
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"][aria-label="btn_menu_toggle"]),
-div[data-testid="stButton"]:has(button[data-testid="baseButton-primary"][aria-label="btn_menu_toggle"]),
-div[data-testid="stButton"]:has(button[kind][aria-label="btn_menu_toggle"]){
-  position:absolute !important;
-  width:220px !important;
-  height:40px !important;
-  margin:0 !important;
-  padding:0 !important;
-  z-index:99999 !important;
-}
+with c1:
+    # LOGO vira o botão do menu
+    if st.button(
+        "",
+        key="btn_menu_toggle",
+        use_container_width=True,
+    ):
+        st.session_state.menu_open = not st.session_state.menu_open
+        st.rerun()
 
-/* deixa o botão invisível e clicável */
-button[aria-label="btn_menu_toggle"]{
-  width:220px !important;
-  height:40px !important;
-  opacity:0 !important;
-  border:none !important;
-  box-shadow:none !important;
-  padding:0 !important;
-}
-</style>
+    # desenha o logo por cima do botão
+    st.markdown(
+        """
+        <div style="
+            margin-top:-70px;
+            display:flex;
+            align-items:center;
+            justify-content:flex-start;
+            pointer-events:none;
+        ">
+          <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+               style="height:45px;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-<div id="almg_header1" style="
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin:0 auto 20px auto;
-  background:white;
-  max-width:560px;
-  padding:10px 18px;
-  border-radius:12px;
-  gap:10px;
-  position:relative;
-">
-  <div style="display:flex; align-items:center; gap:10px;">
-    <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:38px;">
-  </div>
-
-  <div style="display:flex; align-items:center; gap:12px; font-size:24px;">
-    <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
-    <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# botão invisível (logo = clique)
-if st.button("", key="btn_menu_toggle"):
-    st.session_state.menu_open = not st.session_state.menu_open
-    st.rerun()
-
-# CSS: joga o botão por cima da área do logo e esconde visualmente
-st.markdown("""
-<style>
-button[data-testid="baseButton-secondary"], button[data-testid="baseButton-primary"]{
-  box-shadow:none !important;
-}
-div[data-testid="stButton"]:has(#btn_menu_toggle) { display:none; }
-</style>
-""", unsafe_allow_html=True)
+with c2:
+    st.markdown(
+        """
+        <div style="display:flex; align-items:center; justify-content:flex-end; height:45px; gap:12px; font-size:24px;">
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
+          <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # style do "container" do header (1 caixa branca como antes)
 st.markdown("""
