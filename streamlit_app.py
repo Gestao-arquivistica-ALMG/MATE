@@ -152,46 +152,53 @@ div[data-testid="stButton"] > button#menu_btn{
 
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
-
-# Wrapper com o mesmo visual do seu header (branco, largura 560, padding, radius)
+    
 st.markdown("""
 <div id="almg_header" style='
+display:flex;
+align-items:center;
+justify-content:space-between;
 margin:0 auto 20px auto;
 background:white;
 max-width:560px;
 padding:10px 18px;
 border-radius:12px;
+position:relative;
 '>
+
+<div id="menu_icon" style='font-size:35px;color:#cc0000'>☰</div>
+
+<div>
+<a href="https://www.almg.gov.br/" target="_blank">
+<img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+style="height:45px;">
+</a>
 </div>
-""", unsafe_allow_html=True)
 
-# Agora o conteúdo REAL do header em colunas (fica no lugar certo sempre)
-col_left, col_mid, col_right = st.columns([1.2, 6, 1.6])
+<div style='font-size:30px;color:#cc0000'>
+<a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
+target="_blank" style="text-decoration:none;">
+🔍
+</a>
+<a href="https://intra.almg.gov.br/"
+target="_blank" style="text-decoration:none;">
+👤
+</a>
+</div>
 
-with col_left:
-    # ☰ vira botão de verdade (clicável)
+</div>
+""",unsafe_allow_html=True)
+
+# --- BOTÃO MENU (logo abaixo do header) ---
+
+col_menu, col_space = st.columns([1,9])
+
+with col_menu:
     if st.button("☰", key="menu_btn"):
-        st.session_state.menu_open = not st.session_state.menu_open
+        st.session_state.menu_open = True
 
-with col_mid:
-    st.markdown("""
-    <div style="display:flex; justify-content:center; align-items:center; height:48px;">
-      <a href="https://www.almg.gov.br/" target="_blank">
-        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-             style="height:45px;">
-      </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_right:
-    st.markdown("""
-    <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center; height:48px; font-size:30px;">
-      <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
-         target="_blank" style="text-decoration:none;color:#cc0000;">🔍</a>
-      <a href="https://intra.almg.gov.br/"
-         target="_blank" style="text-decoration:none;color:#cc0000;">👤</a>
-    </div>
-    """, unsafe_allow_html=True)
+with col_space:
+    st.write("")
 
 # ================= HEADER =================
 st.markdown(
