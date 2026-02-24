@@ -187,39 +187,30 @@ button#close_menu_btn{
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# botão real do menu (fica acima do header, visualmente não importa)
-if st.button("☰", key="btn_menu_toggle"):
-    st.session_state.menu_open = not st.session_state.menu_open
-    st.rerun()
+# "cabeçalho" feito com layout Streamlit (sem HTML clicável)
+c1, c2 = st.columns([1, 9], gap="small")
 
-st.markdown("""
-<div style="
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin:0 auto 20px auto;
-  background:white;
-  max-width:560px;
-  padding:10px 18px;
-  border-radius:12px;
-  gap:10px;
-">
+with c1:
+    if st.button("☰", key="btn_menu_toggle"):
+        st.session_state.menu_open = not st.session_state.menu_open
+        st.rerun()
 
-  <div style="width:45px; height:45px; display:flex; align-items:center; justify-content:center;"></div>
+with c2:
+    st.markdown(
+        """
+        <div style="display:flex; align-items:center; justify-content:space-between; height:45px;">
+          <a href="https://www.almg.gov.br/" target="_blank">
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;">
+          </a>
 
-  <div style="display:flex; align-items:center; justify-content:center; flex:1;">
-    <a href="https://www.almg.gov.br/" target="_blank">
-      <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:36px;">
-    </a>
-  </div>
-
-  <div style="display:flex; align-items:center; gap:10px; font-size:24px;">
-    <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
-    <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
-  </div>
-
-</div>
-""", unsafe_allow_html=True)
+          <div style="display:flex; align-items:center; gap:10px; font-size:26px;">
+            <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
+            <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # style do "container" do header (1 caixa branca como antes)
 st.markdown("""
