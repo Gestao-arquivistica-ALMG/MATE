@@ -188,17 +188,41 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([1, 9], gap="small")
+c1, c2 = st.columns([2, 8], gap="small")
 
 with c1:
+    # LOGO vira o botão do menu
+    if st.button(
+        "",
+        key="btn_menu_toggle",
+        use_container_width=True,
+    ):
+        st.session_state.menu_open = not st.session_state.menu_open
+        st.rerun()
+
+    # desenha o logo por cima do botão
     st.markdown(
         """
-        <div style="display:flex; align-items:center; justify-content:space-between; height:45px;">
-         <a href="?menu=toggle" target="_self" style="text-decoration:none;"><img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:36px;"></a>
-          <div style="display:flex; align-items:center; gap:10px; font-size:26px;">
-            <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
-            <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
-          </div>
+        <div style="
+            margin-top:-42px;
+            display:flex;
+            align-items:center;
+            justify-content:flex-start;
+            pointer-events:none;
+        ">
+          <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+               style="height:38px;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c2:
+    st.markdown(
+        """
+        <div style="display:flex; align-items:center; justify-content:flex-end; height:45px; gap:12px; font-size:24px;">
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
+          <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
         </div>
         """,
         unsafe_allow_html=True,
