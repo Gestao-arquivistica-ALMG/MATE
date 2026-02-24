@@ -61,6 +61,10 @@ div[data-testid="stTextInput"] > div{
 background:white !important;
 }
 
+div[data-testid="stFormSubmitButton"] button{
+min-width:140px;
+}
+
 .stButton>button{
 font-family:Inter;
 font-weight:700;
