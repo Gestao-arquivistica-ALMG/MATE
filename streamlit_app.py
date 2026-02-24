@@ -201,7 +201,7 @@ with c2:
         """
         <div style="display:flex; align-items:center; justify-content:center; height:45px;">
           <a href="https://www.almg.gov.br/" target="_blank">
-            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;">
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:30px;">
           </a>
         </div>
         """,
@@ -211,7 +211,7 @@ with c2:
 with c3:
     st.markdown(
         """
-        <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; height:45px; font-size:26px;">
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; height:45px; font-size:20px;">
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
           <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
         </div>
@@ -232,7 +232,7 @@ div[data-testid="stHorizontalBlock"]{
 }
 button[kind="secondary"][data-testid="baseButton-secondary"]{
   color:#cc0000 !important;
-  font-size:26px !important;
+  font-size:20px !important;
   width:45px !important;
   height:45px !important;
   padding:0 !important;
