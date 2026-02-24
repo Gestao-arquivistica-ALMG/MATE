@@ -87,13 +87,6 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   gap:10px !important;                 /* ajuste manual aqui */
 }
 
-/* 🚀 Gerar (PRIMARY) */
-div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
-button[kind="primary"]{
-  min-width:240px !important;   /* ajuste aqui */
-  padding:12px 18px !important;
-}
-
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   max-width:320px !important;
   margin:12px 0 0 40px !important;
@@ -107,7 +100,7 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
     max-width:240px !important;
   }
 
-  /* reduz o Gerar no celular */
+/* 🚀 Gerar (PRIMARY) */
   div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
   button[kind="primary"]{
     min-width:100px !important;
