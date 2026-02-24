@@ -99,12 +99,6 @@ div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
   padding:8px 0 !important;
 }
 
-/* Primeiro botão (🚀 Gerar) */
-div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
-div[data-testid="stFormSubmitButton"]:nth-of-type(1) button{
-  min-width:110px !important;
-  padding:12px 18px !important;
-}
 .small-gap{ margin-top:10px; }
 
 </style>
