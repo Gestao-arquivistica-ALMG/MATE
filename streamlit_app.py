@@ -75,6 +75,7 @@ display:flex;
 align-items:center;
 justify-content:space-between;
 margin-bottom:20px;
+background:white;
 '>
 
 <div style='font-size:28px;color:white'>☰</div>
