@@ -137,7 +137,7 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle" style="font-size:14px; font-weight:1000;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
+    '<div class="subtitle" style="font-size:16px; font-weight:1000;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
     unsafe_allow_html=True
 )
 
@@ -146,11 +146,11 @@ st.markdown(
 with st.form("form_mate", clear_on_submit=False):
     entrada = st.text_input(
         "Informe uma data do Diário do Legislativo",
-        placeholder="Ex: 21/02/2026 ou https://...",
+        placeholder="Ex: 24/02/2026 ou https://...",
     )
 
     st.caption(
-        "- 19122026 ou 191226 ou 19/12/2026\n"
+        "- 24022026 ou 240226 ou 24/02/2026\n"
         "- hoje, ontem, anteontem\n"
         "- terça, quarta, quinta, sexta, sábado"
     )
