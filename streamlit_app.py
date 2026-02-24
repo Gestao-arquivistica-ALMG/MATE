@@ -298,12 +298,13 @@ if st.session_state.get("menu_open", False):
         <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
       </div>
 
-      <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
+      <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
         <a href="https://www.almg.gov.br/a-assembleia/" target="_blank" style="text-decoration:none; color:#111;">A Assembleia</a>
         <a href="https://www.almg.gov.br/atividade-parlamentar/" target="_blank" style="text-decoration:none; color:#111;">Atividade parlamentar</a>
         <a href="https://www.almg.gov.br/participacao/" target="_blank" style="text-decoration:none; color:#111;">Participação</a>
         <a href="https://www.almg.gov.br/comunicacao/" target="_blank" style="text-decoration:none; color:#111;">Comunicação</a>
         <a href="https://www.almg.gov.br/servicos/" target="_blank" style="text-decoration:none; color:#111;">Serviços</a>
+        <a href="https://www.almg.gov.br/transparencia/" target="_blank" style="text-decoration:none; color:#111;">Transparência</a>
       </div>
 
       <div style="margin-top:18px;">
