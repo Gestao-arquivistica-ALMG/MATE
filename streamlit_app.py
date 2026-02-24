@@ -255,34 +255,27 @@ if st.button("menu", key="menu_btn"):
 
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
-    st.markdown("""
-    <a href="?menu=close" target="_self"
-    id="almg_menu_overlay"
-    style="
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.25);
-        z-index: 9998;
-        display:block;
-    ">
-    </a>
 
+    # 1) overlay clicável (fecha ao clicar fora)
+    if st.button("close", key="close_menu_btn"):
+        st.session_state.menu_open = False
+        st.rerun()
+
+    # 2) drawer (menu) por cima do overlay
+    st.markdown("""
     <div id="almg_menu_drawer" style="
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 260px;
-    background: white;
-    padding: 20px;
-    z-index: 9999;
-    box-shadow: 3px 0 12px rgba(0,0,0,0.2);
-    transform: translateX(0);
-    transition: transform 0.25s ease;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px;
+      background: white;
+      padding: 20px;
+      z-index: 9999;
+      box-shadow: 3px 0 12px rgba(0,0,0,0.2);
     ">
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
-        <a href="?menu=close" target="_self" style="text-decoration:none; font-size:20px; color:#111;">✕</a>
       </div>
 
       <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
@@ -292,6 +285,12 @@ if st.session_state.get("menu_open", False):
         <a href="https://www.almg.gov.br/comunicacao/" target="_blank" style="text-decoration:none; color:#111;">Comunicação</a>
         <a href="https://www.almg.gov.br/servicos/" target="_blank" style="text-decoration:none; color:#111;">Serviços</a>
         <a href="https://www.almg.gov.br/transparencia/" target="_blank" style="text-decoration:none; color:#111;">Transparência</a>
+      </div>
+
+      <div style="margin-top:18px;">
+        <button onclick="window.location.reload()" style="
+          display:none;
+        "></button>
       </div>
     </div>
     """, unsafe_allow_html=True)
