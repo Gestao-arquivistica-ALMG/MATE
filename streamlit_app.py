@@ -86,12 +86,6 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   gap:8px !important;
 }
 
-@media (max-width: 520px){
-  /* reduz o grupo no celular */
-  div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-    max-width:240px !important;
-  }
-
 /* 🚀 Gerar (PRIMARY) */
   div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
   button[kind="primary"]{
