@@ -99,7 +99,7 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle" style="font-size:9px;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
+    '<div class="subtitle" style="font-size:14px;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
     unsafe_allow_html=True
 )
 
