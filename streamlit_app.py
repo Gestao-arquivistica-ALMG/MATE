@@ -74,12 +74,12 @@ st.markdown("""
 display:flex;
 align-items:center;
 justify-content:space-between;
+margin-bottom:30px;
 
 background:white;
-padding:10px 20px;
-
-border-bottom:3px solid #cc0000;
-margin-bottom:35px;
+padding:12px 18px;
+border-radius:0px;
+box-shadow:0 2px 8px rgba(0,0,0,0.15);
 '>
 
 <div style='font-size:26px;color:#cc0000'>
@@ -88,7 +88,7 @@ margin-bottom:35px;
 
 <div>
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:40px;">
+style="height:38px;">
 </div>
 
 <div style='font-size:22px;color:#cc0000'>
