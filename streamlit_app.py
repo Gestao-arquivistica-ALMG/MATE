@@ -182,30 +182,58 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
-        def set_prog(pct: int, msg: str):
+        progress_bar.progress(5)
+        status_text.write("Inicializando… 5%")
+
+        result = {"url": None, "aba": None, "err": None}
+        done = threading.Event()
+
+        def run_main():
+            try:
+                url, aba = main(
+                    entrada_override=entrada_clean,
+                    spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
+                    auth_mode="service_account",
+                    sa_info=st.secrets["gcp_service_account"],
+                )
+                result["url"], result["aba"] = url, aba
+            except Exception as e:
+                result["err"] = e
+            finally:
+                done.set()
+
+        t = threading.Thread(target=run_main, daemon=True)
+        t.start()
+
+        # Progresso "vivo" enquanto main roda (não chega em 100 antes de acabar)
+        pct = 8
+        direction = 1
+
+        while not done.is_set():
+            pct += direction
+
+            # Faz um "vai e volta" entre 8% e 90% pra nunca parecer travado
+            if pct >= 90:
+                pct = 90
+                direction = -1
+            elif pct <= 8:
+                pct = 8
+                direction = 1
+
             progress_bar.progress(pct)
-            status_text.write(f"{msg} — {pct}%")
+            status_text.write(f"Processando Diário do Legislativo… {pct}%")
+            time.sleep(0.08)  # velocidade da animação
 
-        set_prog(5,  "Inicializando")
-        set_prog(15, "Validando entrada")
-        set_prog(25, "Iniciando processamento")
+        # terminou
+        if result["err"] is not None:
+            raise result["err"]
 
-        # Durante o main: não “congela” no mesmo texto
-        status_text.write("Processando Diário do Legislativo… (pode levar alguns segundos)")
-
-        url, aba = main(
-            entrada_override=entrada_clean,
-            spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
-            auth_mode="service_account",
-            sa_info=st.secrets["gcp_service_account"],
-        )
-
-        set_prog(90, "Finalizando")
-        set_prog(100, "Concluído")
+        progress_bar.progress(100)
+        status_text.write("Concluído 100%")
 
         st.success("")
-        st.write("Aba:", aba)
-        st.link_button("Abrir planilha", url, use_container_width=True)
+        st.write("Aba:", result["aba"])
+        st.link_button("Abrir planilha", result["url"], use_container_width=True)
 
     except Exception as e:
         st.error("Erro ao processar.")
