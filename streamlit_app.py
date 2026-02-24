@@ -149,6 +149,34 @@ div[data-testid="stButton"] > button#menu_btn{
   padding:0 !important;
 }
 
+/* =========================================================
+   MENU OVERLAY (sem :has) — o botão invisível em cima do ☰
+   ========================================================= */
+
+/* a área branca geral vira referência para "absolute" */
+.block-container{
+  position: relative;
+}
+
+/* pega o wrapper do botão do Streamlit e põe em cima do header */
+div[data-testid="stButton"]{
+  position: absolute !important;
+  top: 32px !important;   /* AJUSTE FINO */
+  left: 34px !important;  /* AJUSTE FINO */
+  z-index: 9999 !important;
+}
+
+/* deixa o botão invisível, mas clicável */
+div[data-testid="stButton"] > button#menu_btn{
+  width: 52px !important;
+  height: 52px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;   /* some o texto "menu" */
+}
+
 </style>
 """, unsafe_allow_html=True)
 
