@@ -247,7 +247,7 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-<a href="?menu=toggle" style="
+<a href="?menu=toggle" target="_self" style="
   text-decoration:none;
   color:#cc0000;
   display:flex;
