@@ -121,63 +121,47 @@ button[kind="secondary"]{
 
 /* ===== BOTÃO MENU OVERLAY (ÚNICO E LIMPO) ===== */
 
-/* não mexe em outros botões */
+/* botão invisível exatamente em cima do ☰ no cabeçalho */
 button#menu_btn{
   position: fixed !important;
-  top: 118px !important;                    /* ajuste fino */
-  left: calc(50% - 300px + 26px) !important;/* ajuste fino */
-  width: 52px !important;
-  height: 52px !important;
+  top: 118px !important;                     /* ajuste fino */
+  left: calc(50% - 280px + 18px) !important; /* ajuste fino: 560/2 = 280 */
+  width: 45px !important;
+  height: 45px !important;
   padding: 0 !important;
-
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-
-  color: transparent !important; /* some o texto "menu" */
-  z-index: 9999 !important;
-}
-
-/* ===== MENU OVERLAY (seguro): move SOMENTE o botão #menu_btn ===== */
-
-/* garante um "pai" para o absolute */
-.block-container{
-  position: relative;
-}
-
-/* só o botão do menu (não mexe em outros botões) */
-button#menu_btn{
-  position: absolute !important;
-  top: 36px !important;   /* ajuste fino */
-  left: 34px !important;  /* ajuste fino */
-  width: 52px !important;
-  height: 52px !important;
-  padding: 0 !important;
-
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
-
-  color: transparent !important; /* some o texto "menu" */
-  z-index: 9999 !important;
+  color: transparent !important;
+  z-index: 10000 !important;
 }
 
-/* ===== POSIÇÃO REAL DO BOTÃO MENU (NOVO) ===== */
-
-button#menu_btn{
+/* overlay invisível que fecha ao clicar fora */
+button#close_menu_btn{
   position: fixed !important;
-  top:118px !important;                /* ajuste vertical */
-  left:calc(50% - 300px + 26px) !important; /* ajuste horizontal */
-  width:52px !important;
-  height:52px !important;
-  padding:0 !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  background: rgba(0,0,0,0.25) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  z-index: 9998 !important;
+}
+button#close_menu_btn *{ display:none !important; }
 
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-  color:transparent !important;
-
-  z-index:9999 !important;
+/* drawer por cima do overlay */
+#almg_menu_drawer{
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background: white;
+  padding: 20px;
+  z-index: 9999;
+  box-shadow: 3px 0 12px rgba(0,0,0,0.2);
 }
 
 #almg_menu_drawer_hidden{
@@ -274,6 +258,11 @@ target="_blank" style="text-decoration:none;">
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
 
+    # overlay invisível (clica fora e fecha)
+    if st.button(" ", key="close_menu_btn"):
+        st.session_state.menu_open = False
+        st.rerun()
+
     # 2) drawer (menu) por cima do overlay
     st.markdown("""
     <div id="almg_menu_drawer" style="
@@ -318,6 +307,14 @@ st.markdown(
     '<div class="subtitle" style="font-size:16px; font-weight:1000;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
     unsafe_allow_html=True
 )
+
+if "menu_open" not in st.session_state:
+    st.session_state.menu_open = False
+
+# botão invisível em cima do ☰
+if st.button(" ", key="menu_btn"):
+    st.session_state.menu_open = not st.session_state.menu_open
+    st.rerun()
 
 # ================= CARD =================
 
