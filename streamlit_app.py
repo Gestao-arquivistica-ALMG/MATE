@@ -188,7 +188,17 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([7, 10], gap="small")
+c1, c2 = st.columns([3, 7], gap="small")
+
+st.markdown("""
+<style>
+/* só o botão da 1ª coluna do header */
+div[data-testid="column"]:first-child div[data-testid="stButton"] button{
+  height:45px !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+</style>
 
 with c1:
     # LOGO vira o botão do menu
