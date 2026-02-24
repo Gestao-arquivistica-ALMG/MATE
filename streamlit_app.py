@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Oregano&family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
 
 html, body, [data-testid="stAppViewContainer"]{
 background:#b30000;
@@ -27,9 +27,7 @@ padding-bottom:60px;
 }
 
 .title{
-font-family:Oregano;
-font-size:52px;
-text-align:center;
+font-family: Montserrat;
 color:white;
 }
 
