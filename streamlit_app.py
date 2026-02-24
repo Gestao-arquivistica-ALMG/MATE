@@ -79,52 +79,6 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
-/* Linha dos botões: força ficar em uma linha no mobile */
-/* HEADER: 1 linha no mobile, sem vazar */
-div[data-testid="stHorizontalBlock"]:first-of-type{
-  max-width:560px;
-  margin:0 auto 20px auto;
-  background:white;
-  padding:10px 18px;
-  border-radius:12px;
-
-  display:flex !important;
-  flex-wrap: nowrap !important;
-  align-items: center !important;
-  overflow: hidden !important;     /* <- impede vazar */
-  gap: 10px !important;
-}
-
-/* permite encolher sem sumir */
-div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]{
-  min-width: 0 !important;         /* <- essencial no mobile */
-}
-
-/* ☰ */
-div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(1){
-  flex: 0 0 52px !important;
-  max-width: 52px !important;
-}
-
-/* LOGO (pode encolher) */
-div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(2){
-  flex: 1 1 0 !important;          /* <- encolhe/expande */
-  overflow: hidden !important;
-}
-
-/* ÍCONES (fixo, mas menor) */
-div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(3){
-  flex: 0 0 84px !important;
-  max-width: 84px !important;
-}
-
-/* garante que a imagem do logo não estoura */
-div[data-testid="stHorizontalBlock"]:first-of-type img{
-  max-width: 100% !important;
-  height: 45px !important;
-  object-fit: contain !important;
-}
-
 /* mobile: reduz tudo um pouco */
 @media (max-width: 520px){
   div[data-testid="stHorizontalBlock"]:first-of-type{
