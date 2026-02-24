@@ -100,7 +100,8 @@ div[data-testid="stHorizontalBlock"]:last-of-type
 button[kind="secondary"]{
   min-width:40px !important;
   padding:8px 0 !important;
-  justify-content: left !important;
+  align-items:center;
+  justify-content: flex-start !important;
 }
 
 .small-gap{ margin-top:10px; }
