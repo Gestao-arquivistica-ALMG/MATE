@@ -55,6 +55,10 @@ max-width:560px !important;
 margin:0 auto !important;
 }
 
+div[data-testid="stForm"] [data-testid="stHorizontalBlock"]{
+justify-content:center !important;
+}
+
 div[data-testid="stTextInput"] > div{
 background:white !important;
 }
