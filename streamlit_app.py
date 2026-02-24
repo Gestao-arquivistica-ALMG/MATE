@@ -4,53 +4,83 @@ from mate_pipeline import main
 
 # ================= CONFIG =================
 st.set_page_config(
-    page_title="MATE",
-    page_icon="🧠",
-    layout="wide",
+    page_title="MATE - Matérias em Tramitação",
+    layout="centered",
+    initial_sidebar_state="collapsed",
 )
 
 # ================= ESTILO =================
-st.markdown(
-    """
+st.markdown("""
 <style>
-.block-container {
-    padding-top: 1rem !important;
-    padding-bottom: 2rem;
-    max-width: 600px;
-    margin: auto;
+
+@import url('https://fonts.googleapis.com/css2?family=Oregano&family=Inter:wght@400;700&display=swap');
+
+html, body, [data-testid="stAppViewContainer"]{
+background:#b30000;
 }
 
-.title {
-    font-size: 34px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 0.2rem;
+.block-container{
+max-width:650px;
+margin:auto;
+padding-top:60px;
+padding-bottom:60px;
 }
 
-.subtitle {
-    text-align: center;
-    color: #6b7280;
-    margin-top: 0;
-    margin-bottom: 1rem;
+.title{
+font-family:Oregano;
+font-size:52px;
+text-align:center;
+color:white;
 }
 
-.card {
-    background: #ffffff;
-    padding: 1.4rem;
-    border: 1px solid rgba(0,0,0,0.10);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+.subtitle{
+text-align:center;
+color:white;
+font-family:Inter;
+margin-bottom:20px;
 }
 
-div[data-baseweb="input"] > div {
-    background: #f3f4f6;
+.card{
+background:white;
+padding:20px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
-.small-gap { margin-top: 0.6rem; }
+.stButton>button{
+font-family:Inter;
+font-weight:700;
+border-radius:14px;
+padding:14px;
+}
+
+.small-gap{margin-top:10px;}
+
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""",unsafe_allow_html=True)
+
+# ================= HEADER ALMG =================
+
+st.markdown("""
+<div style='
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:20px;
+'>
+
+<div style='font-size:28px;color:white'>☰</div>
+
+<div style='color:white;font-weight:700'>
+ASSEMBLEIA LEGISLATIVA
+</div>
+
+<div style='font-size:22px;color:white'>
+🔍 👤
+</div>
+
+</div>
+""",unsafe_allow_html=True)
 
 # ================= HEADER =================
 st.markdown('<div class="title">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>', unsafe_allow_html=True)
