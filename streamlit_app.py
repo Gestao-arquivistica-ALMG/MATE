@@ -88,7 +88,7 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
 
 /* Form interno mais estreito e centralizado */
 div[data-testid="stForm"]{
-max-width:520px;
+max-width:220px;
 margin-left:auto;
 margin-right:auto;
 }
