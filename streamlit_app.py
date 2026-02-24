@@ -216,7 +216,7 @@ if st.session_state.menu_open:
             st.session_state.menu_open = False
             st.query_params.clear()
             st.rerun()
-            
+
 # ================= HEADER =================
 st.markdown(
     '<div class="title" style="font-size:24px; font-weight:1000; font-height:100;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
@@ -244,7 +244,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns([3,1], gap="small")
+    col1, col2 = st.columns([3,0], gap="small")
     with col1:
         rodar = st.form_submit_button("🚀 Gerar Planilha", type="primary")
     with col2:
