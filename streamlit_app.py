@@ -81,7 +81,7 @@ margin-bottom:20px;
 
 <div>
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:34px;">
+style="height:36px; filter: brightness(0) invert(1);">
 </div>
 
 <div style='font-size:22px;color:white'>
