@@ -182,19 +182,34 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
-        status_text.write("Iniciando... 0%")
-        progress_bar.progress(10)
+        def set_prog(pct: int, msg: str):
+            progress_bar.progress(pct)
+            status_text.write(f"{msg} — {pct}%")
 
-        # baixar PDF
-        progress_bar.progress(30)
+        set_prog(5,  "Inicializando")
+        set_prog(15, "Validando entrada")
 
-        # processar
-        progress_bar.progress(60)
+        set_prog(25, "Autenticando e preparando planilha")
+        # (a autenticação real acontece dentro do main, mas pelo menos dá feedback)
 
-        url, aba = main(...)
+        set_prog(40, "Baixando Diário / carregando PDF")
+        set_prog(60, "Extraindo títulos e itens")
+        set_prog(80, "Gerando aba e aplicando formatação")
 
-        progress_bar.progress(100)
-        status_text.write("Concluído")
+        # Etapa “pesada” real
+        url, aba = main(
+            entrada_override=entrada_clean,
+            spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
+            auth_mode="service_account",
+            sa_info=st.secrets["gcp_service_account"],
+        )
+
+        set_prog(95, "Finalizando")
+        set_prog(100, "Concluído")
+
+        st.success("")
+        st.write("Aba:", aba)
+        st.link_button("Abrir planilha", url, use_container_width=True)
 
     except Exception as e:
         st.error("Erro ao processar.")
