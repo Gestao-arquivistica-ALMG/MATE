@@ -78,14 +78,14 @@ margin-bottom:20px;
 background:white;
 '>
 
-<div style='font-size:28px;color:white'>☰</div>
+<div style='font-size:28px;color:#cc0000'>☰</div>
 
 <div>
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:36px; filter: brightness(0) invert(1);">
+style="height:36px;"
 </div>
 
-<div style='font-size:22px;color:white'>
+<div style='font-size:22px;color:#cc0000'>
 🔍 👤
 </div>
 
