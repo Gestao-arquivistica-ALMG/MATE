@@ -79,25 +79,6 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
-/* mobile: reduz tudo um pouco */
-@media (max-width: 520px){
-  div[data-testid="stHorizontalBlock"]:first-of-type{
-    padding:8px 12px !important;
-    gap: 8px !important;
-  }
-  div[data-testid="stHorizontalBlock"]:first-of-type img{
-    height: 34px !important;
-  }
-  div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(1){
-    flex: 0 0 46px !important;
-    max-width: 46px !important;
-  }
-  div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child(3){
-    flex: 0 0 72px !important;
-    max-width: 72px !important;
-  }
-}
-
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   max-width:320px !important;
   margin:12px 0 0 40px !important;
