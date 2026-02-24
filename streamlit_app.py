@@ -109,10 +109,12 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
 }
 
 /* 🧹 Limpar (SECONDARY) */
-div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
+div[data-testid="stForm"]
+div[data-testid="stHorizontalBlock"]:last-of-type
 button[kind="secondary"]{
   min-width:40px !important;
   padding:8px 0 !important;
+  justify-content: flex-start !important;
 }
 
 .small-gap{ margin-top:10px; }
