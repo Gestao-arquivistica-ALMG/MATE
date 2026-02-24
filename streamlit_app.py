@@ -209,10 +209,6 @@ if menu_cmd:
     cmd = str(menu_cmd).lower()
     if cmd == "toggle":
         st.session_state.menu_open = not st.session_state.menu_open
-    elif cmd == "open":
-        st.session_state.menu_open = True
-    elif cmd == "close":
-        st.session_state.menu_open = False
 
     # limpa o query param (compatível com versões diferentes)
     try:
