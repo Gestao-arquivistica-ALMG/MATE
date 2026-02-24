@@ -179,7 +179,7 @@ if rodar:
 
     try:
         with st.status("Processando Diário do Legislativo...", expanded=True) as status:
-            status.write("Checkpoint 1: antes do main()")
+            status.write("Checkpoint 1")
 
             url, aba = main(
                 entrada_override=entrada_clean,
@@ -191,7 +191,7 @@ if rodar:
             status.write("Checkpoint 2: depois do main()")
             status.update(label="Concluído ✅", state="complete", expanded=False)
 
-        st.success("Aba:", aba)
+        st.success("")
         st.write("Aba:", aba)
         st.link_button("Abrir planilha", url, use_container_width=True)
 
