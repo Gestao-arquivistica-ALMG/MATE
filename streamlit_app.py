@@ -130,7 +130,6 @@ with st.form("form_mate", clear_on_submit=False):
     with col1:
         rodar = st.form_submit_button(
             "🚀 Gerar",
-            use_container_width=True,
             type="primary"
         )
 
