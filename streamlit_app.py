@@ -59,6 +59,11 @@ div[data-testid="stForm"] [data-testid="stHorizontalBlock"]{
 justify-content:center !important;
 }
 
+div[data-testid="stForm"] label,
+div[data-testid="stForm"] .stCaption{
+text-align:left !important;
+}
+
 div[data-testid="stTextInput"] > div{
 background:white !important;
 }
