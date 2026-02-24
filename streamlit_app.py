@@ -82,7 +82,7 @@ background:white;
 
 <div>
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:36px;"
+style="height:36px;">
 </div>
 
 <div style='font-size:22px;color:#cc0000'>
