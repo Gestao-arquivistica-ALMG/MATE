@@ -100,7 +100,7 @@ div[data-testid="stHorizontalBlock"]:last-of-type
 button[kind="secondary"]{
   min-width:40px !important;
   padding:8px 0 !important;
-  justify-content: flex-start !important;
+  justify-content: left !important;
 }
 
 .small-gap{ margin-top:10px; }
@@ -303,7 +303,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns([3,0], gap="small")
+    col1, col2 = st.columns([3,1], gap="small")
     with col1:
         rodar = st.form_submit_button("🚀 Gerar Planilha", type="primary")
     with col2:
