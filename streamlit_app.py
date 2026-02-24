@@ -247,7 +247,6 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-
 <a href="?menu=toggle" target="_self" style="
   text-decoration:none;
   color:#cc0000;
@@ -255,6 +254,7 @@ line-height:1;
   width:45px;height:45px;
   align-items:center;justify-content:center;
 ">☰</a>
+</div>
 
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
