@@ -55,10 +55,6 @@ max-width:560px !important;
 margin:0 auto !important;
 }
 
-div[data-testid="stForm"] [data-testid="stHorizontalBlock"]{
-justify-content:center !important;
-}
-
 div[data-testid="stForm"] label,
 div[data-testid="stForm"] .stCaption{
 text-align:left !important;
@@ -136,13 +132,19 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([2,1,5])
+    col1, col2, col3 = st.columns([2,1,3])
 
     with col1:
-        rodar = st.form_submit_button("🚀 Gerar", type="primary")
+        rodar = st.form_submit_button(
+            "🚀 Gerar",
+            type="primary"
+        )
 
     with col2:
         limpar = st.form_submit_button("🧹")
+
+    with col3:
+        st.write("")
 
 # ================= EXECUÇÃO =================
 if limpar:
