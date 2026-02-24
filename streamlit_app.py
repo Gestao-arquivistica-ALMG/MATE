@@ -262,12 +262,16 @@ elif params.get("menu") == "close":
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
     st.markdown("""
-    <div id="almg_menu_overlay" style="
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.25);
-      z-index: 9998;
-    "></div>
+    <a href="?menu=close" target="_self"
+    id="almg_menu_overlay"
+    style="
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.25);
+        z-index: 9998;
+        display:block;
+    ">
+    </a>
 
     <div id="almg_menu_drawer" style="
       position: fixed;
