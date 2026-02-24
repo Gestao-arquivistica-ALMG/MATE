@@ -40,7 +40,18 @@ font-family:Inter;
 margin-bottom:20px;
 }
 
-.card *{
+.card{
+background:white !important;
+padding:20px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+div[data-testid="stForm"]{
+background:white !important;
+}
+
+div[data-testid="stTextInput"] > div{
 background:white !important;
 }
 
