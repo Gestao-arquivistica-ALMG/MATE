@@ -201,8 +201,7 @@ with c2:
         """
         <div style="display:flex; align-items:center; justify-content:center; height:45px;">
           <a href="https://www.almg.gov.br/" target="_blank">
-            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;">
-          </a>
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;"></a>
         </div>
         """,
         unsafe_allow_html=True,
@@ -212,6 +211,7 @@ with c3:
     st.markdown(
         """
         <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; height:45px; font-size:26px;">
+          <a href="https://www.almg.gov.br/" target="_blank"><img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;"></a>
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
           <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
         </div>
