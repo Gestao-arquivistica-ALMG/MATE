@@ -91,6 +91,10 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
 button[kind="primary"]{
   min-width:240px !important;   /* ajuste aqui */
+  max-width:320px !important;
+  margin:12px 0 0 40px !important;
+  flex-wrap:nowrap !important;
+  gap:8px !important;
   padding:12px 18px !important;
 }
 
