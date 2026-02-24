@@ -259,25 +259,44 @@ if params.get("menu") == "open":
 elif params.get("menu") == "close":
     st.session_state.menu_open = False
 
-# ================= MENU (SIDEBAR) =================
+# ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
-    with st.sidebar:
-        st.markdown("### Navegar em:")
-        st.markdown("---")
+    st.markdown("""
+    <div id="almg_menu_overlay" style="
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 9998;
+    "></div>
 
-        st.markdown("[A Assembleia](https://www.almg.gov.br/a-assembleia/)")
-        st.markdown("[Atividade parlamentar](https://www.almg.gov.br/atividade-parlamentar/)")
-        st.markdown("[Participação](https://www.almg.gov.br/participacao/)")
-        st.markdown("[Comunicação](https://www.almg.gov.br/comunicacao/)")
-        st.markdown("[Serviços](https://www.almg.gov.br/servicos/)")
-        st.markdown("[Transparência](https://www.almg.gov.br/transparencia/)")
+    <div id="almg_menu_drawer" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 320px;
+      max-width: 86vw;
+      background: #ffffff;
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      padding: 16px 18px;
+      overflow: auto;
+    ">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
+        <a href="?menu=close" target="_self" style="text-decoration:none; font-size:20px; color:#111;">✕</a>
+      </div>
 
-        st.markdown("---")
-
-        if st.button("✖ Fechar", use_container_width=True):
-            st.session_state.menu_open = False
-            st.query_params.clear()
-            st.rerun()
+      <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
+        <a href="https://www.almg.gov.br/a-assembleia/" target="_blank" style="text-decoration:none; color:#111;">A Assembleia</a>
+        <a href="https://www.almg.gov.br/atividade-parlamentar/" target="_blank" style="text-decoration:none; color:#111;">Atividade parlamentar</a>
+        <a href="https://www.almg.gov.br/participacao/" target="_blank" style="text-decoration:none; color:#111;">Participação</a>
+        <a href="https://www.almg.gov.br/comunicacao/" target="_blank" style="text-decoration:none; color:#111;">Comunicação</a>
+        <a href="https://www.almg.gov.br/servicos/" target="_blank" style="text-decoration:none; color:#111;">Serviços</a>
+        <a href="https://www.almg.gov.br/transparencia/" target="_blank" style="text-decoration:none; color:#111;">Transparência</a>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
             
 # ================= HEADER =================
 st.markdown(
