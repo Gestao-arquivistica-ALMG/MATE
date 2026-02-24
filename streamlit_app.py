@@ -276,6 +276,10 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
+if st.button(" ", key="menu_btn"):
+    st.session_state.menu_open = not st.session_state.menu_open
+    st.rerun()
+
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
 
@@ -292,6 +296,7 @@ if st.session_state.get("menu_open", False):
       z-index: 9999;
       box-shadow: 3px 0 12px rgba(0,0,0,0.2);
     ">
+    
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
       </div>
