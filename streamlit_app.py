@@ -77,10 +77,19 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
-/* Linha dos botões */
+/* Linha dos botões: só a ÚLTIMA linha de colunas dentro do form */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:200px !important;
-  margin:12px auto 0 0 !important;
+  max-width:200px !important;      /* largura do grupo [Gerar][🧹] */
+  margin:12px auto 0 0 !important; /* centraliza o grupo */
+}
+
+/* Botões: tamanhos fixos (não espicha) */
+div[data-testid="stFormSubmitButton"] button{
+  font-family:Montserrat !important;
+  font-weight:700 !important;
+  border-radius:14px !important;
+  padding:12px 14px !important;
+  min-width:20px !important;      /* Gerar */
 }
 
 /* Primeiro botão (🚀 Gerar) */
@@ -90,7 +99,7 @@ div[data-testid="stFormSubmitButton"]:nth-of-type(1) button{
   padding:12px 18px !important;
 }
 
-/* Segundo botão (🧹) */
+/* Segundo botão (🧹) menor */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
 div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
   min-width:20px !important;
