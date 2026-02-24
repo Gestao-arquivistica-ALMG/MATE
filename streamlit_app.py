@@ -124,29 +124,25 @@ button[kind="secondary"]{
 
 .small-gap{ margin-top:10px; }
 
-/* --- Overlay do botão do menu em cima do ☰ do header --- */
-div[data-testid="stButton"] button[kind]{
+/* --- Overlay do botão menu (SEM :has) --- */
+
+/* tira a cara de botão */
+div[data-testid="stButton"] > button{
   background:transparent !important;
   border:none !important;
   box-shadow:none !important;
 }
 
-/* pega o container do botão menu e põe por cima do header */
-div[data-testid="stButton"]:has(> button[key="menu_btn"]),
-div[data-testid="stButton"]:has(button#menu_btn){
+/* o menu_btn vira um "overlay" fixo em cima do header */
+div[data-testid="stButton"] > button#menu_btn{
   position: absolute !important;
-  top: 18px !important;      /* ajuste fino */
-  left: 26px !important;     /* ajuste fino */
-  z-index: 9999 !important;
-}
-
-/* deixa o botão só como área clicável, sem “caixa” */
-div[data-testid="stButton"]:has(> button[key="menu_btn"]) button,
-div[data-testid="stButton"]:has(button#menu_btn) button{
-  padding: 0 !important;
+  top: 112px !important;     /* AJUSTE FINO: sobe/desce */
+  left: calc(50% - 300px + 26px) !important;  /* AJUSTE FINO: esquerda/direita */
   width: 45px !important;
   height: 45px !important;
+  padding: 0 !important;
   font-size: 0 !important;   /* some o texto do botão */
+  z-index: 9999 !important;
 }
 
 </style>
