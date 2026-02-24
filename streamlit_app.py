@@ -86,6 +86,13 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   margin: 12px auto 0 auto !important; /* centraliza o grupo */
 }
 
+/* Form interno mais estreito e centralizado */
+div[data-testid="stForm"]{
+max-width:520px;
+margin-left:auto;
+margin-right:auto;
+}
+
 .stButton>button{
 font-family:Inter;
 font-weight:700;
