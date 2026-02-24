@@ -237,9 +237,9 @@ height:45px;
 display:flex;
 align-items:center;
 justify-content:center;
+color:#cc0000;
 font-size:35px;
 line-height:1;
-color:#cc0000;
 '>
 ☰
 </div>
