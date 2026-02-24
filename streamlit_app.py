@@ -274,17 +274,17 @@ if st.session_state.get("menu_open", False):
     </a>
 
     <div id="almg_menu_drawer" style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 320px;
-      max-width: 86vw;
-      background: #ffffff;
-      z-index: 9999;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-      padding: 16px 18px;
-      overflow: auto;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: white;
+    padding: 20px;
+    z-index: 9999;
+    box-shadow: 3px 0 12px rgba(0,0,0,0.2);
+    transform: translateX(0);
+    transition: transform 0.25s ease;
     ">
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
