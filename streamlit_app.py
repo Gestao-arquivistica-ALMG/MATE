@@ -104,7 +104,6 @@ st.markdown(
 )
 
 # ================= CARD =================
-with st.container():
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     with st.form("form_mate", clear_on_submit=False):
