@@ -40,11 +40,11 @@ font-family:Inter;
 margin-bottom:20px;
 }
 
-.card{
+div[data-testid="stForm"]{
 background:white !important;
-padding:20px;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,0.25);
+padding:20px !important;
+border-radius:18px !important;
+box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
 }
 
 div[data-testid="stForm"]{
