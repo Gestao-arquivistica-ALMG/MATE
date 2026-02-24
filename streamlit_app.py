@@ -12,110 +12,91 @@ st.set_page_config(
 # ================= ESTILO =================
 st.markdown("""
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
 
+/* Fundo externo */
 html, body, [data-testid="stAppViewContainer"]{
-background:#b30000;
+  background:#b30000;
 }
 
+/* Container geral branco (fecha tudo) */
 .block-container{
-max-width:720px;
-
-/* ↓ aumenta a borda vermelha superior */
-margin:90px auto 30px auto;
-
-padding:22px 22px 26px 22px;
-
-background:white;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  max-width:720px;
+  margin:90px auto 30px auto;
+  padding:22px 22px 26px 22px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
+/* Título e subtítulo */
 .title{
-font-family: Montserrat;
-font-size:52px;
-text-align:center;
-color:#111;
+  font-family:Montserrat;
+  font-size:52px;
+  font-weight:700;
+  text-align:center;
+  color:#111;
+  margin:0;
 }
-
 .subtitle{
-text-align:center;
-font-family:Montserrat;
-color:#444;
-margin-bottom:10px;
+  font-family:Montserrat;
+  font-size:14px;
+  font-weight:700;
+  text-align:center;
+  color:#444;
+  margin:6px 0 10px 0;
 }
 
+/* Card interno (o próprio form) */
 div[data-testid="stForm"]{
-background:white !important;
-padding:20px !important;
-border-radius:18px !important;
-box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
-max-width:560px !important;
-margin:0 auto !important;
+  background:#fff !important;
+  padding:20px !important;
+  border-radius:18px !important;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
+
+  max-width:560px !important;
+  margin:0 auto !important;
 }
 
-div[data-testid="stForm"] label,
-div[data-testid="stForm"] .stCaption{
-text-align:left !important;
-}
-
+/* Input com fundo claro */
 div[data-testid="stTextInput"] > div{
-background:white !important;
+  background:#f3f4f6 !important;
 }
 
-div[data-testid="stFormSubmitButton"] button{
-min-width:140px;
+/* Conteúdo legível: alinhamento à esquerda */
+div[data-testid="stForm"] label,
+div[data-testid="stForm"] .stCaption,
+div[data-testid="stForm"] ul,
+div[data-testid="stForm"] li{
+  text-align:left !important;
 }
 
-div[data-testid="stHorizontalBlock"]{
-justify-content:center;
-}
-
-div[data-testid="stFormSubmitButton"] button{
-min-width:120px;
-}
-
-div[data-testid="stFormSubmitButton"]:nth-child(2) button{
-min-width:60px;
-}
-
-/* Linha dos botões (o último stHorizontalBlock dentro do form) */
+/* Linha dos botões: só a ÚLTIMA linha de colunas dentro do form */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width: 260px !important;     /* largura do “grupo” [Gerar][🧹] */
-  margin: 12px auto 0 auto !important; /* centraliza o grupo */
+  max-width:260px !important;      /* largura do grupo [Gerar][🧹] */
+  margin:12px auto 0 auto !important; /* centraliza o grupo */
 }
 
-/* Form interno mais estreito e centralizado */
-div[data-testid="stForm"]{
-max-width:220px;
-margin-left:auto;
-margin-right:auto;
-}
-
-div[data-testid="stForm"] .stVerticalBlock{
-align-items:center;
-}
-
-.stButton>button{
-font-family:Inter;
-font-weight:700;
-border-radius:14px;
-padding:14px;
-}
-
+/* Botões: tamanhos fixos (não espicha) */
 div[data-testid="stFormSubmitButton"] button{
-min-width:140px;
+  font-family:Montserrat !important;
+  font-weight:700 !important;
+  border-radius:14px !important;
+  padding:12px 14px !important;
+  min-width:140px !important;      /* Gerar */
 }
 
-div[data-testid="stFormSubmitButton"]:nth-child(2) button{
-min-width:60px;
+/* Segundo botão (🧹) menor */
+div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
+div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
+  min-width:60px !important;
+  padding:12px 0 !important;
 }
 
-.small-gap{margin-top:10px;}
+.small-gap{ margin-top:10px; }
 
 </style>
-""",unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ================= HEADER ALMG =================
 
