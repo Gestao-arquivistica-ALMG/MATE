@@ -104,37 +104,37 @@ st.markdown(
 )
 
 # ================= CARD =================
+with st.container():
+    st.markdown('<div class="card">', unsafe_allow_html=True)
 
-st.markdown('<div class="card">', unsafe_allow_html=True)
+    with st.form("form_mate", clear_on_submit=False):
+        entrada = st.text_input(
+            "Informe uma data do Diário do Legislativo",
+            placeholder="Ex: 21/02/2026 ou https://...",
+        )
 
-with st.form("form_mate", clear_on_submit=False):
-    entrada = st.text_input(
-        "Informe uma data do Diário do Legislativo",
-        placeholder="Ex: 21/02/2026 ou https://...",
-    )
+        st.caption(
+            "- 19122026 ou 191226 ou 19/12/2026\n"
+            "- hoje, ontem, anteontem\n"
+            "- terça, quarta, quinta, sexta, sábado"
+        )
 
-    st.caption(
-        "- 19122026 ou 191226 ou 19/12/2026\n"
-        "- hoje, ontem, anteontem\n"
-        "- terça, quarta, quinta, sexta, sábado"
-    )
+        st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
+        col1, col2 = st.columns(2, gap="small")
+        with col1:
+            rodar = st.form_submit_button("🚀 Gerar", use_container_width=True, type="primary")
+        with col2:
+            st.write("")
 
+    # Limpar fora do form (ENTER = Gerar garantido)
     col1, col2 = st.columns(2, gap="small")
     with col1:
-        rodar = st.form_submit_button("🚀 Gerar", use_container_width=True, type="primary")
-    with col2:
         st.write("")
+    with col2:
+        limpar = st.button("🧹 Limpar", use_container_width=True)
 
-# Limpar fora do form (ENTER = Gerar garantido)
-col1, col2 = st.columns(2, gap="small")
-with col1:
-    st.write("")
-with col2:
-    limpar = st.button("🧹 Limpar", use_container_width=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ================= EXECUÇÃO =================
 if limpar:
