@@ -219,18 +219,17 @@ position:relative;
 '>
 
 <div id="menu_icon" style='
-font-size:35px;
-color:#cc0000;
+width:45px;
+height:45px;
 display:flex;
 align-items:center;
-height:45px;
+justify-content:center;
 '>
   <a href="?menu=open" style="
   text-decoration:none;
   color:#cc0000;
-  display:flex;
-  align-items:center;
-  height:45px;
+  font-size:35px;
+  line-height:1;
   ">
   ☰
   </a>
