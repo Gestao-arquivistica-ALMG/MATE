@@ -188,7 +188,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([1, 1, 1], gap="small")
+c1, c2, c3 = st.columns([1, 1, 1])
 
 with c1:
     # botão real (sem recarregar por navegação)
@@ -200,8 +200,7 @@ with c2:
     st.markdown(
         """
         <div style="display:flex; align-items:center; justify-content:center; height:45px;">
-          <a href="https://www.almg.gov.br/" target="_blank">
-            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;"></a>
+          <a href="https://www.almg.gov.br/" target="_blank"><img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;"></a>
         </div>
         """,
         unsafe_allow_html=True,
