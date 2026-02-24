@@ -93,10 +93,8 @@ margin-left:auto;
 margin-right:auto;
 }
 
-/* Centraliza conteúdo interno do form */
-div[data-testid="stForm"] > div{
-margin-left:auto;
-margin-right:auto;
+div[data-testid="stForm"] .stVerticalBlock{
+align-items:center;
 }
 
 .stButton>button{
