@@ -247,13 +247,13 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-<span style="
+<a href="?menu=toggle" target="_self" style="
+  text-decoration:none;
   color:#cc0000;
   display:flex;
   width:45px;height:45px;
   align-items:center;justify-content:center;
-">☰</span>
-</div>
+">☰</a>
 
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
@@ -275,10 +275,6 @@ target="_blank" style="text-decoration:none;">
 
 </div>
 """,unsafe_allow_html=True)
-
-if st.button(" ", key="menu_btn"):
-    st.session_state.menu_open = not st.session_state.menu_open
-    st.rerun()
 
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
