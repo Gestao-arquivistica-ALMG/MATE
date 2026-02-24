@@ -256,11 +256,11 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
-# ===== Detecta clique no ☰ =====
 params = st.query_params
-
 if params.get("menu") == "open":
     st.session_state.menu_open = True
+elif params.get("menu") == "close":
+    st.session_state.menu_open = False
 
 # ================= HEADER =================
 st.markdown(
@@ -272,12 +272,6 @@ st.markdown(
     '<div class="subtitle" style="font-size:16px; font-weight:1000;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
     unsafe_allow_html=True
 )
-
-params = st.query_params
-if params.get("menu") == "open":
-    st.session_state.menu_open = True
-elif params.get("menu") == "close":
-    st.session_state.menu_open = False
 
 # ================= CARD =================
 
