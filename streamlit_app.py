@@ -247,12 +247,18 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-<a href="javascript:void(0);" onclick="
-  const url = new URL(window.location);
+<a href="#" onclick="
+  const url = new URL(window.location.href);
   url.searchParams.set('menu','toggle');
-  window.history.replaceState({},'',url);
-  window.location.reload();
-" style="...">☰</a>
+  window.location.search = url.search;
+  return false;
+" style="
+  text-decoration:none;
+  color:#cc0000;
+  display:flex;
+  width:45px;height:45px;
+  align-items:center;justify-content:center;
+">☰</a>
 </div>
 
 <div>
