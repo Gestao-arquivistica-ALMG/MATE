@@ -20,24 +20,28 @@ background:#b30000;
 }
 
 .block-container{
-max-width:650px;
-margin:auto;
-padding-top:60px;
-padding-bottom:60px;
+max-width:720px;
+margin:30px auto;
+padding:22px 22px 26px 22px;
+
+/* >>> container branco que “fecha tudo” <<< */
+background:white;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
 .title{
 font-family: Montserrat;
 font-size:52px;
 text-align:center;
-color:white;
+color:#111;
 }
 
 .subtitle{
 text-align:center;
-color:white;
 font-family:Inter;
-margin-bottom:20px;
+color:#444;
+margin-bottom:10px;
 }
 
 div[data-testid="stForm"]{
