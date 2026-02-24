@@ -119,18 +119,17 @@ with st.form("form_mate", clear_on_submit=False):
 
     st.markdown('<div class="small-gap"></div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2, gap="small")
-    with col1:
-        rodar = st.form_submit_button("🚀 Gerar", use_container_width=True, type="primary")
-    with col2:
-        st.write("")
+    col1, col2 = st.columns([5,1])
 
-# Limpar fora do form (ENTER = Gerar garantido)
-col1, col2 = st.columns(2, gap="small")
-with col1:
-    st.write("")
-with col2:
-    limpar = st.button("🧹 Limpar", use_container_width=True)
+    with col1:
+        rodar = st.form_submit_button(
+            "🚀 Gerar",
+            use_container_width=True,
+            type="primary"
+        )
+
+    with col2:
+        limpar = st.form_submit_button("🧹")
 
 # ================= EXECUÇÃO =================
 if limpar:
