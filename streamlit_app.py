@@ -80,7 +80,7 @@ div[data-testid="stForm"] li{
 /* Linha dos botões: só a ÚLTIMA linha de colunas dentro do form */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   max-width:260px !important;      /* largura do grupo [Gerar][🧹] */
-  margin:12px auto 0 auto !important; /* centraliza o grupo */
+  margin:12px 0 0 auto !important; /* centraliza o grupo */
 }
 
 /* Botões: tamanhos fixos (não espicha) */
