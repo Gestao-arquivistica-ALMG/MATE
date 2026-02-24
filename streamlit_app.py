@@ -235,7 +235,6 @@ with st.form("form_mate", clear_on_submit=False):
         "Informe uma data do Diário do Legislativo",
         placeholder="Ex: 24/02/2026 ou https://...",
     )
-
     st.caption(
         "- 24022026 ou 240226 ou 24/02/2026\n"
         "- hoje, ontem, anteontem\n"
