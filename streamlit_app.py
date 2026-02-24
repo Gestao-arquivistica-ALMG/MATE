@@ -167,7 +167,6 @@ position:relative;
 '>
 
 <div id="menu_icon" style='font-size:35px;color:#cc0000'>
-<a href="?menu=open" style="text-decoration:none;color:#cc0000;">☰</a>
 </div>
 
 <div>
@@ -191,31 +190,9 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
-params = st.query_params
-
-if params.get("menu") == "open":
+# --- BOTÃO MENU REAL (PASSO B) ---
+if st.button("menu", key="menu_btn"):
     st.session_state.menu_open = True
-
-# ================= MENU (PASSO 3) =================
-
-if st.session_state.menu_open:
-    with st.sidebar:
-        st.markdown("### Navegar em:")
-        st.markdown("---")
-
-        st.markdown("[A Assembleia](https://www.almg.gov.br/a-assembleia/)")
-        st.markdown("[Atividade parlamentar](https://www.almg.gov.br/atividade-parlamentar/)")
-        st.markdown("[Participação](https://www.almg.gov.br/participacao/)")
-        st.markdown("[Comunicação](https://www.almg.gov.br/comunicacao/)")
-        st.markdown("[Serviços](https://www.almg.gov.br/servicos/)")
-        st.markdown("[Transparência](https://www.almg.gov.br/transparencia/)")
-
-        st.markdown("---")
-
-        if st.button("✕ Fechar", use_container_width=True):
-            st.session_state.menu_open = False
-            st.query_params.clear()
-            st.rerun()
             
 # ================= HEADER =================
 st.markdown(
@@ -235,6 +212,7 @@ with st.form("form_mate", clear_on_submit=False):
         "Informe uma data do Diário do Legislativo",
         placeholder="Ex: 24/02/2026 ou https://...",
     )
+
     st.caption(
         "- 24022026 ou 240226 ou 24/02/2026\n"
         "- hoje, ontem, anteontem\n"
