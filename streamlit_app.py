@@ -23,7 +23,7 @@ background:#b30000;
 max-width:720px;
 
 /* ↓ aumenta a borda vermelha superior */
-margin:60px auto 30px auto;
+margin:100px auto 30px auto;
 
 padding:22px 22px 26px 22px;
 
