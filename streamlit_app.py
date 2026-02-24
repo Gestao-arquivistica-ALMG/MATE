@@ -191,6 +191,11 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
+params = st.query_params
+
+if params.get("menu") == "open":
+    st.session_state.menu_open = True
+
 # ================= HEADER =================
 st.markdown(
     '<div class="title" style="font-size:24px; font-weight:1000; font-height:100;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
