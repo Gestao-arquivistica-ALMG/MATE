@@ -227,14 +227,9 @@ display:flex;
 align-items:center;
 justify-content:center;
 '>
-  <a href="?menu=open" style="
-  text-decoration:none;
-  color:#cc0000;
-  font-size:35px;
-  line-height:1;
-  ">
-  ☰
-  </a>
+<a href="?menu=open" target="_self" style="text-decoration:none; color:#cc0000; font-size:35px; line-height:1;">
+☰
+</a>
 </div>
 
 <div>
