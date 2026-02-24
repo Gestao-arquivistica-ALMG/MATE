@@ -93,6 +93,12 @@ margin-left:auto;
 margin-right:auto;
 }
 
+/* Centraliza conteúdo interno do form */
+div[data-testid="stForm"] > div{
+margin-left:auto;
+margin-right:auto;
+}
+
 .stButton>button{
 font-family:Inter;
 font-weight:700;
