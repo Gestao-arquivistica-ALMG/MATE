@@ -41,7 +41,7 @@ color:#111;
 
 .subtitle{
 text-align:center;
-font-family:Inter;
+font-family:Montserrat;
 color:#444;
 margin-bottom:10px;
 }
