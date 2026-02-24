@@ -247,13 +247,12 @@ justify-content:center;
 font-size:35px;
 line-height:1;
 '>
-<a href="?menu=toggle" target="_self" style="
-  text-decoration:none;
-  color:#cc0000;
-  display:flex;
-  width:45px;height:45px;
-  align-items:center;justify-content:center;
-">☰</a>
+<a href="javascript:void(0);" onclick="
+  const url = new URL(window.location);
+  url.searchParams.set('menu','toggle');
+  window.history.replaceState({},'',url);
+  window.location.reload();
+" style="...">☰</a>
 </div>
 
 <div>
