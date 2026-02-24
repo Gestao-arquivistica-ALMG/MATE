@@ -86,6 +86,21 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   gap:8px !important;
 }
 
+@media (max-width: 520px){
+  /* força o header (primeiro bloco de colunas) ficar numa linha */
+  div[data-testid="stHorizontalBlock"]:first-of-type{
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+  }
+  /* evita o “min-width” padrão estourar */
+  div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]{
+    min-width: 0 !important;
+  }
+}
+
 /* 🚀 Gerar (PRIMARY) */
   div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
   button[kind="primary"]{
