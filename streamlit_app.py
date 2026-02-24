@@ -28,6 +28,8 @@ padding-bottom:60px;
 
 .title{
 font-family: Montserrat;
+font-size:52px;
+text-align:center;
 color:white;
 }
 
