@@ -277,6 +277,8 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
+st.write("menu_open =", st.session_state.menu_open)
+
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
 
