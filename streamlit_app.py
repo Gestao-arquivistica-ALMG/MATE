@@ -124,6 +124,31 @@ button[kind="secondary"]{
 
 .small-gap{ margin-top:10px; }
 
+/* --- Overlay do botão do menu em cima do ☰ do header --- */
+div[data-testid="stButton"] button[kind]{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+
+/* pega o container do botão menu e põe por cima do header */
+div[data-testid="stButton"]:has(> button[key="menu_btn"]),
+div[data-testid="stButton"]:has(button#menu_btn){
+  position: absolute !important;
+  top: 18px !important;      /* ajuste fino */
+  left: 26px !important;     /* ajuste fino */
+  z-index: 9999 !important;
+}
+
+/* deixa o botão só como área clicável, sem “caixa” */
+div[data-testid="stButton"]:has(> button[key="menu_btn"]) button,
+div[data-testid="stButton"]:has(button#menu_btn) button{
+  padding: 0 !important;
+  width: 45px !important;
+  height: 45px !important;
+  font-size: 0 !important;   /* some o texto do botão */
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -133,7 +158,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
     
 st.markdown("""
-<div style='
+<div id="almg_header" style='
 display:flex;
 align-items:center;
 justify-content:space-between;
@@ -142,9 +167,10 @@ background:white;
 max-width:560px;
 padding:10px 18px;
 border-radius:12px;
+position:relative;
 '>
 
-<div id="menu_icon" style='font-size:35px;color:#cc0000; position:relative;'>☰</div>
+<div id="menu_icon" style='font-size:35px;color:#cc0000'>☰</div>
 
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
