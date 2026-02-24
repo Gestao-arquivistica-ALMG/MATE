@@ -198,73 +198,61 @@ button#close_menu_btn{
 """, unsafe_allow_html=True)
 
 # ================= HEADER ALMG =================
-
-# ================= MENU: query param handler =================
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-    # limpa o query param (compatível com versões diferentes)
-    try:
-        st.query_params.clear()
-    except Exception:
-        try:
-            st.experimental_set_query_params()
-        except Exception:
-            pass
+# "cabeçalho" feito com layout Streamlit (sem HTML clicável)
+c1, c2, c3 = st.columns([1, 6, 2], gap="small")
 
-    st.rerun()
+with c1:
+    # botão real (sem recarregar por navegação)
+    if st.button("☰", key="btn_menu_toggle"):
+        st.session_state.menu_open = not st.session_state.menu_open
+        st.rerun()
 
+with c2:
+    st.markdown(
+        """
+        <div style="display:flex; align-items:center; justify-content:center; height:45px;">
+          <a href="https://www.almg.gov.br/" target="_blank">
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;">
+          </a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c3:
+    st.markdown(
+        """
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; height:45px; font-size:26px;">
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
+          <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# style do "container" do header (1 caixa branca como antes)
 st.markdown("""
-<div id="almg_header" style='
-display:flex;
-align-items:center;
-justify-content:space-between;
-margin:0 auto 20px auto;
-background:white;
-max-width:560px;
-padding:10px 18px;
-border-radius:12px;
-position:relative;
-'>
-
-<div id="menu_icon" style='
-width:45px;
-height:45px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:35px;
-line-height:1;
-'>
-<a href="?menu=toggle" target="_self" style="
-  text-decoration:none;
-  color:#cc0000;
-  display:flex;
-  width:45px;height:45px;
-  align-items:center;justify-content:center;
-">☰</a>
-</div>
-
-<div>
-<a href="https://www.almg.gov.br/" target="_blank">
-<img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:45px;">
-</a>
-</div>
-
-<div style='font-size:30px;color:#cc0000'>
-<a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
-target="_blank" style="text-decoration:none;">
-🔍
-</a>
-<a href="https://intra.almg.gov.br/"
-target="_blank" style="text-decoration:none;">
-👤
-</a>
-</div>
-
-</div>
-""",unsafe_allow_html=True)
+<style>
+/* aplica no row acima (Streamlit) */
+div[data-testid="stHorizontalBlock"]{
+  max-width:560px;
+  margin:0 auto 20px auto;
+  background:white;
+  padding:10px 18px;
+  border-radius:12px;
+}
+button[kind="secondary"][data-testid="baseButton-secondary"]{
+  color:#cc0000 !important;
+  font-size:26px !important;
+  width:45px !important;
+  height:45px !important;
+  padding:0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.write("menu_open =", st.session_state.menu_open)
 
