@@ -133,21 +133,12 @@ div[data-testid="stButton"] > button{
   box-shadow:none !important;
 }
 
+/* o menu_btn vira um "overlay" fixo em cima do header */
 div[data-testid="stButton"]{
   position:absolute !important;
   top:108px !important;   /* sobe/desce */
   left:calc(50% - 300px + 22px) !important; /* esquerda/direita */
   z-index:9999 !important;
-}
-
-div[data-testid="stButton"] > button{
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-  width:45px !important;
-  height:45px !important;
-  padding:0 !important;
-  font-size:0 !important;
 }
 
 </style>
