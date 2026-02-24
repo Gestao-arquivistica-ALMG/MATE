@@ -1,5 +1,6 @@
 import re
 import streamlit as st
+import time
 from mate_pipeline import main
 
 # ================= CONFIG =================
@@ -178,18 +179,25 @@ if rodar:
     st.info(f"DATA = {entrada_clean!r}")
 
     try:
-        with st.status("Processando Diário do Legislativo...", expanded=True) as status:
-            status.write("Checkpoint 1")
+        progress_bar = st.progress(0)
+        status_text = st.empty()
 
-            url, aba = main(
-                entrada_override=entrada_clean,
-                spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
-                auth_mode="service_account",
-                sa_info=st.secrets["gcp_service_account"],
-            )
+        status_text.write("Processando... 0%")
 
-            status.write("Checkpoint 2: depois do main()")
-            status.update(label="Concluído ✅", state="complete", expanded=False)
+        for i in range(100):
+            progress_bar.progress(i + 1)
+            status_text.write(f"Processando... {i+1}%")
+            time.sleep(0.02)  # simulação
+
+        url, aba = main(
+            entrada_override=entrada_clean,
+            spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
+            auth_mode="service_account",
+            sa_info=st.secrets["gcp_service_account"],
+        )
+
+        progress_bar.progress(100)
+        status_text.write("Concluído 100%")
 
         st.success("")
         st.write("Aba:", aba)
