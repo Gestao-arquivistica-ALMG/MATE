@@ -193,7 +193,7 @@ c1, c2 = st.columns([2, 8], gap="small")
 with c1:
     # LOGO vira o botão do menu
     if st.button(
-        "",
+        " ",
         key="btn_menu_toggle",
         use_container_width=True,
     ):
