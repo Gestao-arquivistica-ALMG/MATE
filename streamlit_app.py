@@ -94,12 +94,12 @@ style="height:36px;">
 
 # ================= HEADER =================
 st.markdown(
-    '<div class="title" style="font-size:64px;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
+    '<div class="title" style="font-size:32px;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    '<div class="subtitle" style="font-size:18px;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
+    '<div class="subtitle" style="font-size:9px;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
     unsafe_allow_html=True
 )
 
