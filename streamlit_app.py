@@ -188,10 +188,9 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([1, 1], gap="small")
+c1, c2 = st.columns([1, 9], gap="small")
 
 with c1:
-    # botão real (sem recarregar por navegação)
     if st.button("☰", key="btn_menu_toggle"):
         st.session_state.menu_open = not st.session_state.menu_open
         st.rerun()
@@ -199,10 +198,15 @@ with c1:
 with c2:
     st.markdown(
         """
-        <div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; height:45px; font-size:26px;">
-          <a href="https://www.almg.gov.br/" target="_blank"><img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;"></a>
-          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
-          <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
+        <div style="display:flex; align-items:center; justify-content:space-between; height:45px;">
+          <a href="https://www.almg.gov.br/" target="_blank">
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" style="height:45px;">
+          </a>
+
+          <div style="display:flex; align-items:center; gap:10px; font-size:26px;">
+            <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
+            <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
+          </div>
         </div>
         """,
         unsafe_allow_html=True,
