@@ -23,7 +23,7 @@ background:#b30000;
 max-width:720px;
 
 /* ↓ aumenta a borda vermelha superior */
-margin:100px auto 30px auto;
+margin:90px auto 30px auto;
 
 padding:22px 22px 26px 22px;
 
@@ -51,10 +51,8 @@ background:white !important;
 padding:20px !important;
 border-radius:18px !important;
 box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
-}
-
-div[data-testid="stForm"]{
-background:white !important;
+max-width:560px !important;
+margin:0 auto !important;
 }
 
 div[data-testid="stTextInput"] > div{
