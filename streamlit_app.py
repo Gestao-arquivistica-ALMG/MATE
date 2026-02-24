@@ -136,7 +136,7 @@ div[data-testid="stButton"] > button{
 /* o menu_btn vira um "overlay" fixo em cima do header */
 div[data-testid="stButton"] > button#menu_btn{
   position: absolute !important;
-  top:108px !important;   /* sobe/desce */
+  top:48px !important;   /* sobe/desce */
   left:calc(50% - 300px + 22px) !important; /* esquerda/direita */
   width: 45px !important;
   height: 45px !important;
