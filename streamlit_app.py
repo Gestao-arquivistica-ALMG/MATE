@@ -215,8 +215,25 @@ button#close_menu_btn{
 
 # ================= HEADER ALMG =================
 
+# ================= MENU: query param handler =================
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
+
+qp = st.query_params
+menu_cmd = qp.get("menu", None)
+
+if menu_cmd:
+    cmd = str(menu_cmd).lower()
+    if cmd == "open":
+        st.session_state.menu_open = True
+    elif cmd == "close":
+        st.session_state.menu_open = False
+    elif cmd == "toggle":
+        st.session_state.menu_open = not st.session_state.menu_open
+
+    # limpa a URL e rerun pra não ficar repetindo
+    st.query_params.clear()
+    st.rerun()
     
 st.markdown("""
 <div id="almg_header" style='
@@ -237,11 +254,16 @@ height:45px;
 display:flex;
 align-items:center;
 justify-content:center;
-color:#cc0000;
 font-size:35px;
 line-height:1;
 '>
-☰
+  <a href="?menu=toggle" target="_self" style="
+    text-decoration:none;
+    color:#cc0000;
+    display:flex;
+    width:45px;height:45px;
+    align-items:center;justify-content:center;
+  ">☰</a>
 </div>
 
 <div>
@@ -265,17 +287,19 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
-# --- BOTÃO MENU REAL (clica e abre, sem query params) ---
-if st.button("menu", key="menu_btn"):
-    st.session_state.menu_open = True
-
 # ================= MENU (OVERLAY NO CORPO) =================
+    # overlay clicável (fecha clicando fora) — sem st.button
+    st.markdown("""
+    <a href="?menu=close" target="_self" id="almg_menu_overlay_link" style="
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.25);
+      z-index:9998;
+      display:block;
+    "></a>
+    """, unsafe_allow_html=True)
+    
 if st.session_state.get("menu_open", False):
-
-    # 1) overlay clicável (fecha ao clicar fora)
-    if st.button("close", key="close_menu_btn"):
-        st.session_state.menu_open = False
-        st.rerun()
 
     # 2) drawer (menu) por cima do overlay
     st.markdown("""
