@@ -328,11 +328,6 @@ st.markdown(
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# botão invisível em cima do ☰
-if st.button(" ", key="menu_btn"):
-    st.session_state.menu_open = not st.session_state.menu_open
-    st.rerun()
-
 # ================= CARD =================
 
 with st.form("form_mate", clear_on_submit=False):
