@@ -120,15 +120,16 @@ border-radius:12px;
 
 <div style='font-size:35px;color:#cc0000'>☰</div>
 
-<div>
-<a href="https://www.almg.gov.br/" target="_blank">
-<img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-style="height:45px;">
-</a>
-</div>
-
 <div style='font-size:30px;color:#cc0000'>
-🔍 👤
+<a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
+target="_blank" style="text-decoration:none;">
+🔍
+</a>
+
+<a href="https://intra.almg.gov.br/"
+target="_blank" style="text-decoration:none;">
+👤
+</a>
 </div>
 
 </div>
