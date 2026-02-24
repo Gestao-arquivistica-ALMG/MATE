@@ -145,6 +145,33 @@ div[data-testid="stButton"] > button#menu_btn{
   z-index: 9999 !important;
 }
 
+/* ===== Overlay do botão menu em cima do ☰ do header ===== */
+
+/* esconde visualmente o botão "menu" */
+div[data-testid="stButton"] > button#menu_btn{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  color:transparent !important;    /* some o texto 'menu' */
+  padding:0 !important;
+}
+
+/* pega o container do botão e posiciona por cima do header */
+div[data-testid="stButton"]:has(> button#menu_btn){
+  position: absolute !important;
+  top: 108px !important;   /* AJUSTE FINO */
+  left: 44px !important;   /* AJUSTE FINO */
+  width: 50px !important;
+  height: 50px !important;
+  z-index: 9999 !important;
+}
+
+/* garante área clicável */
+div[data-testid="stButton"]:has(> button#menu_btn) > button#menu_btn{
+  width: 50px !important;
+  height: 50px !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
