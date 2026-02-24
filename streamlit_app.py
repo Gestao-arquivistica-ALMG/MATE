@@ -77,25 +77,23 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
-/* Linha dos botões: só a ÚLTIMA linha de colunas dentro do form */
+/* Linha dos botões */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:200px !important;      /* largura do grupo [Gerar][🧹] */
-  margin:12px auto 0 0 !important; /* centraliza o grupo */
+  max-width:200px !important;
+  margin:12px auto 0 0 !important;
 }
 
-/* Botões: tamanhos fixos (não espicha) */
-div[data-testid="stFormSubmitButton"] button{
-  font-family:Montserrat !important;
-  font-weight:700 !important;
-  border-radius:14px !important;
-  padding:12px 14px !important;
-  min-width:20px !important;      /* Gerar */
-}
-
-/* Segundo botão (🧹) menor */
+/* 🚀 Gerar (PRIMARY) */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
-div[data-testid="stFormSubmitButton"]:nth-of-type(2) button{
-  min-width:20px !important;
+button[kind="primary"]{
+  min-width:120px !important;   /* ajuste aqui */
+  padding:12px 18px !important;
+}
+
+/* 🧹 Limpar (SECONDARY) */
+div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
+button[kind="secondary"]{
+  min-width:40px !important;
   padding:8px 0 !important;
 }
 
