@@ -218,6 +218,10 @@ border-radius:12px;
 position:relative;
 '>
 
+<div id="menu_icon" style='font-size:35px;color:#cc0000'>
+  <a href="?menu=open" style="text-decoration:none; color:#cc0000;">☰</a>
+</div>
+
 <div>
 <a href="https://www.almg.gov.br/" target="_blank">
 <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
@@ -239,10 +243,6 @@ target="_blank" style="text-decoration:none;">
 </div>
 """,unsafe_allow_html=True)
 
-# --- BOTÃO MENU REAL (PASSO B) ---
-if st.button("menu", key="menu_btn"):
-    st.session_state.menu_open = True
-            
 # ================= HEADER =================
 st.markdown(
     '<div class="title" style="font-size:24px; font-weight:1000; font-height:100;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
@@ -253,6 +253,12 @@ st.markdown(
     '<div class="subtitle" style="font-size:16px; font-weight:1000;">MATE - MATÉRIAS EM TRAMITAÇÃO</div>',
     unsafe_allow_html=True
 )
+
+params = st.query_params
+if params.get("menu") == "open":
+    st.session_state.menu_open = True
+elif params.get("menu") == "close":
+    st.session_state.menu_open = False
 
 # ================= CARD =================
 
