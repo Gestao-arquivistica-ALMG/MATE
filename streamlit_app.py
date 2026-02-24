@@ -182,30 +182,57 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
-        def set_prog(pct: int, msg: str):
+        progress_bar.progress(5)
+        status_text.write("Inicializando… 5%")
+
+        result = {"url": None, "aba": None}
+        err = {"exc": None}
+        done = threading.Event()
+
+        def run_main():
+            try:
+                url, aba = main(
+                    entrada_override=entrada_clean,
+                    spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
+                    auth_mode="service_account",
+                    sa_info=st.secrets["gcp_service_account"],
+                )
+                result["url"] = url
+                result["aba"] = aba
+            except Exception as e:
+                err["exc"] = e
+            finally:
+                done.set()
+
+        t = threading.Thread(target=run_main, daemon=True)
+        t.start()
+
+        # Animação de progresso: sobe lentamente até 90% e fica “vivo”
+        pct = 8
+        while not done.is_set():
+            pct = min(90, pct + 1)
             progress_bar.progress(pct)
-            status_text.write(f"{msg} — {pct}%")
+            status_text.write(f"Processando Diário do Legislativo… {pct}%")
+            time.sleep(0.10)
 
-        set_prog(5,  "Inicializando")
-        set_prog(15, "Validando entrada")
-        set_prog(25, "Iniciando processamento")
+            # quando chega em 90, mantém “batendo” sem ficar parado
+            if pct >= 90 and not done.is_set():
+                for dots in (".", "..", "..."):
+                    status_text.write(f"Processando Diário do Legislativo{dots} {pct}%")
+                    time.sleep(0.35)
+                    if done.is_set():
+                        break
 
-        # Durante o main: não “congela” no mesmo texto
-        status_text.write("Processando Diário do Legislativo… (pode levar alguns segundos)")
+        # terminou: se houve erro na thread, explode aqui no principal
+        if err["exc"] is not None:
+            raise err["exc"]
 
-        url, aba = main(
-            entrada_override=entrada_clean,
-            spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
-            auth_mode="service_account",
-            sa_info=st.secrets["gcp_service_account"],
-        )
-
-        set_prog(90, "Finalizando")
-        set_prog(100, "Concluído")
+        progress_bar.progress(100)
+        status_text.write("Concluído 100%")
 
         st.success("")
-        st.write("Aba:", aba)
-        st.link_button("Abrir planilha", url, use_container_width=True)
+        st.write("Aba:", result["aba"])
+        st.link_button("Abrir planilha", result["url"], use_container_width=True)
 
     except Exception as e:
         st.error("Erro ao processar.")
