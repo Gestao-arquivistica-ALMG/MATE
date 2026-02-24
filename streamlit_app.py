@@ -63,6 +63,12 @@ div[data-testid="stTextInput"] > div{
   background:#f3f4f6 !important;
 }
 
+/* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
+div[data-testid="stForm"] > div{
+  max-width:520px;
+  margin:0 auto;
+}
+
 /* Conteúdo legível: alinhamento à esquerda */
 div[data-testid="stForm"] label,
 div[data-testid="stForm"] .stCaption,
@@ -105,8 +111,11 @@ st.markdown("""
 display:flex;
 align-items:center;
 justify-content:space-between;
-margin-bottom:20px;
+margin:0 auto 20px auto;
 background:white;
+max-width:560px;
+padding:10px 18px;
+border-radius:12px;
 '>
 
 <div style='font-size:28px;color:#cc0000'>☰</div>
