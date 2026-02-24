@@ -211,7 +211,7 @@ with c1:
             pointer-events:none;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-               style="height:75px;">
+               style="height:45px;width:45px;">
         </div>
         """,
         unsafe_allow_html=True,
