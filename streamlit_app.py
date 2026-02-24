@@ -67,29 +67,29 @@ padding:14px;
 </style>
 """,unsafe_allow_html=True)
 
-    # ================= HEADER ALMG =================
+# ================= HEADER ALMG =================
 
-    st.markdown("""
-    <div style='
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:20px;
-    '>
+st.markdown("""
+<div style='
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:20px;
+'>
 
-    <div style='font-size:28px;color:white'>☰</div>
+<div style='font-size:28px;color:white'>☰</div>
 
-    <div>
-    <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-    style="height:36px; filter: brightness(0) invert(1);">
-    </div>
+<div>
+<img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+style="height:36px; filter: brightness(0) invert(1);">
+</div>
 
-    <div style='font-size:22px;color:white'>
-    🔍 👤
-    </div>
+<div style='font-size:22px;color:white'>
+🔍 👤
+</div>
 
-    </div>
-    """,unsafe_allow_html=True)
+</div>
+""",unsafe_allow_html=True)
 
 # ================= HEADER =================
 st.markdown(
