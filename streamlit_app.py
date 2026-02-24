@@ -79,22 +79,6 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
-/* HEADER mais compacto no celular */
-@media (max-width: 520px){
-  div[data-testid="stHorizontalBlock"]:first-of-type{
-    gap: 6px !important;
-    padding: 6px 10px !important;
-  }
-
-  div[data-testid="stHorizontalBlock"]:first-of-type img{
-    height: 32px !important;
-  }
-
-  div[data-testid="stHorizontalBlock"]:first-of-type button{
-    padding: 6px 8px !important;
-  }
-}
-
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   max-width:320px !important;
   margin:12px 0 0 40px !important;
