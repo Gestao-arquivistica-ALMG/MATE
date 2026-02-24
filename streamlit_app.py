@@ -79,8 +79,8 @@ div[data-testid="stForm"] li{
 
 /* Linha dos botões */
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:200px !important;
-  margin:12px 0 0 0 !important;
+  max-width:300px !important;
+  margin:12px aut 0 0 !important;
 }
 
 /* 🚀 Gerar (PRIMARY) */
