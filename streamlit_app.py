@@ -196,19 +196,23 @@ with c1:
         "",
         key="btn_menu_toggle",
         use_container_width=True,
-        type="secondary",
     ):
         st.session_state.menu_open = not st.session_state.menu_open
         st.rerun()
 
+    # desenha o logo por cima do botão
     st.markdown(
         """
-        <style>
-        /* força o botão do logo a ter altura real */
-        div[data-testid="stButton"] button[kind]{
-            height:45px !important;
-        }
-        </style>
+        <div style="
+            margin-top:-70px;
+            display:flex;
+            align-items:center;
+            justify-content:flex-start;
+            pointer-events:none;
+        ">
+          <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+               style="height:45px;width:100px;">
+        </div>
         """,
         unsafe_allow_html=True,
     )
