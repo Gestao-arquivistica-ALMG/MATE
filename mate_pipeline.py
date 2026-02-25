@@ -314,19 +314,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     import re
 
-    # A partir daqui, cole TODO o fluxo atual (o que hoje está global),
-    # usando a variável local `entrada` (sem globals()).
-    #
-    # IMPORTANTE: mantenha suas inicializações exatamente como estão:
-    # pdf_path = None, aba_yyyymmdd = None, aba = None, yyyymmdd = None, etc.
-    #
-    # IMPORTANTE 2: quando chegar na chamada do upsert_tab_diario, use:
-    # spreadsheet_url_or_id = spreadsheet_url_or_id or SPREADSHEET
-    #
-    # E ao final:
-    # return url, aba
-
-    pdf_path = None  # sempre inicializa
+        pdf_path = None  # sempre inicializa
     aba_yyyymmdd = None  # data da ABA (trabalho), quando a entrada for DATA
     aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
     yyyymmdd = None  # fallback seguro p/ diario_key quando entrada não for DATA
@@ -387,7 +375,31 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
         pdf_path = baixar_pdf_por_url(url)
         if not pdf_path:
-            raise SystemExit("DL não existe para a data informada.")
+            # fallback: volta até achar o último DL existente (pula domingo)
+            import datetime as dt
+            dt_cur = dt.datetime.strptime(yyyymmdd, "%Y%m%d").date()
+
+            ok = False
+            for _ in range(14):  # tenta até 14 dias pra trás
+                dt_cur -= dt.timedelta(days=1)
+                if dt_cur.weekday() == 6:  # domingo
+                    continue
+
+                y = dt_cur.strftime("%Y%m%d")
+                url_try = f"{URL_BASE}/{y[:4]}/L{y}.pdf"
+                pdf_try = baixar_pdf_por_url(url_try)
+                if pdf_try:
+                    yyyymmdd = y
+                    url = url_try
+                    pdf_path = pdf_try
+                    aba_yyyymmdd = proximo_dia_util(yyyymmdd)
+                    diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)
+                    print(f"DL não encontrado na data pedida; usando o último disponível: {yyyymmdd}")
+                    ok = True
+                    break
+
+            if not ok:
+                raise SystemExit("DL não existe para a data informada (nem nos últimos 14 dias).")
 
     # ? TRATAMENTO DEFINITIVO DE DL INEXISTENTE
     if pdf_path is None:
