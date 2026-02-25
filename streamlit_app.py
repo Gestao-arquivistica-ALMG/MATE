@@ -395,31 +395,28 @@ if rodar:
         st.success("")
         st.write("Aba:", result["aba"])
 
-        gid = result.get("gid")
         url_base = result.get("url")
+        gid = result.get("gid")
 
-        if url_base:
-            url_com_aba = f"{url_base}#gid={gid}" if gid else url_base
+        url_com_aba = f"{url_base}#gid={gid}" if (url_base and gid) else (url_base or "")
 
-            st.markdown(
-                f"""
-                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="
-                    display: block;
-                    text-align: center;
-                    padding: 10px;
-                    border-radius: 8px;
-                    background-color: #e9e9e9;
-                    text-decoration: none;
-                    font-weight: 500;
-                    color: black;
-                ">
-                    Abrir planilha
-                </a>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
-            st.error("URL da planilha não encontrada.")
+        st.markdown(
+            f"""
+            <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="
+                display: block;
+                text-align: center;
+                padding: 10px;
+                border-radius: 8px;
+                background-color: #e9e9e9;
+                text-decoration: none;
+                font-weight: 500;
+                color: black;
+            ">
+                Abrir planilha
+            </a>
+            """,
+            unsafe_allow_html=True
+        )
 
     except Exception as e:
         st.error("Erro ao processar.")
