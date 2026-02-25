@@ -375,31 +375,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
         pdf_path = baixar_pdf_por_url(url)
         if not pdf_path:
-            # fallback: volta até achar o último DL existente (pula domingo)
-            import datetime as dt
-            dt_cur = dt.datetime.strptime(yyyymmdd, "%Y%m%d").date()
-
-            ok = False
-            for _ in range(14):  # tenta até 14 dias pra trás
-                dt_cur -= dt.timedelta(days=1)
-                if dt_cur.weekday() == 6:  # domingo
-                    continue
-
-                y = dt_cur.strftime("%Y%m%d")
-                url_try = f"{URL_BASE}/{y[:4]}/L{y}.pdf"
-                pdf_try = baixar_pdf_por_url(url_try)
-                if pdf_try:
-                    yyyymmdd = y
-                    url = url_try
-                    pdf_path = pdf_try
-                    aba_yyyymmdd = proximo_dia_util(yyyymmdd)
-                    diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)
-                    print(f"DL não encontrado na data pedida; usando o último disponível: {yyyymmdd}")
-                    ok = True
-                    break
-
-            if not ok:
-                raise SystemExit("DL não existe para a data informada (nem nos últimos 14 dias).")
+            raise SystemExit("DL não existe para a data informada.")
 
     # ? TRATAMENTO DEFINITIVO DE DL INEXISTENTE
     if pdf_path is None:
