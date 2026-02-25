@@ -25,7 +25,7 @@ html, body, [data-testid="stAppViewContainer"]{
 .block-container{
   padding-top: 0rem !important;
   max-width:600px;
-  margin:20px auto 30px auto;
+  margin:90px auto 30px auto;
   padding:22px 22px 26px 22px;
   background:#fff;
   border-radius:18px;
