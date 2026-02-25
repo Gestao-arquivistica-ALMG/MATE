@@ -194,7 +194,7 @@ with c1:
     # LOGO vira o botão do menu
     if st.button(
         " ",
-        key="btn_menu_toggle"
+        key="btn_menu_toggle",
         use_container_width=True,
     ):
         st.session_state.menu_open = not st.session_state.menu_open
