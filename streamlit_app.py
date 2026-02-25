@@ -183,61 +183,111 @@ button#close_menu_btn{
 </style>
 """, unsafe_allow_html=True)
 
-# ================= HEADER ALMG (HTML RENDER) =================
+# ================= HEADER ALMG =================
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-qp = st.query_params
-if qp.get("menu") == "open":
-    st.session_state.menu_open = True
-elif qp.get("menu") == "close":
-    st.session_state.menu_open = False
+# "cabeçalho" feito com layout Streamlit (sem HTML clicável)
+c1, c2 = st.columns([2, 8], gap="small")
 
-st.markdown(
-    """
-    <style>
-    #xeque_hdr{
-      max-width:560px;
-      margin:0 auto 20px auto;
-      background:#fff;
-      padding:10px 18px;
-      border-radius:12px;
-    }
-    #xeque_hdr .row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    #xeque_hdr .left, #xeque_hdr .right{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:88px;
-    }
-    #xeque_hdr .center{ flex:1; display:flex; justify-content:flex-start; }
-    #xeque_hdr a{ text-decoration:none; font-size:24px; line-height:1; }
-    #xeque_hdr .menu{ font-size:26px; color:#cc0000; }
-    #xeque_hdr img{ height:45px; width:auto; }
-    </style>
+with c1:
+    # LOGO vira o botão do menu
+    if st.button(
+        " ",
+        key="btn_menu_toggle",
+        use_container_width=True,
+    ):
+        st.session_state.menu_open = not st.session_state.menu_open
+        st.rerun()
 
-    <div id="xeque_hdr">
-      <div class="row">
-        <div class="left">
-          <a class="menu" href="?menu=open" target="_self">☰</a>
-          <a href="https://www.almg.gov.br/" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg">
-          </a>
+    # desenha o logo por cima do botão
+    st.markdown(
+        """
+        <div style="
+            margin-top:-70px;
+            display:flex;
+            align-items:center;
+            justify-content:flex-start;
+            pointer-events:none;
+        ">
+          <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+               style="height:45px;width:100px;">
         </div>
-        <div class="right">
-          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" rel="noopener noreferrer">🔍</a>
-          <a href="https://intra.almg.gov.br/" target="_blank" rel="noopener noreferrer">👤</a>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c2:
+    st.markdown(
+        """
+        <div style="display:flex; align-items:center; justify-content:flex-end; height:45px; gap:12px; font-size:24px;">
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
+          <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
         </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# style do "container" do header (1 caixa branca como antes)
+st.markdown("""
+<style>
+/* aplica no row acima (Streamlit) */
+div[data-testid="stHorizontalBlock"]{
+  max-width:560px;
+  margin:0 auto 20px auto;
+  background:white;
+  padding:10px 18px;
+  border-radius:12px;
+}
+button[kind="secondary"][data-testid="baseButton-secondary"]{
+  color:#cc0000 !important;
+  font-size:26px !important;
+  width:45px !important;
+  height:45px !important;
+  padding:0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ================= MENU (OVERLAY NO CORPO) =================
+if st.session_state.get("menu_open", False):
+
+    # 2) drawer (menu) por cima do overlay
+    st.markdown("""
+    <div id="almg_menu_drawer" style="
+      display: block !important;
+      z-index: 2147483647 !important;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px;
+      background: white;
+      padding: 20px;
+      z-index: 9999;
+      box-shadow: 3px 0 12px rgba(0,0,0,0.2);
+    ">
+    
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
+        <a href="https://www.almg.gov.br/a-assembleia/" target="_blank" style="text-decoration:none; color:#111;">A Assembleia</a>
+        <a href="https://www.almg.gov.br/atividade-parlamentar/" target="_blank" style="text-decoration:none; color:#111;">Atividade parlamentar</a>
+        <a href="https://www.almg.gov.br/participacao/" target="_blank" style="text-decoration:none; color:#111;">Participação</a>
+        <a href="https://www.almg.gov.br/comunicacao/" target="_blank" style="text-decoration:none; color:#111;">Comunicação</a>
+        <a href="https://www.almg.gov.br/servicos/" target="_blank" style="text-decoration:none; color:#111;">Serviços</a>
+        <a href="https://www.almg.gov.br/transparencia/" target="_blank" style="text-decoration:none; color:#111;">Transparência</a>
+      </div>
+
+      <div style="margin-top:18px;">
+        <button onclick="window.location.reload()" style="
+          display:none;
+        "></button>
       </div>
     </div>
-    """,
-    unsafe_allow_html=True,
-)
+    """, unsafe_allow_html=True)
             
 # ================= HEADER =================
 st.markdown(
@@ -345,13 +395,19 @@ if rodar:
         st.success("")
         st.write("Aba:", result["aba"])
 
-        url_base = result["url"]
-        gid = result["gid"]
+                url_base = str(result.get("url") or "").strip()
+        gid = result.get("gid")
 
-        if "/edit" not in url_base:
+        # garante URL absoluta e canônica do Google Sheets
+        if url_base and not url_base.startswith("http"):
+            url_base = "https://" + url_base.lstrip("/")
+
+        if url_base and "/spreadsheets/d/" in url_base and "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
 
-        url_com_aba = f"{url_base}#gid={gid}"
+        st.write("DEBUG URL FINAL:", url_com_aba)
+        
+        url_com_aba = f"{url_base}#gid={gid}" if (url_base and gid is not None) else url_base
 
         st.markdown(
             f"""
