@@ -205,7 +205,7 @@ with c1:
         <div style="
             margin-top:-70px;
             display:flex;
-            align-items:center;
+            align-items:left;
             justify-content:flex-start;
             pointer-events:none;
         ">
