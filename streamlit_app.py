@@ -203,13 +203,14 @@ with c1:
     # desenha o logo por cima do botão
     st.markdown(
         """
-        <div style="
-            margin-top:-70px;
-            display:flex;
-            align-items:left;
-            justify-content:flex-start;
-            pointer-events:none;
-        ">
+        <div style="display:flex; align-items:center;">
+            <button style="
+                height:45px;
+                width:100px;
+                background:transparent;
+                border:none;
+                cursor:pointer;
+            " onclick="window.location.reload()"></button>
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
                style="height:45px;width:100px;">
         </div>
