@@ -23,6 +23,7 @@ html, body, [data-testid="stAppViewContainer"]{
 
 /* Container geral branco (fecha tudo) */
 .block-container{
+  padding-top: 0.5rem !important;
   max-width:600px;
   margin:90px auto 30px auto;
   padding:22px 22px 26px 22px;
