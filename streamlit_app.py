@@ -195,7 +195,7 @@ with c1:
     if st.button(
         " ",
         key="btn_menu_toggle",
-        /*use_container_width=True,
+/*use_container_width=True,
     ):
         st.session_state.menu_open = not st.session_state.menu_open
         st.rerun()
