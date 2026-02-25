@@ -395,19 +395,13 @@ if rodar:
         st.success("")
         st.write("Aba:", result["aba"])
 
-                url_base = str(result.get("url") or "").strip()
-        gid = result.get("gid")
+        url_base = result["url"]
+        gid = result["gid"]
 
-        # garante URL absoluta e canônica do Google Sheets
-        if url_base and not url_base.startswith("http"):
-            url_base = "https://" + url_base.lstrip("/")
-
-        if url_base and "/spreadsheets/d/" in url_base and "/edit" not in url_base:
+        if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
 
-        st.write("DEBUG URL FINAL:", url_com_aba)
-        
-        url_com_aba = f"{url_base}#gid={gid}" if (url_base and gid is not None) else url_base
+        url_com_aba = f"{url_base}#gid={gid}"
 
         st.markdown(
             f"""
