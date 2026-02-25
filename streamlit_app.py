@@ -53,7 +53,7 @@ html, body, [data-testid="stAppViewContainer"]{
 /* Card interno (o próprio form) */
 div[data-testid="stForm"]{
   background:#fff !important;
-  padding:0px !important;
+  padding:20px !important;
   border-radius:18px !important;
   box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
 
