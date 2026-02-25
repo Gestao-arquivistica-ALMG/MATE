@@ -126,8 +126,6 @@ button#menu_btn{
 button#close_menu_btn{
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
   padding: 0 !important;
   background: rgba(0,0,0,0.25) !important;
   border: 0 !important;
