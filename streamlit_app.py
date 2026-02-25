@@ -183,81 +183,61 @@ button#close_menu_btn{
 </style>
 """, unsafe_allow_html=True)
 
-# ================= HEADER ALMG (MOBILE OK) =================
+# ================= HEADER ALMG (HTML RENDER) =================
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# captura query ?menu=open/close pra abrir/fechar sem JS
 qp = st.query_params
 if qp.get("menu") == "open":
     st.session_state.menu_open = True
 elif qp.get("menu") == "close":
     st.session_state.menu_open = False
 
-st.markdown("""
-<style>
-/* container do header */
-#xeque_hdr{
-  max-width:560px;
-  margin:0 auto 20px auto;
-  background:#fff;
-  padding:10px 18px;
-  border-radius:12px;
-}
+st.markdown(
+    """
+    <style>
+    #xeque_hdr{
+      max-width:560px;
+      margin:0 auto 20px auto;
+      background:#fff;
+      padding:10px 18px;
+      border-radius:12px;
+    }
+    #xeque_hdr .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    #xeque_hdr .left, #xeque_hdr .right{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:88px;
+    }
+    #xeque_hdr .center{ flex:1; display:flex; justify-content:flex-start; }
+    #xeque_hdr a{ text-decoration:none; font-size:24px; line-height:1; }
+    #xeque_hdr .menu{ font-size:26px; color:#cc0000; }
+    #xeque_hdr img{ height:45px; width:auto; }
+    </style>
 
-/* linha flex (não quebra no mobile) */
-#xeque_hdr .row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-/* lados fixos, centro flex */
-#xeque_hdr .left, #xeque_hdr .right{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-width:88px;
-}
-#xeque_hdr .center{
-  flex:1;
-  display:flex;
-  justify-content:flex-start;
-}
-
-/* botões/links */
-#xeque_hdr a{
-  text-decoration:none;
-  font-size:24px;
-  line-height:1;
-}
-#xeque_hdr .menu{
-  font-size:26px;
-  color:#cc0000;
-}
-#xeque_hdr img{
-  height:45px;
-  width:auto;
-}
-</style>
-
-<div id="xeque_hdr">
-  <div class="row">
-    <div class="left">
-      <a class="menu" href="?menu=open" target="_self">☰</a>
-      <a href="https://www.almg.gov.br/" target="_blank" rel="noopener noreferrer">
-        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg">
-      </a>
+    <div id="xeque_hdr">
+      <div class="row">
+        <div class="left">
+          <a class="menu" href="?menu=open" target="_self">☰</a>
+          <a href="https://www.almg.gov.br/" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg">
+          </a>
+        </div>
+        <div class="right">
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" rel="noopener noreferrer">🔍</a>
+          <a href="https://intra.almg.gov.br/" target="_blank" rel="noopener noreferrer">👤</a>
+        </div>
+      </div>
     </div>
-
-    <div class="right">
-      <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" rel="noopener noreferrer">🔍</a>
-      <a href="https://intra.almg.gov.br/" target="_blank" rel="noopener noreferrer">👤</a>
-    </div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
             
 # ================= HEADER =================
 st.markdown(
