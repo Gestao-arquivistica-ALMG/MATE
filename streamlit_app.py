@@ -398,6 +398,8 @@ if rodar:
         url_base = result.get("url")
         gid = result.get("gid")
 
+        st.write("DEBUG URL:", result)
+        
         url_com_aba = f"{url_base}#gid={gid}" if (url_base and gid) else (url_base or "")
 
         st.markdown(
