@@ -307,7 +307,7 @@ if "menu_open" not in st.session_state:
 with st.form("form_mate", clear_on_submit=False):
     entrada = st.text_input(
         "Informe uma data do Diário do Legislativo",
-        placeholder="Ex: 24/02/2026 ou https://...",
+        placeholder="Ex.: 24/02/2026 ou dia...",
     )
 
     st.caption(
