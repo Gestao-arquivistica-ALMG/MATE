@@ -352,7 +352,7 @@ if rodar:
 
         def run_main():
             try:
-                url, aba = main(
+                url, aba, gid = main(
                     entrada_override=entrada_clean,
                     spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
                     auth_mode="service_account",
@@ -394,7 +394,7 @@ if rodar:
         st.success("")
         st.write("Aba:", result["aba"])
         url_com_aba = f'{result["url"]}#gid={result["gid"]}'
-        st.link_button("Abrir planilha", url_com_aba, use_container_width=True)
+        st.link_button("Abrir planilha",f'{result["url"]}#gid={result["gid"]}',use_container_width=True)
 
     except Exception as e:
         st.error("Erro ao processar.")
