@@ -180,6 +180,21 @@ button#close_menu_btn{
   z-index: 9998 !important;
 }
 
+st.markdown("""
+<div style="display:flex; align-items:center;">
+    <button style="
+        height:45px;
+        width:100px;
+        background:transparent;
+        border:none;
+        cursor:pointer;
+    " onclick="window.location.reload()"></button>
+
+    <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+         style="height:45px;width:100px;">
+</div>
+""", unsafe_allow_html=True)
+
 </style>
 """, unsafe_allow_html=True)
 
