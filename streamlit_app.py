@@ -111,7 +111,7 @@ button[kind="secondary"]{
 button#menu_btn{
   position: fixed !important;
   top: 118px !important;                     /* ajuste fino */
-  left: calc(50% - 280px + 18px) !important; /* ajuste fino: 560/2 = 280 */
+  left: 20px !important; /* ajuste fino: 560/2 = 280 */
   width: 45px !important;
   height: 45px !important;
   padding: 0 !important;
