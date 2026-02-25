@@ -393,8 +393,9 @@ if rodar:
 
         st.success("")
         st.write("Aba:", result["aba"])
-        url_com_aba = f'{result["url"]}#gid={result["gid"]}'
-        st.link_button("Abrir planilha", f'{result["url"]}#gid={result["gid"]}', use_container_width=True)
+        url, aba, gid = result
+        url_com_aba = f'{url}#gid={gid}'
+        st.link_button("Abrir planilha", url_com_aba, use_container_width=True)
 
     except Exception as e:
         st.error("Erro ao processar.")
