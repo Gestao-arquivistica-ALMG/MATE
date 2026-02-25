@@ -4065,7 +4065,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             aba_yyyymmdd = proximo_dia_util(yyyymmdd)
     diario_key = aba_yyyymmdd if aba_yyyymmdd else datetime.now(TZ_BR).strftime("%Y%m%d")
 
-    url, aba = upsert_tab_diario(
+    url, ab, gid = upsert_tab_diario(
         gc,
         spreadsheet_url_or_id=(spreadsheet_url_or_id or SPREADSHEET),
         diario_key=diario_key,
