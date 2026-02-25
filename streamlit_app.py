@@ -236,7 +236,7 @@ div[data-testid="stHorizontalBlock"]{
   max-width:100%;
   margin:0 auto 0 auto;
   background:white;
-  padding:5px 9px;
+  padding:2px 4px;
   border-radius:12px;
 }
 button[kind="secondary"][data-testid="baseButton-secondary"]{
