@@ -158,6 +158,9 @@ def normalizar_data(entrada: str) -> str:
             base -= timedelta(days=2)
         return base.strftime("%Y%m%d")
 
+    if s_lower in ("domingo", "segunda"):
+        raise ValueError("Não há Diário do Legislativo em domingo/segunda. Use sábado ou uma data.")
+
     # --- DIAS DA SEMANA (última ocorrência passada) ---
     weekday_map = {
         "terça": 1, "terca": 1,
