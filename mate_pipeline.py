@@ -4077,7 +4077,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     print("Planilha:", url)
     
-    return url, aba
+    return url, aba, gid
 
 if __name__ == "__main__":
     main()
