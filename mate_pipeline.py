@@ -147,7 +147,7 @@ def proximo_dia_util(yyyymmdd: str) -> str:
 def normalizar_data(entrada: str) -> str:
     s_raw = "" if entrada is None else str(entrada)
     s = s_raw.strip()
-    s_lower = s.lower()
+    s_lower = s.lower() 
 
     # --- PALAVRAS-CHAVE ---
     if s_lower in ("hoje", "ontem", "anteontem"):
@@ -347,7 +347,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         if not pdf_path:
             raise SystemExit("DL não existe (URL não retornou PDF).")
 
-    elif "/" in entrada or "\\" in entrada or entrada.lower().startswith("/content"):
+    elif (
+        entrada.lower().startswith("/content")                  # Colab upload path
+        or entrada.lower().endswith(".pdf")                     # arquivo PDF
+        or os.path.exists(entrada)                              # caminho real existente
+        or (len(entrada) >= 2 and entrada[1] == ":" and ("\\" in entrada or "/" in entrada))  # Windows C:\...
+    ):
         pdf_path = entrada
         if not os.path.exists(pdf_path):
             raise SystemExit(f"Arquivo local não encontrado: {pdf_path}")
