@@ -396,6 +396,9 @@ if rodar:
         st.write("Aba:", result["aba"])
 
         url_base = result.get("url")
+
+        if url_base and "/edit" not in url_base:
+            url_base = url_base.rstrip("/") + "/edit"
         gid = result.get("gid")
 
         st.write("DEBUG URL:", result)
