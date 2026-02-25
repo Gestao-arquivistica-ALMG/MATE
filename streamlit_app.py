@@ -188,7 +188,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([5, 2], gap="small")
+c1, c2 = st.columns([2, 5], gap="small")
 
 with c1:
     # LOGO vira o botão do menu
@@ -233,6 +233,7 @@ st.markdown("""
 <style>
 /* aplica no row acima (Streamlit) */
 div[data-testid="stHorizontalBlock"]{
+  max-width:100%;
   margin:0 auto 20px auto;
   background:white;
   padding:10px 18px;
@@ -241,8 +242,8 @@ div[data-testid="stHorizontalBlock"]{
 button[kind="secondary"][data-testid="baseButton-secondary"]{
   color:#cc0000 !important;
   font-size:26px !important;
-  width:200px !important;
-  height:200px !important;
+  width:45px !important;
+  height:45px !important;
   padding:0 !important;
 }
 </style>
