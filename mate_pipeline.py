@@ -4050,7 +4050,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
         _with_backoff(sh.batch_update, body={"requests": reqs})
 
-        return sh.url, ws.title
+        return {"url": sh.url,"aba": ws.title,"gid": sheet_id}
 
 
     SPREADSHEET = "https://docs.google.com/spreadsheets/d/1QUpyjHetLqLcr4LrgQqTnCXPZZfEyPkSQb-ld2RxW1k/edit"
