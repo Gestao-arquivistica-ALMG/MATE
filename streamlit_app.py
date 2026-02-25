@@ -242,8 +242,8 @@ div[data-testid="stHorizontalBlock"]{
 button[kind="secondary"][data-testid="baseButton-secondary"]{
   color:#cc0000 !important;
   font-size:26px !important;
-  width:100px !important;
-  height:100px !important;
+  width:200px !important;
+  height:200px !important;
   padding:0 !important;
 }
 </style>
