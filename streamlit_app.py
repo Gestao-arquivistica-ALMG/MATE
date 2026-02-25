@@ -203,7 +203,7 @@ with c1:
     st.markdown(
         """
         <div style="
-            margin-top:-70px;
+            margin-top:-140px;
             display:flex;
             align-items:center;
             justify-content:flex-start;
