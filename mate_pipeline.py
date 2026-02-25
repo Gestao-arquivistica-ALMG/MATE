@@ -314,7 +314,19 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     import re
 
-        pdf_path = None  # sempre inicializa
+    # A partir daqui, cole TODO o fluxo atual (o que hoje está global),
+    # usando a variável local `entrada` (sem globals()).
+    #
+    # IMPORTANTE: mantenha suas inicializações exatamente como estão:
+    # pdf_path = None, aba_yyyymmdd = None, aba = None, yyyymmdd = None, etc.
+    #
+    # IMPORTANTE 2: quando chegar na chamada do upsert_tab_diario, use:
+    # spreadsheet_url_or_id = spreadsheet_url_or_id or SPREADSHEET
+    #
+    # E ao final:
+    # return url, aba
+
+    pdf_path = None  # sempre inicializa
     aba_yyyymmdd = None  # data da ABA (trabalho), quando a entrada for DATA
     aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
     yyyymmdd = None  # fallback seguro p/ diario_key quando entrada não for DATA
