@@ -360,6 +360,7 @@ if rodar:
                 )
                 result["url"] = url
                 result["aba"] = aba
+                result["gid"] = gid
             except Exception as e:
                 err["exc"] = e
             finally:
@@ -393,7 +394,7 @@ if rodar:
 
         st.success("")
         st.write("Aba:", result["aba"])
-        url, aba = result
+        
         url_com_aba = f'{result["url"]}#gid={result["gid"]}'
         st.link_button("Abrir planilha", url_com_aba, use_container_width=True)
 
