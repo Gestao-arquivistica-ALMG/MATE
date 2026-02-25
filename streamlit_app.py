@@ -352,15 +352,15 @@ if rodar:
 
         def run_main():
             try:
-                url, aba, gid = main(
+                r = main(
                     entrada_override=entrada_clean,
                     spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
                     auth_mode="service_account",
                     sa_info=st.secrets["gcp_service_account"],
                 )
-                result["url"] = url
-                result["aba"] = aba
-                result["gid"] = gid
+                result["url"] = r.get("url")
+                result["aba"] = r.get("aba")
+                result["gid"] = r.get("gid")
             except Exception as e:
                 err["exc"] = e
             finally:
