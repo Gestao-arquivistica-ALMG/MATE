@@ -233,7 +233,7 @@ st.markdown("""
 <style>
 /* aplica no row acima (Streamlit) */
 div[data-testid="stHorizontalBlock"]{
-  max-width:560px;
+  max-width:100%;
   margin:0 auto 20px auto;
   background:white;
   padding:10px 18px;
