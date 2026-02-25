@@ -180,17 +180,6 @@ button#close_menu_btn{
   z-index: 9998 !important;
 }
 
-/* MOBILE: NÃO EMPILHAR AS COLUNAS DO HEADER */
-@media (max-width: 900px){
-  #hdrwrap div[data-testid="stHorizontalBlock"]{
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-  }
-  #hdrwrap div[data-testid="stColumn"]{
-    min-width: 0 !important;
-  }
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -199,7 +188,6 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-st.markdown('<div id="hdrwrap">', unsafe_allow_html=True)
 c1, c2 = st.columns([2, 8], gap="small")
 
 with c1:
@@ -239,8 +227,6 @@ with c2:
         """,
         unsafe_allow_html=True,
     )
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 # style do "container" do header (1 caixa branca como antes)
 st.markdown("""
