@@ -65,6 +65,12 @@ div[data-testid="stTextInput"] > div{
   background:#f3f4f6 !important;
 }
 
+/* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
+div[data-testid="stForm"] > div{
+  max-width:400px;
+  margin:0 auto;
+}
+
 /* Conteúdo legível: alinhamento à esquerda */
 div[data-testid="stForm"] label,
 div[data-testid="stForm"] .stCaption,
