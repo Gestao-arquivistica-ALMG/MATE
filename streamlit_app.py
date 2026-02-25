@@ -56,7 +56,6 @@ div[data-testid="stForm"]{
   padding:30px !important;
   border-radius:18px !important;
   box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
-
   max-width:560px !important;
   margin:0 auto !important;
 }
@@ -64,12 +63,6 @@ div[data-testid="stForm"]{
 /* Input com fundo claro */
 div[data-testid="stTextInput"] > div{
   background:#f3f4f6 !important;
-}
-
-/* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
-div[data-testid="stForm"] > div{
-  max-width:340px;
-  margin:0 auto;
 }
 
 /* Conteúdo legível: alinhamento à esquerda */
