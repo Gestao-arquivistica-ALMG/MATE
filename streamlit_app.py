@@ -271,12 +271,12 @@ if st.session_state.get("menu_open", False):
       </div>
 
       <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
-        <a href="https://www.almg.gov.br/a-assembleia/" target="_blank" style="text-decoration:none; color:#111;">A Assembleia</a>
-        <a href="https://www.almg.gov.br/atividade-parlamentar/" target="_blank" style="text-decoration:none; color:#111;">Atividade parlamentar</a>
-        <a href="https://www.almg.gov.br/participacao/" target="_blank" style="text-decoration:none; color:#111;">Participação</a>
-        <a href="https://www.almg.gov.br/comunicacao/" target="_blank" style="text-decoration:none; color:#111;">Comunicação</a>
-        <a href="https://www.almg.gov.br/servicos/" target="_blank" style="text-decoration:none; color:#111;">Serviços</a>
-        <a href="https://www.almg.gov.br/transparencia/" target="_blank" style="text-decoration:none; color:#111;">Transparência</a>
+        <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" style="text-decoration:none; color:#111;">Diário do Executivo</a>
+        <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" style="text-decoration:none; color:#111;">Diário do Legislativo</a>
+        <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" style="text-decoration:none; color:#111;">Reuniões de Plenário</a>
+        <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" style="text-decoration:none; color:#111;">Reuniões de Comissões</a>
+        <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none; color:#111;">Silegis</a>
+        <a href="https://webmail.almg.gov.br/" target="_blank" style="text-decoration:none; color:#111;">Webmail</a>
       </div>
 
       <div style="margin-top:18px;">
