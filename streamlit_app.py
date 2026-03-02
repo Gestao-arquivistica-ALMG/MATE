@@ -386,8 +386,12 @@ if rodar:
         if err["exc"] is not None:
             raise err["exc"]
 
-        progress_bar.progress(100)
-        status_text.write("Concluído 100%")
+        progress_bar.empty()
+        status_text.empty()
+
+        with st.info(""):
+            st.progress(100)
+            st.markdown("**Concluído 100%**")
 
         if not result["url"] or result["gid"] is None:
             st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
