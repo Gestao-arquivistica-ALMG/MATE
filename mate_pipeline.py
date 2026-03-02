@@ -234,7 +234,6 @@ def _parece_pdf(caminho: str) -> bool:
     except Exception:
         return False
 
-
 def baixar_pdf_por_url(url: str) -> str | None:
     import requests
 
