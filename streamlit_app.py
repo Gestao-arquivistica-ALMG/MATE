@@ -271,6 +271,7 @@ if st.session_state.get("menu_open", False):
       </div>
 
       <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
+        <a href="https://www.almg.gov.br/" target="_blank" style="text-decoration:none; color:#111;">ALMG</a>
         <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" style="text-decoration:none; color:#111;">Diário do Executivo</a>
         <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" style="text-decoration:none; color:#111;">Diário do Legislativo</a>
         <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" style="text-decoration:none; color:#111;">Reuniões de Plenário</a>
