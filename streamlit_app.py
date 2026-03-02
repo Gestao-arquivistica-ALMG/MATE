@@ -2,8 +2,6 @@ import re
 import streamlit as st
 import threading
 import time
-import mate_pipeline
-st.write("DEBUG pipeline file:", mate_pipeline.__file__)
 from mate_pipeline import main
 
 # ================= CONFIG =================
