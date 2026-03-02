@@ -349,30 +349,17 @@ if rodar:
         err = {"exc": None}
         done = threading.Event()
 
-        # Estado compartilhado thread-safe
-        progress_state = {"pct": None, "msg": None}
-        progress_lock = threading.Lock()
-
         def run_main():
             try:
-                def progress_callback(p, msg=None):
-                    with progress_lock:
-                        progress_state["pct"] = int(max(0, min(99, p)))
-                        if msg is not None:
-                            progress_state["msg"] = str(msg)
-
                 r = main(
                     entrada_override=entrada_clean,
                     spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
                     auth_mode="service_account",
                     sa_info=st.secrets["gcp_service_account"],
-                    progress_callback=progress_callback,
                 )
-
                 result["url"] = r.get("url")
                 result["aba"] = r.get("aba")
                 result["gid"] = r.get("gid")
-
             except Exception as e:
                 err["exc"] = e
             finally:
@@ -383,26 +370,16 @@ if rodar:
         pct_fake = 5
 
         while not done.is_set():
-            with progress_lock:
-                pct_real = progress_state["pct"]
-                msg_real = progress_state["msg"]
-
-            if isinstance(pct_real, int):
-                pct = max(5, min(99, pct_real))
-                progress_bar.progress(pct)
-                status_text.write(f"{msg_real or 'Processando Diário do Legislativo…'} {pct}%")
+            # movimento contínuo até finalizar (cicla 95→99)
+            if pct_fake < 95:
+                pct_fake += 1
+            elif pct_fake < 99:
+                pct_fake += 0.2
             else:
-                # fallback: movimento contínuo até finalizar (cicla 95→99)
-                if pct_fake < 95:
-                    pct_fake += 1
-                elif pct_fake < 99:
-                    pct_fake += 0.2
-                else:
-                    pct_fake = 95  # reseta e sobe de novo
+                pct_fake = 95
 
-                progress_bar.progress(int(pct_fake))
-                status_text.write(f"Processando Diário do Legislativo… {int(pct_fake)}%")
-
+            progress_bar.progress(int(pct_fake))
+            status_text.write(f"Processando Diário do Legislativo… {int(pct_fake)}%")
             time.sleep(0.08)
 
         if err["exc"] is not None:
