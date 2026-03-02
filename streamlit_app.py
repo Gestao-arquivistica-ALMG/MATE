@@ -402,8 +402,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.success("")
-        st.write("Aba:", result["aba"])
+        st.sucess("Aba:", result["aba"])
 
         st.markdown(
             f"""
