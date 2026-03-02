@@ -342,60 +342,27 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
-        progress_bar.progress(5)
-        status_text.write("Inicializando… 5%")
+        def progress_callback(p, msg=None):
+            pct = int(max(0, min(99, p)))
+            progress_bar.progress(pct)
+            status_text.write(
+                f"{msg or 'Processando Diário do Legislativo…'} {pct}%"
+            )
 
-        result = {"url": None, "aba": None, "gid": None}
-        err = {"exc": None}
-        done = threading.Event()
-
-        def run_main():
-            try:
-                r = main(
-                    entrada_override=entrada_clean,
-                    spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
-                    auth_mode="service_account",
-                    sa_info=st.secrets["gcp_service_account"],
-                )
-                result["url"] = r.get("url")
-                result["aba"] = r.get("aba")
-                result["gid"] = r.get("gid")
-            except Exception as e:
-                err["exc"] = e
-            finally:
-                done.set()
-
-        threading.Thread(target=run_main, daemon=True).start()
-
-        pct_fake = 5
-
-        while not done.is_set():
-            if pct_fake < 99:
-                pct_fake += 0.2  # sobe devagar até 99
-            else:
-                pct_fake = 99  # fica fixo em 99
-
-            progress_bar.progress(int(pct_fake))
-
-            spinner = ("⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏")
-            frame = int(time.time() * 10) % len(spinner)
-            status_text.write(f"{spinner[frame]} Processando Diário do Legislativo… {int(pct_fake)}%")
-
-            time.sleep(0.1)
-
-        if err["exc"] is not None:
-            raise err["exc"]
+        result = main(
+            entrada_override=entrada_clean,
+            spreadsheet_url_or_id=st.secrets["SPREADSHEET_URL_OR_ID"],
+            auth_mode="service_account",
+            sa_info=st.secrets["gcp_service_account"],
+            progress_callback=progress_callback,
+        )
 
         progress_bar.progress(100)
         status_text.write("Concluído 100%")
 
-        if not result["url"] or result["gid"] is None:
-            st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
-            st.write("Retorno:", result)
-            st.stop()
-
-        url_base = result["url"]
-        gid = result["gid"]
+        url_base = result.get("url")
+        gid = result.get("gid")
+        diario_url = result.get("diario_url")
 
         if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
@@ -403,19 +370,20 @@ if rodar:
         url_com_aba = f"{url_base}#gid={gid}"
 
         st.success("")
-        st.write("Aba:", result["aba"])
+        st.write("Aba:", result.get("aba"))
 
         st.markdown(
             f"""
             <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="
-                display: block;
-                text-align: center;
-                padding: 10px;
-                border-radius: 8px;
-                background-color: #e9e9e9;
-                text-decoration: none;
-                font-weight: 500;
-                color: black;
+                display:block;
+                text-align:center;
+                padding:10px;
+                border-radius:8px;
+                background:#e9e9e9;
+                text-decoration:none;
+                font-weight:500;
+                color:black;
+                margin-bottom:10px;
             ">
                 Abrir planilha
             </a>
@@ -423,27 +391,25 @@ if rodar:
             unsafe_allow_html=True
         )
 
-        diario_url = result.get("diario_url")
-
         if diario_url:
             st.markdown(
                 f"""
                 <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="
-                    display: block;
-                    text-align: center;
-                    padding: 10px;
-                    margin-top: 8px;
-                    border-radius: 8px;
-                    background-color: #e9e9e9;
-                    text-decoration: none;
-                    font-weight: 500;
-                    color: black;
+                    display:block;
+                    text-align:center;
+                    padding:10px;
+                    border-radius:8px;
+                    background:#e9e9e9;
+                    text-decoration:none;
+                    font-weight:500;
+                    color:black;
                 ">
                     Abrir Diário do Legislativo
                 </a>
                 """,
                 unsafe_allow_html=True
             )
+
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
