@@ -336,7 +336,7 @@ if rodar:
         st.warning("Informe uma data, palavra ou URL.")
         st.stop()
 
-    st.error(f"DATA = {entrada_clean!r}")
+    #st.error(f"DATA = {entrada_clean!r}")
 
     try:
         progress_bar = st.progress(0)
