@@ -312,6 +312,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     else:
         entrada = str(entrada_override).strip()
 
+    print("### STREAMLIT entrada:", entrada)
+
     gc = globals()["get_gspread_client"](auth_mode, sa_info)
 
     import re
