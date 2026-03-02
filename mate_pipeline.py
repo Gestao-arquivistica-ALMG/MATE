@@ -4112,7 +4112,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     )
 
     print("Planilha:", result["url"])
-
     result["diario_url"] = diario_url
     return result
 
