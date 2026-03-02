@@ -370,17 +370,18 @@ if rodar:
         pct_fake = 5
 
         while not done.is_set():
-            # movimento contínuo até finalizar (cicla 95→99)
-            if pct_fake < 95:
-                pct_fake += 1
-            elif pct_fake < 99:
-                pct_fake += 0.2
+            if pct_fake < 99:
+                pct_fake += 0.2  # sobe devagar até 99
             else:
-                pct_fake = 95
+                pct_fake = 99  # fica fixo em 99
 
             progress_bar.progress(int(pct_fake))
-            status_text.write(f"Processando Diário do Legislativo… {int(pct_fake)}%")
-            time.sleep(0.08)
+
+            spinner = ("⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏")
+            frame = int(time.time() * 10) % len(spinner)
+            status_text.write(f"{spinner[frame]} Processando Diário do Legislativo… {int(pct_fake)}%")
+
+            time.sleep(0.1)
 
         if err["exc"] is not None:
             raise err["exc"]
