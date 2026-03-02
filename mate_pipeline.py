@@ -4113,7 +4113,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
 
     print("Planilha:", result["url"])
-    result["diario_url"] = montar_url_diario(yyyymmdd)
+    result["diario_url"] = diario_url or locals().get("url")
     return result
 
 if __name__ == "__main__":
