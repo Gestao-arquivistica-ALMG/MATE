@@ -4115,12 +4115,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
 
     print("Planilha:", result["url"])
-    print("### DEBUG result type:", type(result))
-    print("### DEBUG result keys:", list(result.keys()) if isinstance(result, dict) else "NOT A DICT")
-    print("### DEBUG diario_url var:", diario_url)
     result["diario_url"] = diario_url
-    print("### DEBUG diario_url in result:", "diario_url" in result)
     return result
-    
+
 if __name__ == "__main__":
     main()
