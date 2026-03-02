@@ -405,13 +405,10 @@ if rodar:
 
         with st.container(border=True):
             st.markdown("")
-
             st.markdown(
                 f"""
                 <div style="margin-bottom:8px;">
-                    <strong>Diário do Legislativo:</strong><br>
-                    <a href="{result['diario_url']}" target="_blank">
-                        {result['diario_url']}
+                    <strong>Diário do Legislativo:</strong><br><a href="{result['diario_url']}" target="_blank">{result['diario_url']}
                     </a>
                 </div>
                 """,
