@@ -2291,7 +2291,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
         reqs.append({"updateCells": {
                 "range": {"sheetId": sheet_id, "startRowIndex": r1 - 1, "endRowIndex": r1, "startColumnIndex": 15, "endColumnIndex": 16},  # P
-                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://dspace.almg.gov.br/server/api/core/bitstreams/7cd591b0-1a2c-41cc-9341-78919e827df1/content";IMAGE("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5Y_YMt-RiPPZVOKRYkqMru870B2Pa2Kbsg-Ck-1KphTkHW3XM0Vtlb7MgVZRRxsfFtJY&usqp=CAU";4;130;140))'}}]}],
+                "rows": [{"values": [{"userEnteredValue": {"formulaValue": '=HYPERLINK("https://dspace.almg.gov.br/server/api/core/bitstreams/7cd591b0-1a2c-41cc-9341-78919e827df1/content";IMAGE("https://www.almg.gov.br/servicos/biblioteca/livraria-do-legislativo/capas/capa-regimento-interno.png";4;130;140))'}}]}],
                 "fields": "userEnteredValue"}})
 
         reqs.append({"updateCells": {
