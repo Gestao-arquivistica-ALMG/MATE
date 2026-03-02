@@ -23,6 +23,8 @@ from functools import lru_cache
 
 from pypdf import PdfReader
 
+print("### DEBUG: mate_pipeline.py carregado de:", __file__)
+
 # ---- 1) Regex Base ----
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
 
@@ -4111,9 +4113,14 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         col_width_overrides=COL_OVERRIDES
     )
 
-    print("Planilha:", result["url"])
-    result["diario_url"] = diario_url
-    return result
 
+    print("Planilha:", result["url"])
+    print("### DEBUG result type:", type(result))
+    print("### DEBUG result keys:", list(result.keys()) if isinstance(result, dict) else "NOT A DICT")
+    print("### DEBUG diario_url var:", diario_url)
+    result["diario_url"] = diario_url
+    print("### DEBUG diario_url in result:", "diario_url" in result)
+    return result
+    
 if __name__ == "__main__":
     main()

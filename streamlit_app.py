@@ -2,6 +2,8 @@ import re
 import streamlit as st
 import threading
 import time
+import mate_pipeline
+st.write("DEBUG pipeline file:", mate_pipeline.__file__)
 from mate_pipeline import main
 
 # ================= CONFIG =================
@@ -402,6 +404,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
+        st.write("DEBUG:", "diario_url" in result, result.get("diario_url"))
         st.success(f"Diário do Legislativo: {result.get('diario_url')}")
         st.write("DEBUG keys:", list(result.keys()) if isinstance(result, dict) else type(result))
         st.json(result)
