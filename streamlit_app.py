@@ -403,8 +403,29 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.success(f"Diário do Legislativo: {result['diario_url']}")
-        st.error(f"Aba da Planilha: {result['aba']}")
+        with st.container(border=True):
+            st.markdown("### 📄 Resultado")
+
+            st.markdown(
+                f"""
+                <div style="margin-bottom:8px;">
+                    <strong>Diário do Legislativo:</strong><br>
+                    <a href="{result['diario_url']}" target="_blank">
+                        {result['diario_url']}
+                    </a>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f"""
+                <div>
+                    <strong>Aba da Planilha:</strong> {result['aba']}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
