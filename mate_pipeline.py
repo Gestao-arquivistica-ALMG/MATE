@@ -389,8 +389,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         print(f"Diário: {yyyymmdd}")
         print(f"Aba: {aba_yyyymmdd}")
 
-        pdf_path = baixar_pdf_por_url(url)
         diario_url = url
+        pdf_path = baixar_pdf_por_url(url)
 
         if not pdf_path:
             # fallback: volta até achar o último DL existente (pula domingo)
