@@ -317,9 +317,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     import re
 
-    if progress_callback:
-    progress_callback(30)
-
     # A partir daqui, cole TODO o fluxo atual (o que hoje está global),
     # usando a variável local `entrada` (sem globals()).
     #
