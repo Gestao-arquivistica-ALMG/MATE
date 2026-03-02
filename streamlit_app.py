@@ -345,7 +345,7 @@ if rodar:
         progress_bar.progress(5)
         status_text.write("Inicializando… 5%")
 
-        result = {"url": None, "aba": None, "gid": None}
+        result = {"url": None, "aba": None, "gid": None, "diario_url": None}
         err = {"exc": None}
         done = threading.Event()
 
@@ -360,6 +360,7 @@ if rodar:
                 result["url"] = r.get("url")
                 result["aba"] = r.get("aba")
                 result["gid"] = r.get("gid")
+                result["diario_url"] = r.get("diario_url")
             except Exception as e:
                 err["exc"] = e
             finally:
