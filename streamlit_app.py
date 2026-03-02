@@ -404,7 +404,6 @@ if rodar:
         url_com_aba = f"{url_base}#gid={gid}"
 
         with st.container(border=True):
-            st.markdown("")
             st.markdown(
                 f"""
                 <div style="margin-bottom:8px;">
