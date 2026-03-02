@@ -332,7 +332,7 @@ if limpar:
 if rodar:
     entrada_clean = (entrada or "").strip()
 
-    if not entrada_clean.strip():
+    if not entrada_clean:
         st.warning("Informe uma data, palavra ou URL.")
         st.stop()
 
@@ -345,7 +345,7 @@ if rodar:
         progress_bar.progress(5)
         status_text.write("Inicializando… 5%")
 
-        result = {"url": None, "aba": None}
+        result = {"url": None, "aba": None, "gid": None}
         err = {"exc": None}
         done = threading.Event()
 
@@ -365,60 +365,38 @@ if rodar:
             finally:
                 done.set()
 
-        t = threading.Thread(target=run_main, daemon=True)
-        t.start()
+        threading.Thread(target=run_main, daemon=True).start()
 
-        # Animação de progresso: sobe lentamente até 90% e fica “vivo”
-        pct = 5
-        direction = 1  # controla subida
-
+        pct_fake = 5
         while not done.is_set():
-            # sobe até 98 e desacelera
-            if pct >= 98:
-                direction = 0  # para de subir forte
-            elif pct < 98:
-                direction = 1
-
-            if direction == 1:
-                pct += 1
+            if pct_fake < 98:
+                pct_fake += 1
             else:
-                # sobe bem devagar depois de 98
-                pct += 0.2
+                pct_fake = min(99, pct_fake + 0.2)
 
-            pct = min(99, pct)
-
-            progress_bar.progress(int(pct))
-            status_text.write(f"Processando Diário do Legislativo… {int(pct)}%")
-
+            progress_bar.progress(int(pct_fake))
+            status_text.write(f"Processando Diário do Legislativo… {int(pct_fake)}%")
             time.sleep(0.08)
 
-        # quando chega em 90, continua subindo 1 em 1 até 99 e depois fica em 99 “vivo”
-        if pct >= 90 and not done.is_set():
-            if pct < 99:
-                # continua 91..99
-                pass
-            else:
-                # trava em 99 e mantém vivo sem “...”
-                status_text.write(f"Processando Diário do Legislativo… {pct}%")
-                time.sleep(0.35)
-
-        # terminou: se houve erro na thread, explode aqui no principal
         if err["exc"] is not None:
             raise err["exc"]
 
         progress_bar.progress(100)
         status_text.write("Concluído 100%")
 
-        st.success("")
-        st.write("Aba:", result["aba"])
+        if not result["url"] or result["gid"] is None:
+            st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
+            st.write("Retorno:", result)
+            st.stop()
 
         url_base = result["url"]
         gid = result["gid"]
-
         if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
-
         url_com_aba = f"{url_base}#gid={gid}"
+
+        st.success("")
+        st.write("Aba:", result["aba"])
 
         st.markdown(
             f"""
