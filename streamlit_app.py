@@ -86,7 +86,7 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   gap:8px !important;
 }
 
-/* 🚀 Gerar (PRIMARY) */
+/* 📄 Gerar (PRIMARY) */
   div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type
   button[kind="primary"]{
     min-width:100px !important;
@@ -404,8 +404,6 @@ if rodar:
         url_com_aba = f"{url_base}#gid={gid}"
 
         with st.container(border=True):
-            st.markdown("### 📄 Resultado")
-
             st.markdown(
                 f"""
                 <div style="margin-bottom:8px;">
