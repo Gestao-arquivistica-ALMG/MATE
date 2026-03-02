@@ -256,7 +256,7 @@ def baixar_pdf_por_url(url: str) -> str | None:
             print("Head:", head)
             return None
 
-        return local, url
+        return local
 
     except Exception as e:
         print("?? Erro ao baixar o Diário.")
@@ -333,6 +333,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     aba = None  # NOME FINAL da aba (DD/MM/YYYY) — deve ser usado no Sheets
     yyyymmdd = None  # fallback seguro p/ diario_key quando entrada não for DATA
     diario = None
+    diario_url = None
         
     if not entrada:
         if not _COLAB:
@@ -345,6 +346,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     elif entrada.lower().startswith(("http://", "https://")):
         os.makedirs(CACHE_DIR, exist_ok=True)
+        diario_url = entrada
         pdf_path = baixar_pdf_por_url(entrada)
         if not pdf_path:
             raise SystemExit("DL não existe (URL não retornou PDF).")
@@ -388,6 +390,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         print(f"Aba: {aba_yyyymmdd}")
 
         pdf_path = baixar_pdf_por_url(url)
+        diario_url = url
+
         if not pdf_path:
             # fallback: volta até achar o último DL existente (pula domingo)
             import datetime as dt
@@ -405,6 +409,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 if pdf_try:
                     yyyymmdd = y
                     url = url_try
+                    diario_url = url
                     pdf_path = pdf_try
                     aba_yyyymmdd = proximo_dia_util(yyyymmdd)
                     diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)
@@ -4109,10 +4114,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     print("Planilha:", result["url"])
 
     return {
-    "aba": aba,
-    "planilha_url": planilha_url,
-    "diario_url": diario_url,   # <- adicionar
-}
+        "aba": aba,
+        "planilha_url": result["url"],
+        "diario_url": diario_url,
+    }
 
 if __name__ == "__main__":
     main()
