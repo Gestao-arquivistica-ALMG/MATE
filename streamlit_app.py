@@ -402,7 +402,9 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.success(f"Diário do Legislativo: {result['diario_url']}")
+        st.success(f"Diário do Legislativo: {result.get('diario_url')}")
+        st.write("DEBUG keys:", list(result.keys()) if isinstance(result, dict) else type(result))
+        st.json(result)
         st.error(f"Aba: {result['aba']}")
 
         st.markdown(
