@@ -257,7 +257,7 @@ def baixar_pdf_por_url(url: str) -> str | None:
             print("Head:", head)
             return None
 
-        return local
+        return local, url
 
     except Exception as e:
         print("?? Erro ao baixar o Diário.")
@@ -4109,7 +4109,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     print("Planilha:", result["url"])
 
-    return result
+    return {
+    "aba": aba,
+    "planilha_url": planilha_url,
+    "diario_url": diario_url,   # <- adicionar
+}
 
 if __name__ == "__main__":
     main()
