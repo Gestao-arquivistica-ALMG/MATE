@@ -406,26 +406,17 @@ if rodar:
         with st.container(border=True):
             st.markdown(
                 f"""
-                <div style="margin-bottom:6px;">
+                <p style="margin:0 0 6px 0;">
                     <strong>Diário do Legislativo:</strong>
                     <a href="{result['diario_url']}" target="_blank">
                         {result['diario_url']}
                     </a>
-                </div>
+                </p>
 
-                <div>
+                <p style="margin:0;">
                     <strong>Aba da Planilha:</strong>
                     {result['aba']}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"""
-                <div>
-                    <strong>Aba da Planilha:</strong> {result['aba']}
-                </div>
+                </p>
                 """,
                 unsafe_allow_html=True
             )
