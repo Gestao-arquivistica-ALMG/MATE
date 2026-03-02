@@ -2843,7 +2843,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         add("C5", [[ '=HYPERLINK("https://docs.google.com/document/d/1lftfl3SAfJPMdIKYSjATffe-Tvc9qfoLodfGK-f3sLU/edit";"MATE - MATÉRIAS EM TRAMITAÇÃO")' ]])
         add("G5", [[ '=HYPERLINK("https://writer.zoho.com/writer/open/fgoh367779094842247dd8313f9c7714f452a";"CONFERÊNCIA")' ]])
         add("B6", [[f'=TEXT(DATEVALUE("{diario}");"dd/mm/yyyy")']])
-        add("C6", [["DIÁRIO DO EXECUTIVO"]])
+        add("C6", [['=HYPERLINK("https://www.jornalminasgerais.mg.gov.br/?dataJornal="; "DIÁRIO DO EXECUTIVO")']])
         add("B7", [["-"]])
         add("E8:G8", [[dmenos2]])
 
@@ -3892,7 +3892,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     # ============================================================================================= TÍTULOS ==============================================================================================
     # ====================================================================================================================================================================================================
         data2 = []
-        data2.append({"range": f"{tab_name}!B8:C8", "values": [[diario, "DIÁRIO DO LEGISLATIVO"]]})
+        data2.append({"range": f"{tab_name}!B8:C8", "values": [[diario, '=HYPERLINK("https://www.almg.gov.br/consulte/arquivo_diario_legislativo/index.html";"DIÁRIO DO LEGISLATIVO")']]})
 
         if itens:
             data2.append({"range": f"{tab_name}!B9:C{9 + len(itens) - 1}", "values": [[a, b] for a, b in itens]})
