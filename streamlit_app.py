@@ -403,18 +403,12 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        with st.container():
-            box_html = f"""
-            <div style="
-                background-color:#fdecea;
-                border:1px solid #f5c2c0;
-                color:#611a15;
-                padding:14px 16px;
-                border-radius:8px;
-            ">
+        with st.container(border=True):
+            st.markdown(
+                f"""
                 <p style="margin:0 0 6px 0;">
                     <strong>Diário do Legislativo:</strong>
-                    <a href="{result['diario_url']}" target="_blank" style="color:#611a15; text-decoration:underline;">
+                    <a href="{result['diario_url']}" target="_blank">
                         {result['diario_url']}
                     </a>
                 </p>
@@ -423,10 +417,9 @@ if rodar:
                     <strong>Aba da Planilha:</strong>
                     {result['aba']}
                 </p>
-            </div>
-            """
-
-            st.markdown(box_html, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True
+            )
 
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
