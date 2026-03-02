@@ -371,7 +371,7 @@ if rodar:
         # Animação de progresso: sobe lentamente até 90% e fica “vivo”
         pct = 8
         while not done.is_set():
-            pct = min(90, pct + 1)
+            pct = min(99, pct + 1)
             progress_bar.progress(pct)
             status_text.write(f"Processando Diário do Legislativo… {pct}%")
             time.sleep(0.10)
@@ -383,7 +383,7 @@ if rodar:
                 pass
             else:
                 # trava em 99 e mantém vivo sem “...”
-                status_text.write(f"Processando Diário do Legislativo… {pct}%")
+                status_text.write(f"Processando Diário do Legislativo. {pct}%")
                 time.sleep(0.35)
 
         # terminou: se houve erro na thread, explode aqui no principal
