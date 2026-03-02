@@ -23,8 +23,6 @@ from functools import lru_cache
 
 from pypdf import PdfReader
 
-print("### DEBUG: mate_pipeline.py carregado de:", __file__)
-
 # ---- 1) Regex Base ----
 RE_PAG = re.compile(r"\bP[ÁA]GINA\s+(\d{1,4})\b", re.IGNORECASE)
 
