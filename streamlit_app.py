@@ -403,7 +403,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.success(f"Diário do Legislativo: {result['diario_url']}")
+        st.success(f"DL: {result['diario_url']}")
         st.error(f"Aba: {result['aba']}")
 
         st.markdown(
@@ -418,7 +418,7 @@ if rodar:
                 font-weight: 500;
                 color: black;
             ">
-                Abrir planilha
+                Abrir Planilha
             </a>
             """,
             unsafe_allow_html=True
