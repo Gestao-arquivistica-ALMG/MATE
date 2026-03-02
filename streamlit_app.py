@@ -406,23 +406,52 @@ if rodar:
         st.success(f"DL: {result['diario_url']}")
         st.error(f"Aba: {result['aba']}")
 
-        st.markdown(
-            f"""
-            <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="
-                display: block;
-                text-align: center;
-                padding: 10px;
-                border-radius: 8px;
-                background-color: #e9e9e9;
-                text-decoration: none;
-                font-weight: 500;
-                color: black;
-            ">
-                Abrir Planilha
-            </a>
-            """,
-            unsafe_allow_html=True
-        )
+        # --- botões lado a lado: Planilha + Diário ---
+        diario_url = (result.get("diario_url") or "").strip()
+
+        c_btn1, c_btn2 = st.columns(2, gap="small")
+
+        btn_style = """
+            display:block;
+            text-align:center;
+            padding:10px;
+            border-radius:8px;
+            background-color:#e9e9e9;
+            text-decoration:none;
+            font-weight:500;
+            color:black;
+        """
+
+        with c_btn1:
+            st.markdown(
+                f"""
+                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
+                    Abrir planilha
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with c_btn2:
+            if diario_url:
+                st.markdown(
+                    f"""
+                    <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
+                        Abrir Diário
+                    </a>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                # fallback visual (sem link) se vier vazio
+                st.markdown(
+                    f"""
+                    <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
+                        Abrir Diário
+                    </span>
+                    """,
+                    unsafe_allow_html=True
+                )
 
     except Exception as e:
         st.error("Erro ao processar.")
