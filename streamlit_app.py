@@ -402,7 +402,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        
+        st.success(f"Diário do Legislativo: {result['url']}")
         st.error(f"Aba: {result['aba']}")
 
         st.markdown(
