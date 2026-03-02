@@ -376,13 +376,15 @@ if rodar:
             status_text.write(f"Processando Diário do Legislativo… {pct}%")
             time.sleep(0.10)
 
-            # quando chega em 90, mantém “batendo” sem ficar parado
-            if pct >= 90 and not done.is_set():
-                for dots in (".", "..", "..."):
-                    status_text.write(f"Processando Diário do Legislativo{dots} {pct}%")
-                    time.sleep(0.35)
-                    if done.is_set():
-                        break
+        # quando chega em 90, continua subindo 1 em 1 até 99 e depois fica em 99 “vivo”
+        if pct >= 90 and not done.is_set():
+            if pct < 99:
+                # continua 91..99
+                pass
+            else:
+                # trava em 99 e mantém vivo sem “...”
+                status_text.write(f"Processando Diário do Legislativo… {pct}%")
+                time.sleep(0.35)
 
         # terminou: se houve erro na thread, explode aqui no principal
         if err["exc"] is not None:
