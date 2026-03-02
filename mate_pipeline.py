@@ -4111,13 +4111,11 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         col_width_overrides=COL_OVERRIDES
     )
 
+    result["diario_url"] = diario_url
+
     print("Planilha:", result["url"])
 
-    return {
-        "aba": aba,
-        "planilha_url": result["url"],
-        "diario_url": diario_url,
-    }
+    return result
 
 if __name__ == "__main__":
     main()
