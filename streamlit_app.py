@@ -423,6 +423,27 @@ if rodar:
             unsafe_allow_html=True
         )
 
+        diario_url = result.get("diario_url")
+
+        if diario_url:
+            st.markdown(
+                f"""
+                <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="
+                    display: block;
+                    text-align: center;
+                    padding: 10px;
+                    margin-top: 8px;
+                    border-radius: 8px;
+                    background-color: #e9e9e9;
+                    text-decoration: none;
+                    font-weight: 500;
+                    color: black;
+                ">
+                    Abrir Diário do Legislativo
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
