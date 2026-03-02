@@ -369,12 +369,28 @@ if rodar:
         t.start()
 
         # Animação de progresso: sobe lentamente até 90% e fica “vivo”
-        pct = 8
+        pct = 5
+        direction = 1  # controla subida
+
         while not done.is_set():
-            pct = min(99, pct + 1)
-            progress_bar.progress(pct)
-            status_text.write(f"Processando Diário do Legislativo… {pct}%")
-            time.sleep(0.10)
+            # sobe até 98 e desacelera
+            if pct >= 98:
+                direction = 0  # para de subir forte
+            elif pct < 98:
+                direction = 1
+
+            if direction == 1:
+                pct += 1
+            else:
+                # sobe bem devagar depois de 98
+                pct += 0.2
+
+            pct = min(99, pct)
+
+            progress_bar.progress(int(pct))
+            status_text.write(f"Processando Diário do Legislativo… {int(pct)}%")
+
+            time.sleep(0.08)
 
         # quando chega em 90, continua subindo 1 em 1 até 99 e depois fica em 99 “vivo”
         if pct >= 90 and not done.is_set():
@@ -383,7 +399,7 @@ if rodar:
                 pass
             else:
                 # trava em 99 e mantém vivo sem “...”
-                status_text.write(f"Processando Diário do Legislativo. {pct}%")
+                status_text.write(f"Processando Diário do Legislativo… {pct}%")
                 time.sleep(0.35)
 
         # terminou: se houve erro na thread, explode aqui no principal
