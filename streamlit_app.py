@@ -2,6 +2,7 @@ import re
 import streamlit as st
 import threading
 import time
+from datetime import datetime
 from mate_pipeline import main, normalizar_data
 
 # ================= CONFIG =================
