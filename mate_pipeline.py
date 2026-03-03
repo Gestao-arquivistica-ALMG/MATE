@@ -158,8 +158,8 @@ def normalizar_data(entrada: str) -> str:
             base -= timedelta(days=2)
         return base.strftime("%Y%m%d")
 
-    if base.weekday() in (6, 0):
-        raise ValueError("Não há Diário do Legislativo na data informada ou informe uma data válida.")
+    if s_lower in ("domingo", "segunda"):
+        raise ValueError("Não há Diário do Legislativo em domingo/segunda. Use sábado ou uma data.")
 
     # --- DIAS DA SEMANA (última ocorrência passada) ---
     weekday_map = {
@@ -215,12 +215,7 @@ def normalizar_data(entrada: str) -> str:
             "ddmm, ddmmyy, ddmmyyyy, dd/mm/yy, dd/mm/yyyy ou yyyymmdd."
         )
 
-    dt_ok = datetime.strptime(yyyymmdd, "%Y%m%d").date()
-
-    # DL não existe em domingo (6) nem segunda (0)
-    if dt_ok.weekday() in (6, 0):
-        raise ValueError("Não há Diário do Legislativo em domingo/segunda. Use sábado ou uma data válida.")
-
+    datetime.strptime(yyyymmdd, "%Y%m%d")
     return yyyymmdd
 
     print("ENTRADA RECEBIDA:", repr(entrada))
@@ -399,30 +394,30 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
         if not pdf_path:
             # fallback: volta até achar o último DL existente (pula domingo)
-            #import datetime as dt
-            #dt_cur = dt.datetime.strptime(yyyymmdd, "%Y%m%d").date()
+            import datetime as dt
+            dt_cur = dt.datetime.strptime(yyyymmdd, "%Y%m%d").date()
 
-            #ok = False
-            #for _ in range(14):  # tenta até 14 dias pra trás
-            #    dt_cur -= dt.timedelta(days=1)
-            #    if dt_cur.weekday() == 6:  # domingo
-            #        continue
+            ok = False
+            for _ in range(14):  # tenta até 14 dias pra trás
+                dt_cur -= dt.timedelta(days=1)
+                if dt_cur.weekday() == 6:  # domingo
+                    continue
 
-            #    y = dt_cur.strftime("%Y%m%d")
-            #    url_try = f"{URL_BASE}/{y[:4]}/L{y}.pdf"
-            #    pdf_try = baixar_pdf_por_url(url_try)
-            #    if pdf_try:
-            #        yyyymmdd = y
-            #        url = url_try
-            #        diario_url = url
-            #        pdf_path = pdf_try
-            #        aba_yyyymmdd = proximo_dia_util(yyyymmdd)
-            #        diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)
-            #        print(f"DL não encontrado na data pedida; usando o último disponível: {yyyymmdd}")
-            #        ok = True
-            #        break
+                y = dt_cur.strftime("%Y%m%d")
+                url_try = f"{URL_BASE}/{y[:4]}/L{y}.pdf"
+                pdf_try = baixar_pdf_por_url(url_try)
+                if pdf_try:
+                    yyyymmdd = y
+                    url = url_try
+                    diario_url = url
+                    pdf_path = pdf_try
+                    aba_yyyymmdd = proximo_dia_util(yyyymmdd)
+                    diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)
+                    print(f"DL não encontrado na data pedida; usando o último disponível: {yyyymmdd}")
+                    ok = True
+                    break
 
-            #if not ok:
+            if not ok:
                 raise SystemExit("DL não existe para a data informada (nem nos últimos 14 dias).")
 
     # ? TRATAMENTO DEFINITIVO DE DL INEXISTENTE
