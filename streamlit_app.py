@@ -471,7 +471,7 @@ if rodar:
 from playwright_fetch_jmg import download_diario_executivo
 
 st.divider()
-st.subheader("Baixar Diário do Executivo (Jornal Minas Gerais)")
+st.subheader("Diário do Executivo")
 
 data_pub = st.text_input("Data de publicação (YYYY-MM-DD)", value="2026-03-03", key="jmg_data_pub")
 headless = st.checkbox("Headless (recomendado no Streamlit Cloud)", value=True, key="jmg_headless")
