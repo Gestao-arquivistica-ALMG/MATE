@@ -1,14 +1,16 @@
-import os
 import re
-from pathlib import Path
 from typing import Optional
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 
 import sys
 import subprocess
-from pathlib import Path
 import os
+from pathlib import Path
+
+# força Playwright a usar diretório gravável
+pw_path = Path("/tmp/playwright")
+pw_path.mkdir(parents=True, exist_ok=True)
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(pw_path)
 
 def _ensure_chromium_installed() -> None:
     """
