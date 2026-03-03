@@ -1,8 +1,9 @@
+import os
 import re
 from pathlib import Path
 from typing import Optional
-
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 
 
 def _sanitize_filename(name: str) -> str:
