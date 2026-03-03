@@ -15,6 +15,53 @@
 from __future__ import annotations
 
 import base64
+import streamlit.components.v1 as components
+
+b64 = base64.b64encode(pdf_bytes).decode("ascii")
+safe_name = pdf_path.name.replace("'", "").replace('"', "")
+
+components.html(
+    f"""
+    <button id="openPdfBtn" style="
+        display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
+        text-decoration:none;border:0;cursor:pointer;">
+        Abrir PDF em nova aba
+    </button>
+
+    <script>
+    (function() {{
+      const b64 = "{b64}";
+      const fileName = "{safe_name}";
+
+      function b64ToUint8Array(base64) {{
+        const binary = atob(base64);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes;
+      }}
+
+      document.getElementById("openPdfBtn").addEventListener("click", () => {{
+        const bytes = b64ToUint8Array(b64);
+        const blob = new Blob([bytes], {{ type: "application/pdf" }});
+        const url = URL.createObjectURL(blob);
+
+        // abre em nova aba
+        const w = window.open(url, "_blank");
+        if (!w) {{
+          alert("Popup bloqueado pelo navegador. Permita popups para este site e tente novamente.");
+          return;
+        }}
+
+        // opcional: tenta sugerir nome (nem todo browser respeita)
+        w.document.title = fileName;
+      }});
+    }})();
+    </script>
+    """,
+    height=60,
+)
+
 import re
 from pathlib import Path
 from typing import Callable, Optional
