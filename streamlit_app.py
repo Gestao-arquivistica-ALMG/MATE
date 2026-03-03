@@ -470,70 +470,81 @@ if rodar:
 # EXTRA: Jornal Minas Gerais (Diário do Executivo) — abrir PDF em nova aba (sem Playwright)
 # ======================================================================================
 import base64
-import re
-from playwright import download_diario_executivo
+import streamlit.components.v1 as components
+from playwright_fetch_jmg import fetch_diario_executivo_pdf_bytes
 
 st.divider()
 st.subheader("Diário do Executivo")
 
-data_pub = st.text_input(
-    "Data de publicação (YYYY-MM-DD)",
-    value="2026-03-03",
-    key="jmg_data_pub",
-)
+data_pub = st.text_input("Data de publicação (YYYY-MM-DD)", value="2026-03-03", key="jmg_data_pub")
 
-# Mantido por compatibilidade visual; não é usado no fetch atual (sem browser)
-headless = st.checkbox("Headless (não utilizado)", value=True, key="jmg_headless")
-
-if st.button("Gerar link do PDF (nova aba)", key="jmg_btn_download"):
+if st.button("Gerar link do PDF (nova aba)", key="jmg_btn_open"):
     try:
-        # validação mínima
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", (data_pub or "").strip()):
-            st.error("Data inválida. Use o formato YYYY-MM-DD (ex.: 2026-03-03).")
-            st.stop()
-
         status = st.empty()
 
         def ui_log(msg: str) -> None:
             status.write(msg)
 
         with st.spinner("Obtendo PDF pela API..."):
-            pdf_path = download_diario_executivo(
-                data_publicacao_yyyy_mm_dd=data_pub.strip(),
-                out_dir="downloads",
-                headless=headless,
+            pdf_bytes, filename = fetch_diario_executivo_pdf_bytes(
+                data_publicacao_yyyy_mm_dd=data_pub,
                 timeout_ms=90_000,
                 log=ui_log,
             )
 
-        st.success(f"OK: {pdf_path.name}")
+        st.success(f"OK: {filename}")
 
-        pdf_bytes = pdf_path.read_bytes()
+        # 1) Botão download (sempre funciona)
+        st.download_button(
+            "Baixar PDF",
+            data=pdf_bytes,
+            file_name=filename,
+            mime="application/pdf",
+            key="jmg_dl_btn",
+        )
 
-        # data URLs muito grandes podem falhar no browser; fallback para download
-        # (limite conservador ~8MB de bytes => base64 ~10.6MB)
-        if len(pdf_bytes) > 8_000_000:
-            st.warning("PDF grande demais para abrir via data URL. Use o botão de download abaixo.")
-            st.download_button(
-                label="Download do PDF",
-                data=pdf_bytes,
-                file_name=pdf_path.name,
-                mime="application/pdf",
-                key="jmg_btn_dlfile",
-            )
-        else:
-            b64 = base64.b64encode(pdf_bytes).decode("ascii")
-            data_url = f"data:application/pdf;base64,{b64}"
+        # 2) Abrir em nova aba via Blob URL (evita about:blank#blocked)
+        b64 = base64.b64encode(pdf_bytes).decode("ascii")
+        safe_name = filename.replace("'", "").replace('"', "")
 
-            st.markdown(
-                f"""
-                <a href="{data_url}" target="_blank" rel="noopener noreferrer"
-                  style="display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;text-decoration:none;">
-                    Abrir PDF em nova aba
-                </a>
-                """,
-                unsafe_allow_html=True,
-            )
+        components.html(
+            f"""
+            <button id="openPdfBtn" style="
+                display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
+                border:0;cursor:pointer;margin-top:8px;">
+                Abrir PDF em nova aba
+            </button>
+
+            <script>
+            (function() {{
+              const b64 = "{b64}";
+              const fileName = "{safe_name}";
+
+              function b64ToUint8Array(base64) {{
+                const binary = atob(base64);
+                const len = binary.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                return bytes;
+              }}
+
+              document.getElementById("openPdfBtn").addEventListener("click", () => {{
+                const bytes = b64ToUint8Array(b64);
+                const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                const url = URL.createObjectURL(blob);
+
+                const w = window.open(url, "_blank");
+                if (!w) {{
+                  alert("Popup bloqueado. Permita popups para este site e tente novamente.");
+                  return;
+                }}
+                try {{ w.document.title = fileName; }} catch(e) {{}}
+              }});
+            }})();
+            </script>
+            """,
+            height=90,
+        )
 
     except Exception as e:
         st.error(f"Falhou: {e}")

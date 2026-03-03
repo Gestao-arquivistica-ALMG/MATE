@@ -1,4 +1,4 @@
-# playwright_fetch_jmg.py
+# playwright.py
 # Download do Diário do Executivo (Jornal Minas Gerais) via API (sem Playwright)
 #
 # Fonte:
