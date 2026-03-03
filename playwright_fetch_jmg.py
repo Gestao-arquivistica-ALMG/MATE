@@ -1,13 +1,14 @@
 # playwright_fetch_jmg.py
 #
-# Baixa o PDF do "Diário do Executivo" do Jornal Minas Gerais via Playwright,
-# com robustez para Streamlit Cloud:
-# - instala Chromium em runtime (fallback) em diretório gravável (/tmp)
-# - usa flags cloud-friendly (--no-sandbox, --disable-dev-shm-usage)
-# - fecha banner de cookies quando aparece
+# Downloader robusto do "Diário do Executivo" (Jornal Minas Gerais) via Playwright,
+# preparado para Streamlit Cloud:
+# - instala Chromium em runtime em diretório gravável (/tmp)
+# - evita reinstalar na mesma sessão (marker em /tmp)
+# - flags cloud-friendly no Chromium
+# - tenta fechar banner de cookies
 # - tenta capturar download normal (expect_download)
-# - fallback: captura href data:/blob: gerado pelo PDF.js (monkeypatch em <a>.click)
-# - logs via print() (aparecem nos logs do Streamlit Cloud)
+# - fallback: captura href data:/blob: gerado pelo PDF.js (hook em <a>.click)
+# - instrumentação de etapas via callback log(msg) + print(flush=True)
 
 import os
 import re
@@ -15,7 +16,7 @@ import sys
 import time
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Callable
 
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 
@@ -30,7 +31,7 @@ os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(PW_DIR)
 MARKER = PW_DIR / "chromium_ok"
 
 
-def _ensure_chromium_installed(timeout_s: int = 300) -> None:
+def _ensure_chromium_installed(timeout_s: int = 600) -> None:
     """
     Garante que o Chromium do Playwright está instalado em diretório gravável.
     No Streamlit Cloud, postBuild pode não rodar / cache pode variar.
@@ -38,7 +39,7 @@ def _ensure_chromium_installed(timeout_s: int = 300) -> None:
     if MARKER.exists():
         return
 
-    print("[playwright] Installing chromium (runtime fallback)...")
+    print("[playwright] Installing chromium (runtime fallback)...", flush=True)
     try:
         r = subprocess.run(
             [sys.executable, "-m", "playwright", "install", "chromium"],
@@ -50,9 +51,9 @@ def _ensure_chromium_installed(timeout_s: int = 300) -> None:
         )
         # log curto (evita spam)
         if r.stdout:
-            print("[playwright] install stdout:", r.stdout[:2000])
+            print("[playwright] install stdout:", r.stdout[:2000], flush=True)
         if r.stderr:
-            print("[playwright] install stderr:", r.stderr[:2000])
+            print("[playwright] install stderr:", r.stderr[:2000], flush=True)
     except subprocess.TimeoutExpired as e:
         raise RuntimeError(f"playwright install chromium TIMEOUT ({timeout_s}s)") from e
     except subprocess.CalledProcessError as e:
@@ -61,7 +62,7 @@ def _ensure_chromium_installed(timeout_s: int = 300) -> None:
         ) from e
 
     MARKER.write_text("ok", encoding="utf-8")
-    print("[playwright] chromium ok")
+    print("[playwright] chromium ok", flush=True)
 
 
 def _sanitize_filename(name: str) -> str:
@@ -76,7 +77,6 @@ def _install_download_hooks(page) -> None:
     Instala hooks no DOM para capturar o download gerado pelo PDF.js mesmo quando
     não há evento "download" (ex.: data:application/pdf ou blob:).
     """
-    # Roda o patch o quanto antes (após goto também funciona; antes é melhor).
     page.add_init_script(
         """
         (() => {
@@ -105,7 +105,7 @@ def _try_close_cookies(page) -> None:
     for txt in ("Ok, entendi", "OK, entendi", "Aceitar", "Aceito", "Concordo"):
         try:
             page.locator(f"text={txt}").first.click(timeout=1500)
-            print("[playwright] cookie banner closed")
+            print("[playwright] cookie banner closed", flush=True)
             return
         except Exception:
             pass
@@ -114,7 +114,7 @@ def _try_close_cookies(page) -> None:
 def _goto_best_effort(page, data_publicacao_yyyy_mm_dd: str, timeout_ms: int) -> None:
     """
     O site pode aceitar (ou não) querystring; tentamos algumas.
-    Se nenhuma funcionar, fica no /edicao-do-dia padrão e o usuário pode navegar.
+    Se nenhuma funcionar, fica no /edicao-do-dia padrão.
     """
     base = "https://www.jornalminasgerais.mg.gov.br/edicao-do-dia"
     candidates = [
@@ -127,7 +127,7 @@ def _goto_best_effort(page, data_publicacao_yyyy_mm_dd: str, timeout_ms: int) ->
     last_err: Optional[Exception] = None
     for url in candidates:
         try:
-            print("[playwright] goto:", url)
+            print("[playwright] goto:", url, flush=True)
             page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
             _try_close_cookies(page)
             return
@@ -135,9 +135,9 @@ def _goto_best_effort(page, data_publicacao_yyyy_mm_dd: str, timeout_ms: int) ->
             last_err = e
             continue
 
-    # fallback: tenta ao menos abrir base
     if last_err is not None:
-        print("[playwright] goto candidates failed, fallback to base:", repr(last_err))
+        print("[playwright] goto candidates failed, fallback to base:", repr(last_err), flush=True)
+
     page.goto(base, wait_until="domcontentloaded", timeout=timeout_ms)
     _try_close_cookies(page)
 
@@ -146,11 +146,12 @@ def _wait_viewer_ready(page, timeout_ms: int) -> None:
     """
     Espera o viewer do PDF.js aparecer.
     """
-    print("[playwright] waiting for pdf viewer toolbar...")
+    print("[playwright] waiting for pdf viewer toolbar...", flush=True)
+
     # Em alguns layouts, pode ser iframe; tentamos página principal primeiro
     try:
         page.locator("input[aria-label='Page']").first.wait_for(timeout=timeout_ms)
-        print("[playwright] viewer ready (page)")
+        print("[playwright] viewer ready (page)", flush=True)
         return
     except PWTimeout:
         pass
@@ -159,7 +160,7 @@ def _wait_viewer_ready(page, timeout_ms: int) -> None:
     try:
         iframe = page.frame_locator("iframe").first
         iframe.locator("input[aria-label='Page']").first.wait_for(timeout=timeout_ms)
-        print("[playwright] viewer ready (iframe)")
+        print("[playwright] viewer ready (iframe)", flush=True)
         return
     except Exception as e:
         raise RuntimeError("Não encontrei a barra do viewer do PDF.js (Page input) — possível mudança de layout.") from e
@@ -173,27 +174,27 @@ def _find_download_button(page):
     # 1) principal
     btn = page.locator("#download").first
     if btn.count() > 0:
-        return btn, None
+        return btn
 
     btn = page.locator(
         "button[title*='Download'], button[title*='Baixar'], a[title*='Download'], a[title*='Baixar']"
     ).first
     if btn.count() > 0:
-        return btn, None
+        return btn
 
     # 2) iframe
     iframe = page.frame_locator("iframe").first
     btn = iframe.locator("#download").first
     if btn.count() > 0:
-        return btn, iframe
+        return btn
 
     btn = iframe.locator(
         "button[title*='Download'], button[title*='Baixar'], a[title*='Download'], a[title*='Baixar']"
     ).first
     if btn.count() > 0:
-        return btn, iframe
+        return btn
 
-    return None, None
+    return None
 
 
 def _get_last_pdf_data_url(page, timeout_ms: int) -> Optional[dict]:
@@ -219,7 +220,6 @@ def _dataurl_to_pdf_bytes(data_url: str) -> bytes:
     if not data_url.startswith("data:"):
         raise ValueError("Não é data URL")
 
-    # separa header e payload
     try:
         header, b64 = data_url.split(",", 1)
     except ValueError:
@@ -267,49 +267,59 @@ def download_diario_executivo(
     out_dir: str = "downloads",
     headless: bool = True,
     timeout_ms: int = 90_000,
+    log: Optional[Callable[[str], None]] = None,
 ) -> Path:
     """
-    Abre o Jornal Minas Gerais na data escolhida e baixa o PDF do Diário do Executivo via botão do viewer.
+    Abre o Jornal Minas Gerais e baixa o PDF do Diário do Executivo via botão do viewer.
     Retorna o caminho do arquivo salvo.
 
-    Observação:
-    - Alguns fluxos não disparam "download event" (data:/blob:). Há fallback.
+    Instrumentação:
+      - log(msg): callback opcional (ex.: para exibir etapas no Streamlit)
+      - também faz print(flush=True) para logs do Cloud
     """
+
+    def _log(msg: str) -> None:
+        if log:
+            try:
+                log(msg)
+            except Exception:
+                pass
+        print(msg, flush=True)
+
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
 
     with sync_playwright() as p:
-        # 1) garante browser
+        _log("[1/8] ensure chromium")
         _ensure_chromium_installed()
 
-        print("[playwright] launching browser...")
+        _log("[2/8] launching browser")
         browser = p.chromium.launch(
             headless=headless,
             args=["--no-sandbox", "--disable-dev-shm-usage"],
         )
 
+        _log("[3/8] new context/page")
         context = browser.new_context(accept_downloads=True)
         context.set_default_timeout(timeout_ms)
         context.set_default_navigation_timeout(timeout_ms)
-
         page = context.new_page()
-        _install_download_hooks(page)
 
-        # 2) navega
+        _log("[4/8] install hooks + goto")
+        _install_download_hooks(page)
         _goto_best_effort(page, data_publicacao_yyyy_mm_dd, timeout_ms)
 
-        # 3) espera viewer
+        _log("[5/8] wait viewer")
         _wait_viewer_ready(page, timeout_ms)
 
-        # 4) encontra botão de download
-        download_button, iframe = _find_download_button(page)
+        _log("[6/8] find download button")
+        download_button = _find_download_button(page)
         if download_button is None:
             context.close()
             browser.close()
             raise RuntimeError("Não encontrei o botão de download no viewer (PDF.js).")
 
-        # 5) tenta download normal
-        print("[playwright] clicking download button...")
+        _log("[7/8] click download (expect_download)")
         try:
             with page.expect_download(timeout=timeout_ms) as dl_info:
                 download_button.click()
@@ -320,17 +330,17 @@ def download_diario_executivo(
             final_file = out_path / suggested
 
             download.save_as(final_file.as_posix())
-            print("[playwright] download event ok:", final_file.name)
+            _log(f"[OK] download event: {final_file.name}")
 
             context.close()
             browser.close()
             return final_file
 
         except PWTimeout:
-            print("[playwright] no download event; trying data/blob fallback...")
+            _log("[7/8] sem evento de download; tentando fallback data/blob...")
 
-        # 6) fallback: capturar data/blob via hook
-        # (click de novo para garantir que o hook capture href)
+        _log("[8/8] fallback data/blob (hook)")
+        # clica de novo para garantir que o hook capture href
         try:
             download_button.click()
         except Exception:
@@ -348,7 +358,6 @@ def download_diario_executivo(
         href = str(last.get("href", ""))
         dlname = str(last.get("download", "")).strip()
 
-        # nome sugerido
         suggested = dlname or f"Diario_do_Executivo_{data_publicacao_yyyy_mm_dd}.pdf"
         suggested = _sanitize_filename(suggested)
         final_file = out_path / suggested
@@ -356,7 +365,7 @@ def download_diario_executivo(
         if href.startswith("data:application/pdf"):
             pdf_bytes = _dataurl_to_pdf_bytes(href)
             final_file.write_bytes(pdf_bytes)
-            print("[playwright] saved from data:url:", final_file.name)
+            _log(f"[OK] salvo de data:url: {final_file.name}")
 
             context.close()
             browser.close()
@@ -371,7 +380,7 @@ def download_diario_executivo(
 
             pdf_bytes = _dataurl_to_pdf_bytes(data_url)
             final_file.write_bytes(pdf_bytes)
-            print("[playwright] saved from blob:url:", final_file.name)
+            _log(f"[OK] salvo de blob:url: {final_file.name}")
 
             context.close()
             browser.close()
@@ -379,4 +388,4 @@ def download_diario_executivo(
 
         context.close()
         browser.close()
-        raise RuntimeError(f"Fallback capturou href inesperado: {href[:120]}")
+        raise RuntimeError(f"Fallback capturou href inesperado: {href[:200]}")
