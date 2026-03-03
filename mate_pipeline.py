@@ -2815,7 +2815,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
         add("A5:B5", [[f"=DATE({yyyy};{mm};{dd})", ""]])
         add("A1", [[ '=HYPERLINK("https://www.almg.gov.br/home/index.html";IMAGE("https://sisap.almg.gov.br/banner.png";4;43;110))' ]])
-        add("C1", [["GERÊNCIA DE GESTÃO ARQUIVÍSTICA"]])
+        add("C1", [['=HYPERLINK("https://almg-mate.streamlit.app/"; "GERÊNCIA DE GESTÃO ARQUIVÍSTICA")']])
         add("Q1", [["DATAS"]])
         add("G1", [['=HYPERLINK("https://intra.almg.gov.br/acontece/noticias/index.html?lq=&reloaded=&q=&di=&df=&tema=direcionamento-estrategico/";'
             'IMAGE("https://media.istockphoto.com/vectors/flag-map-of-the-brazilian-state-of-minas-gerais-vector-id1248541649?k=20&m=1248541649&s=170667a&w=0&h=V8Ky8c8rddLPjphovytIJXaB6NlMF7dt-ty-2ZJF5Wc="))']])
