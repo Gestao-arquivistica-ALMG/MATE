@@ -366,6 +366,17 @@ if rodar:
             finally:
                 done.set()
 
+        # --- validação rápida: não iniciar pipeline em domingo/segunda ---
+        try:
+            yyyymmdd_check = normalizar_data(entrada_clean)
+            dt_check = dt.datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
+            if dt_check.weekday() in (6, 0):  # domingo ou segunda
+                st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
+                st.stop()
+        except Exception:
+            # se a normalização já falhar, deixa o fluxo normal tratar a mensagem de data inválida
+            pass
+
         threading.Thread(target=run_main, daemon=True).start()
 
         pct_fake = 5
