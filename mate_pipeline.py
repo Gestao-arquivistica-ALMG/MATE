@@ -1305,7 +1305,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         ("A5:B5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE", "numfmt": ("DATE", "d/m")}),
         ("C5", {"font": "Vidaloka", "size": 15, "bold": True, "underline": False, "fg": "WHITE"}),
         ("E5:O5", {"font": "Fredericka the Great", "size": 12, "bold": False, "underline": False, "fg": "WHITE"}),
-        ("C1:F4", {"bg": "DARK_RED_1", "h": "CENTER", "v": "MIDDLE", "wrap": "CLIP", "font": "Oregano", "size": 29, "bold": True, "fg": "WHITE"}),
+        ("C1:F4", {"bg": "DARK_RED_1", "h": "CENTER", "v": "MIDDLE", "wrap": "CLIP", "font": "Oregano", "size": 29, "bold": True, "fg": "WHITE", "underline": False}),
         ("T5:Y5", {"font": "Vidaloka", "size": 15, "bold": True, "fg": "WHITE"}),
         ("P2:Y4", {"wrap": "CLIP", "font": "Special Elite", "size": 6, "bold": True}),
         ("P1:P4", {"h": "RIGHT", "v": "MIDDLE", "wrap": "CLIP", "font": "Special Elite", "size": 6, "bold": True}),
