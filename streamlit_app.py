@@ -337,8 +337,15 @@ if rodar:
         st.warning("Informe uma data, palavra ou URL.")
         st.stop()
 
-    #st.error(f"DATA = {entrada_clean!r}")
+    # --- VALIDAÇÃO AQUI ---
+    yyyymmdd_check = normalizar_data(entrada_clean)
+    dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
 
+    if dt_check.weekday() in (6, 0):  # domingo ou segunda
+        st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
+        st.stop()
+
+    # só agora começa a execução visual
     try:
         progress_bar = st.progress(0)
         status_text = st.empty()
@@ -366,13 +373,6 @@ if rodar:
                 err["exc"] = e
             finally:
                 done.set()
-
-        # --- validação: não iniciar pipeline em domingo/segunda ---
-        yyyymmdd_check = normalizar_data(entrada_clean)
-        dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
-        if dt_check.weekday() in (6, 0):  # domingo ou segunda
-            st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
-            st.stop()
 
         # só inicia thread/progresso se passou na validação
         threading.Thread(target=run_main, daemon=True).start()
