@@ -5,6 +5,36 @@ from typing import Optional
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 
+import sys
+import subprocess
+from pathlib import Path
+import os
+
+def _ensure_chromium_installed() -> None:
+    """
+    No Streamlit Cloud, o postBuild pode falhar/ser ignorado por cache.
+    Este fallback instala o Chromium em runtime (uma vez) quando necessário.
+    """
+    marker = Path(".cache") / "playwright_chromium_ok"
+    marker.parent.mkdir(parents=True, exist_ok=True)
+
+    if marker.exists():
+        return
+
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "playwright", "install", "chromium"],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=os.environ.copy(),
+        )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"playwright install chromium falhou:\nSTDOUT:\n{e.stdout}\n\nSTDERR:\n{e.stderr}"
+        ) from e
+
+    marker.write_text("ok", encoding="utf-8")
 
 def _sanitize_filename(name: str) -> str:
     name = name.strip()
@@ -31,7 +61,21 @@ def download_diario_executivo(
     base_url = "https://www.jornalminasgerais.mg.gov.br/edicao-do-dia"
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=headless,args=["--no-sandbox", "--disable-dev-shm-usage"],)
+        try:
+            _ensure_chromium_installed()
+            browser = p.chromium.launch(
+                headless=headless,
+                args=["--no-sandbox", "--disable-dev-shm-usage"],
+            )
+        except Exception:
+            # tenta instalar de novo (caso o marker exista mas a pasta sumiu por cache)
+            if Path(".playwright_chromium_ok").exists():
+                Path(".playwright_chromium_ok").unlink()
+            _ensure_chromium_installed()
+            browser = p.chromium.launch(
+                headless=headless,
+                args=["--no-sandbox", "--disable-dev-shm-usage"],
+            )
         context = browser.new_context(accept_downloads=True)
         page = context.new_page()
 
