@@ -469,18 +469,28 @@ if rodar:
 # EXTRA: Jornal Minas Gerais (Diário do Executivo) — abrir PDF em nova aba (sem Playwright)
 # ======================================================================================
 import base64
+import re
 from playwright_fetch_jmg import download_diario_executivo
 
 st.divider()
 st.subheader("Diário do Executivo")
 
-data_pub = st.text_input("Data de publicação (YYYY-MM-DD)", value="2026-03-03", key="jmg_data_pub")
+data_pub = st.text_input(
+    "Data de publicação (YYYY-MM-DD)",
+    value="2026-03-03",
+    key="jmg_data_pub",
+)
 
 # Mantido por compatibilidade visual; não é usado no fetch atual (sem browser)
 headless = st.checkbox("Headless (não utilizado)", value=True, key="jmg_headless")
 
 if st.button("Gerar link do PDF (nova aba)", key="jmg_btn_download"):
     try:
+        # validação mínima
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", (data_pub or "").strip()):
+            st.error("Data inválida. Use o formato YYYY-MM-DD (ex.: 2026-03-03).")
+            st.stop()
+
         status = st.empty()
 
         def ui_log(msg: str) -> None:
@@ -488,7 +498,7 @@ if st.button("Gerar link do PDF (nova aba)", key="jmg_btn_download"):
 
         with st.spinner("Obtendo PDF pela API..."):
             pdf_path = download_diario_executivo(
-                data_publicacao_yyyy_mm_dd=data_pub,
+                data_publicacao_yyyy_mm_dd=data_pub.strip(),
                 out_dir="downloads",
                 headless=headless,
                 timeout_ms=90_000,
@@ -497,20 +507,32 @@ if st.button("Gerar link do PDF (nova aba)", key="jmg_btn_download"):
 
         st.success(f"OK: {pdf_path.name}")
 
-        # Converte o arquivo em base64 e abre via data URL
         pdf_bytes = pdf_path.read_bytes()
-        b64 = base64.b64encode(pdf_bytes).decode("ascii")
-        data_url = f"data:application/pdf;base64,{b64}"
 
-        st.markdown(
-            f"""
-            <a href="{data_url}" target="_blank" rel="noopener noreferrer"
-              style="display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;text-decoration:none;">
-                Abrir PDF em nova aba
-            </a>
-            """,
-            unsafe_allow_html=True,
-        )
+        # data URLs muito grandes podem falhar no browser; fallback para download
+        # (limite conservador ~8MB de bytes => base64 ~10.6MB)
+        if len(pdf_bytes) > 8_000_000:
+            st.warning("PDF grande demais para abrir via data URL. Use o botão de download abaixo.")
+            st.download_button(
+                label="Download do PDF",
+                data=pdf_bytes,
+                file_name=pdf_path.name,
+                mime="application/pdf",
+                key="jmg_btn_dlfile",
+            )
+        else:
+            b64 = base64.b64encode(pdf_bytes).decode("ascii")
+            data_url = f"data:application/pdf;base64,{b64}"
+
+            st.markdown(
+                f"""
+                <a href="{data_url}" target="_blank" rel="noopener noreferrer"
+                  style="display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;text-decoration:none;">
+                    Abrir PDF em nova aba
+                </a>
+                """,
+                unsafe_allow_html=True,
+            )
 
     except Exception as e:
         st.error(f"Falhou: {e}")
