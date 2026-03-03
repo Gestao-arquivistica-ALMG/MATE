@@ -470,7 +470,7 @@ if rodar:
 # ======================================================================================
 import base64
 import re
-from playwright_fetch_jmg import download_diario_executivo
+from playwright import download_diario_executivo
 
 st.divider()
 st.subheader("Diário do Executivo")
