@@ -30,7 +30,7 @@ def download_diario_executivo(
     base_url = "https://www.jornalminasgerais.mg.gov.br/edicao-do-dia"
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=headless)
+        browser = p.chromium.launch(headless=headless,args=["--no-sandbox", "--disable-dev-shm-usage"],)
         context = browser.new_context(accept_downloads=True)
         page = context.new_page()
 
