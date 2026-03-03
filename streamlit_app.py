@@ -464,3 +464,38 @@ if rodar:
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
+
+# ======================================================================================
+# EXTRA: Downloader Jornal Minas Gerais (Diário do Executivo) via Playwright
+# ======================================================================================
+from playwright_fetch_jmg import download_diario_executivo
+
+st.divider()
+st.subheader("Baixar Diário do Executivo (Jornal Minas Gerais)")
+
+data_pub = st.text_input("Data de publicação (YYYY-MM-DD)", value="2026-03-03", key="jmg_data_pub")
+headless = st.checkbox("Headless (recomendado no Streamlit Cloud)", value=True, key="jmg_headless")
+
+if st.button("Baixar PDF do Diário do Executivo", key="jmg_btn_download"):
+    try:
+        with st.spinner("Baixando via navegador headless..."):
+            pdf_path = download_diario_executivo(
+                data_publicacao_yyyy_mm_dd=data_pub,
+                out_dir="downloads",
+                headless=headless,
+                timeout_ms=90_000,
+            )
+
+        st.success(f"Baixado: {pdf_path.name}")
+
+        with open(pdf_path, "rb") as f:
+            st.download_button(
+                label="Download do PDF",
+                data=f,
+                file_name=pdf_path.name,
+                mime="application/pdf",
+                key="jmg_btn_dlfile",
+            )
+
+    except Exception as e:
+        st.error(f"Falhou: {e}")
