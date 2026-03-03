@@ -468,7 +468,7 @@ if rodar:
 # ======================================================================================
 # EXTRA: Downloader Jornal Minas Gerais (Diário do Executivo) via Playwright
 # ======================================================================================
-from playwright_fetch_jmg import download_diario_executivo
+from playwright import download_diario_executivo
 
 st.divider()
 st.subheader("Diário do Executivo")
@@ -494,12 +494,16 @@ if st.button("Baixar PDF do Diário do Executivo", key="jmg_btn_download"):
         st.success(f"Baixado: {pdf_path.name}")
 
         with open(pdf_path, "rb") as f:
-            st.download_button(
-                label="Download do PDF",
-                data=f,
-                file_name=pdf_path.name,
-                mime="application/pdf",
-                key="jmg_btn_dlfile",
+            data_url = f"data:application/pdf;base64,{b64}"
+
+            st.markdown(
+                f"""
+                <a href="{data_url}" target="_blank"
+                  style="display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;text-decoration:none;">
+                    Abrir PDF em nova aba
+                </a>
+                """,
+                unsafe_allow_html=True
             )
 
     except Exception as e:
