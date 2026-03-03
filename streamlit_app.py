@@ -466,23 +466,27 @@ if rodar:
         st.exception(e)
 
 # ======================================================================================
-# EXTRA: Downloader Jornal Minas Gerais (Diário do Executivo) via Playwright
+# EXTRA: Jornal Minas Gerais (Diário do Executivo) — abrir PDF em nova aba (sem Playwright)
 # ======================================================================================
-from playwright import download_diario_executivo
+import base64
+from playwright_fetch_jmg import download_diario_executivo
 
 st.divider()
 st.subheader("Diário do Executivo")
 
 data_pub = st.text_input("Data de publicação (YYYY-MM-DD)", value="2026-03-03", key="jmg_data_pub")
-headless = st.checkbox("Headless (recomendado no Streamlit Cloud)", value=True, key="jmg_headless")
 
-if st.button("Baixar PDF do Diário do Executivo", key="jmg_btn_download"):
+# Mantido por compatibilidade visual; não é usado no fetch atual (sem browser)
+headless = st.checkbox("Headless (não utilizado)", value=True, key="jmg_headless")
+
+if st.button("Gerar link do PDF (nova aba)", key="jmg_btn_download"):
     try:
         status = st.empty()
+
         def ui_log(msg: str) -> None:
             status.write(msg)
 
-        with st.spinner("Baixando via navegador headless..."):
+        with st.spinner("Obtendo PDF pela API..."):
             pdf_path = download_diario_executivo(
                 data_publicacao_yyyy_mm_dd=data_pub,
                 out_dir="downloads",
@@ -491,20 +495,22 @@ if st.button("Baixar PDF do Diário do Executivo", key="jmg_btn_download"):
                 log=ui_log,
             )
 
-        st.success(f"Baixado: {pdf_path.name}")
+        st.success(f"OK: {pdf_path.name}")
 
-        with open(pdf_path, "rb") as f:
-            data_url = f"data:application/pdf;base64,{b64}"
+        # Converte o arquivo em base64 e abre via data URL
+        pdf_bytes = pdf_path.read_bytes()
+        b64 = base64.b64encode(pdf_bytes).decode("ascii")
+        data_url = f"data:application/pdf;base64,{b64}"
 
-            st.markdown(
-                f"""
-                <a href="{data_url}" target="_blank"
-                  style="display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;text-decoration:none;">
-                    Abrir PDF em nova aba
-                </a>
-                """,
-                unsafe_allow_html=True
-            )
+        st.markdown(
+            f"""
+            <a href="{data_url}" target="_blank" rel="noopener noreferrer"
+              style="display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;text-decoration:none;">
+                Abrir PDF em nova aba
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
 
     except Exception as e:
         st.error(f"Falhou: {e}")
