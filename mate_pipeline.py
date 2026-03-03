@@ -159,7 +159,7 @@ def normalizar_data(entrada: str) -> str:
         return base.strftime("%Y%m%d")
 
     if s_lower in ("domingo", "segunda"):
-        raise ValueError("Não há Diário do Legislativo em domingo/segunda. Use sábado ou uma data.")
+        raise ValueError("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
 
     # --- DIAS DA SEMANA (última ocorrência passada) ---
     weekday_map = {
