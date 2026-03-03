@@ -2,7 +2,7 @@ import re
 import streamlit as st
 import threading
 import time
-from mate_pipeline import main
+from mate_pipeline import main, normalizar_data
 
 # ================= CONFIG =================
 st.set_page_config(
