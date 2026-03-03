@@ -471,7 +471,7 @@ if rodar:
 # ======================================================================================
 import base64
 import streamlit.components.v1 as components
-from playwright_fetch_jmg import fetch_diario_executivo_pdf_bytes
+from playwright import fetch_diario_executivo_pdf_bytes
 
 st.divider()
 st.subheader("Diário do Executivo")
