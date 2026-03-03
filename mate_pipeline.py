@@ -215,7 +215,12 @@ def normalizar_data(entrada: str) -> str:
             "ddmm, ddmmyy, ddmmyyyy, dd/mm/yy, dd/mm/yyyy ou yyyymmdd."
         )
 
-    datetime.strptime(yyyymmdd, "%Y%m%d")
+    dt_ok = datetime.strptime(yyyymmdd, "%Y%m%d").date()
+
+    # DL não existe em domingo (6) nem segunda (0)
+    if dt_ok.weekday() in (6, 0):
+        raise ValueError("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
+
     return yyyymmdd
 
     print("ENTRADA RECEBIDA:", repr(entrada))
