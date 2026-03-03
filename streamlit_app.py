@@ -478,12 +478,17 @@ headless = st.checkbox("Headless (recomendado no Streamlit Cloud)", value=True, 
 
 if st.button("Baixar PDF do Diário do Executivo", key="jmg_btn_download"):
     try:
+        status = st.empty()
+        def ui_log(msg: str) -> None:
+            status.write(msg)
+
         with st.spinner("Baixando via navegador headless..."):
             pdf_path = download_diario_executivo(
                 data_publicacao_yyyy_mm_dd=data_pub,
                 out_dir="downloads",
                 headless=headless,
                 timeout_ms=90_000,
+                log=ui_log,
             )
 
         st.success(f"Baixado: {pdf_path.name}")
