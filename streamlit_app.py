@@ -521,6 +521,7 @@ if rodar:
                 except Exception as e:
                     st.error(f"Falhou: {e}")
 
+
 # ======================================================================================
 # EXTRA: Jornal Minas Gerais (Diário do Executivo) — abrir PDF em nova aba (sem Playwright)
 # ======================================================================================
