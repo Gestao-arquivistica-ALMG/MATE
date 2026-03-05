@@ -453,14 +453,14 @@ if rodar:
                     """,
                     unsafe_allow_html=True
                 )
-            else:
-                st.markdown(
-                    f"""
-                    <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
-                        Abrir Diário
-                    </span>
-                    """,
-                    unsafe_allow_html=True
+              else:
+                  st.markdown(
+                      f"""
+                      <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
+                          Abrir Diário
+                      </span>
+                      """,
+                      unsafe_allow_html=True
                 )
 
         with c_btn3:
