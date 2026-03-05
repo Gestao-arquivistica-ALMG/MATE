@@ -340,6 +340,8 @@ if rodar:
     # --- VALIDAÇÃO AQUI ---
     yyyymmdd_check = normalizar_data(entrada_clean)
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
+    data_pub_exec = dt_check.strftime("%Y-%m-%d")
+    diario_exec_url = f"https://www.jornalminasgerais.mg.gov.br/?dataJornal={data_pub_exec}"
 
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")

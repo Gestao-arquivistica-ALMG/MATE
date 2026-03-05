@@ -20,7 +20,6 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from functools import lru_cache
-
 from pypdf import PdfReader
 
 # ---- 1) Regex Base ----
