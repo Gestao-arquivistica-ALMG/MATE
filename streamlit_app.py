@@ -460,18 +460,66 @@ if rodar:
             st.markdown(html_btn2, unsafe_allow_html=True)
 
         with c_btn3:
-            st.markdown(
-                f"""
-                <a href="{diario_exec_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                    Abrir Executivo
-                </a>
-                """,
-                unsafe_allow_html=True
-            )
+            if st.button("Abrir Executivo", key=f"jmg_open_top_{data_pub_exec}"):
+                try:
+                    status_exec = st.empty()
 
-    except Exception as e:
-        st.error("Erro ao processar.")
-        st.exception(e)
+                    def ui_log_exec(msg: str) -> None:
+                        status_exec.write(msg)
+
+                    with st.spinner("Obtendo PDF do Executivo pela API..."):
+                        pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
+                            data_publicacao_yyyy_mm_dd=data_pub_exec,
+                            timeout_ms=90_000,
+                            log=ui_log_exec,
+                        )
+
+                    # Botão download (opcional aqui em cima)
+                    st.download_button(
+                        "Baixar PDF",
+                        data=pdf_bytes_exec,
+                        file_name=filename_exec,
+                        mime="application/pdf",
+                        key=f"jmg_dl_top_{data_pub_exec}",
+                    )
+
+                    # Abrir em nova aba via Blob URL (mesma lógica do seu bloco)
+                    b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
+                    safe_name_exec = filename_exec.replace("'", "").replace('"', "")
+
+                    components.html(
+                        f"""
+                        <script>
+                        (function() {{
+                          const b64 = "{b64_exec}";
+                          const fileName = "{safe_name_exec}";
+
+                          function b64ToUint8Array(base64) {{
+                            const binary = atob(base64);
+                            const len = binary.length;
+                            const bytes = new Uint8Array(len);
+                            for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                            return bytes;
+                          }}
+
+                          const bytes = b64ToUint8Array(b64);
+                          const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                          const url = URL.createObjectURL(blob);
+
+                          const w = window.open(url, "_blank");
+                          if (!w) {{
+                            alert("Popup bloqueado. Permita popups para este site e tente novamente.");
+                            return;
+                          }}
+                          try {{ w.document.title = fileName; }} catch(e) {{}}
+                        }})();
+                        </script>
+                        """,
+                        height=0,
+                    )
+
+                except Exception as e:
+                    st.error(f"Falhou: {e}")
 
 # ======================================================================================
 # EXTRA: Jornal Minas Gerais (Diário do Executivo) — abrir PDF em nova aba (sem Playwright)
