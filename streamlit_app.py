@@ -420,7 +420,7 @@ if rodar:
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
 
-        c_btn1, c_btn2 = st.columns(2, gap="small")
+        c_btn1, c_btn2, c_btn3 = st.columns(3, gap="small")
 
         btn_style = """
             display:block;
@@ -453,6 +453,17 @@ if rodar:
                     """,
                     unsafe_allow_html=True
                 )
+
+        with c_btn3:
+            st.markdown(
+                f"""
+                <a href="{diario_exec_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
+                    Abrir Executivo
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
+
             else:
                 # fallback visual (sem link) se vier vazio
                 st.markdown(
