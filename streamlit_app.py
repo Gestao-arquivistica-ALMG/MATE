@@ -469,17 +469,6 @@ if rodar:
                 unsafe_allow_html=True
             )
 
-            else:
-                # fallback visual (sem link) se vier vazio
-                st.markdown(
-                    f"""
-                    <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
-                        Abrir Diário
-                    </span>
-                    """,
-                    unsafe_allow_html=True
-                )
-
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
