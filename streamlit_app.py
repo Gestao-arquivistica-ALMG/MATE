@@ -521,6 +521,9 @@ if rodar:
                 except Exception as e:
                     st.error(f"Falhou: {e}")
 
+    except Exception as e:
+        st.error("Erro ao processar.")
+        st.exception(e)
 
 # ======================================================================================
 # EXTRA: Jornal Minas Gerais (Diário do Executivo) — abrir PDF em nova aba (sem Playwright)
