@@ -445,23 +445,19 @@ if rodar:
 
         with c_btn2:
             if diario_url:
-                st.markdown(
-                    f"""
-                    <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                        Abrir Diário
-                    </a>
-                    """,
-                    unsafe_allow_html=True
-                )
-              else:
-                  st.markdown(
-                      f"""
-                      <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
-                          Abrir Diário
-                      </span>
-                      """,
-                      unsafe_allow_html=True
-                )
+                html_btn2 = f"""
+                <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
+                    Abrir Diário
+                </a>
+                """
+            else:
+                html_btn2 = f"""
+                <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
+                    Abrir Diário
+                </span>
+                """
+
+            st.markdown(html_btn2, unsafe_allow_html=True)
 
         with c_btn3:
             st.markdown(
