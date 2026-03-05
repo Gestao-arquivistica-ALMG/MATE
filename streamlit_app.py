@@ -460,6 +460,7 @@ if rodar:
             st.markdown(html_btn2, unsafe_allow_html=True)
 
         with c_btn3:
+            # 1) Clique no botão do Streamlit: baixa e guarda em session_state
             if st.button("Abrir Executivo", key=f"jmg_open_top_{data_pub_exec}"):
                 try:
                     status_exec = st.empty()
@@ -474,52 +475,69 @@ if rodar:
                             log=ui_log_exec,
                         )
 
-                    # Botão download (opcional aqui em cima)
-                    st.download_button(
-                        "Baixar PDF",
-                        data=pdf_bytes_exec,
-                        file_name=filename_exec,
-                        mime="application/pdf",
-                        key=f"jmg_dl_top_{data_pub_exec}",
-                    )
-
-                    # Abrir em nova aba via Blob URL (mesma lógica do seu bloco)
-                    b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
-                    safe_name_exec = filename_exec.replace("'", "").replace('"', "")
-
-                    components.html(
-                        f"""
-                        <script>
-                        (function() {{
-                          const b64 = "{b64_exec}";
-                          const fileName = "{safe_name_exec}";
-
-                          function b64ToUint8Array(base64) {{
-                            const binary = atob(base64);
-                            const len = binary.length;
-                            const bytes = new Uint8Array(len);
-                            for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                            return bytes;
-                          }}
-
-                          const bytes = b64ToUint8Array(b64);
-                          const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                          const url = URL.createObjectURL(blob);
-
-                          const w = window.open(url, "_blank");
-                          if (!w) {{
-                            alert("Popup bloqueado. Permita popups para este site e tente novamente.");
-                            return;
-                          }}
-                          try {{ w.document.title = fileName; }} catch(e) {{}}
-                        }})();
-                        </script>
-                        """,
-                        height=0,
-                    )
+                    st.session_state["jmg_top_pdf_bytes"] = pdf_bytes_exec
+                    st.session_state["jmg_top_filename"] = filename_exec
+                    st.success(f"OK: {filename_exec}")
 
                 except Exception as e:
                     st.error(f"Falhou: {e}")
+                    st.session_state.pop("jmg_top_pdf_bytes", None)
+                    st.session_state.pop("jmg_top_filename", None)
+
+            # 2) Se já tiver PDF em memória, oferece download e botão HTML (user gesture real)
+            if st.session_state.get("jmg_top_pdf_bytes") and st.session_state.get("jmg_top_filename"):
+                pdf_bytes_exec = st.session_state["jmg_top_pdf_bytes"]
+                filename_exec = st.session_state["jmg_top_filename"]
+
+                st.download_button(
+                    "Baixar PDF",
+                    data=pdf_bytes_exec,
+                    file_name=filename_exec,
+                    mime="application/pdf",
+                    key=f"jmg_dl_top_{data_pub_exec}",
+                )
+
+                b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
+                safe_name_exec = filename_exec.replace("'", "").replace('"', "")
+
+                components.html(
+                    f"""
+                    <button id="openPdfBtnTop" style="
+                        display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
+                        border:0;cursor:pointer;margin-top:8px;">
+                        Abrir PDF em nova aba
+                    </button>
+
+                    <script>
+                    (function() {{
+                      const b64 = "{b64_exec}";
+                      const fileName = "{safe_name_exec}";
+
+                      function b64ToUint8Array(base64) {{
+                        const binary = atob(base64);
+                        const len = binary.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                        return bytes;
+                      }}
+
+                      document.getElementById("openPdfBtnTop").addEventListener("click", () => {{
+                        const bytes = b64ToUint8Array(b64);
+                        const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                        const url = URL.createObjectURL(blob);
+
+                        const w = window.open(url, "_blank");
+                        if (!w) {{
+                          alert("Popup bloqueado. Permita popups para este site e tente novamente.");
+                          return;
+                        }}
+                        try {{ w.document.title = fileName; }} catch(e) {{}}
+                      }});
+                    }})();
+                    </script>
+                    """,
+                    height=90,
+                )
 
     except Exception as e:
         st.error("Erro ao processar.")
