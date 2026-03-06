@@ -445,7 +445,7 @@ if rodar:
         btn_style = """
             display:block;
             text-align:center;
-            padding:12px 11px;
+            padding:10px;
             border-radius:8px;
             background-color:#e9e9e9;
             text-decoration:none;
@@ -457,12 +457,12 @@ if rodar:
         btn_style_exec = """
             display:block;
             text-align:center;
-            padding:10px;
+            padding:12px 10px;
             border-radius:8px;
             background-color:#e9e9e9;
             text-decoration:none;
             font-weight:400;
-            font-size:12px;
+            font-size:13px;
             color:black;
             white-space:nowrap;
             cursor:pointer;
