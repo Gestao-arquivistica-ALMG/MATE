@@ -492,7 +492,7 @@ if rodar:
                     f"""
                     <a id="openPdfBtnTopExec"
                       href="javascript:void(0)"
-                      style="{btn_style}; white-space:nowrap; position:relative; top:-3px; cursor:pointer; font-family:Arial, Helvetica, sans-serif;">
+                      style="{btn_style}; white-space:nowrap; position:relative; top:-2px; cursor:pointer; font-family:Arial, Helvetica, sans-serif; font-size:14px;">
                     Diário do Executivo
                     </a>
 
