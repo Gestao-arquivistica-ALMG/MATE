@@ -489,9 +489,9 @@ if rodar:
 
                 components.html(
                     f"""
-                  <a id="openPdfBtnTopExec" style="{btn_style}">
-                  Diário do Executivo
-                  </a>
+                    <a id="openPdfBtnTopExec" style="{btn_style}; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;">
+                    Diário do Executivo
+                    </a>
 
                     <script>
                     (function() {{
@@ -540,6 +540,7 @@ if rodar:
                     """,
                     unsafe_allow_html=True,
                 )
+
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
