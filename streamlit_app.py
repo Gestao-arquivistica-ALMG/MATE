@@ -450,8 +450,25 @@ if rodar:
             background-color:#e9e9e9;
             text-decoration:none;
             font-weight:400;
-            font-size:10px;
+            font-size:14px;
             color:black;
+        """
+
+        btn_style_exec = """
+            display:block;
+            text-align:center;
+            padding:10px;
+            border-radius:8px;
+            background-color:#e9e9e9;
+            text-decoration:none;
+            font-weight:400;
+            font-size:14px;
+            color:black;
+            white-space:nowrap;
+            cursor:pointer;
+            font-family:Arial, Helvetica, sans-serif;
+            position:relative;
+            top:-2px;
         """
 
         with c_btn1:
@@ -492,7 +509,7 @@ if rodar:
                     f"""
                     <a id="openPdfBtnTopExec"
                       href="javascript:void(0)"
-                      style="{btn_style}; white-space:nowrap; position:relative; top:-5px; cursor:pointer; font-family:Arial, Helvetica, sans-serif; font-size:10px;">
+                      style="{btn_style_exec}; white-space:nowrap; position:relative; top:-5px; cursor:pointer; font-family:Arial, Helvetica, sans-serif; font-size:10px;">
                     Diário do Executivo
                     </a>
 
