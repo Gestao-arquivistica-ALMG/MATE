@@ -489,9 +489,9 @@ if rodar:
 
                 components.html(
                     f"""
-                    <button id="openPdfBtnTopExec" style="{btn_style}">
+                    <a id="openPdfBtnTopExec" style="{btn_style}">
                     Diário do Executivo
-                    </button>
+                    </a>
 
                     <script>
                     (function() {{
