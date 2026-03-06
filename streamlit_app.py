@@ -462,13 +462,13 @@ if rodar:
             background-color:#e9e9e9;
             text-decoration:none;
             font-weight:400;
-            font-size:14px;
+            font-size:12px;
             color:black;
             white-space:nowrap;
             cursor:pointer;
             font-family:Arial, Helvetica, sans-serif;
             position:relative;
-            top:-2px;
+            top:-3px;
         """
 
         with c_btn1:
