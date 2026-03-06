@@ -478,18 +478,22 @@ if rodar:
             pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
             filename_exec = st.session_state.get("exec_filename")
 
-            if pdf_bytes_exec and st.button("Diário do Executivo"):
-                st.success(f"OK: {filename_exec}")
-
+            if pdf_bytes_exec:
                 b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
                 safe_name_exec = filename_exec.replace("'", "").replace('"', "")
 
                 components.html(
                     f"""
                     <button id="openPdfBtnTopExec" style="
-                        display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
-                        border:0;cursor:pointer;margin-top:8px;">
-                        Abrir PDF em nova aba
+                        display:inline-block;
+                        width:100%;
+                        padding:10px 12px;
+                        background:#f0f0f0;
+                        border:1px solid #d0d0d0;
+                        border-radius:8px;
+                        cursor:pointer;
+                        font-size:16px;">
+                        Diário do Executivo
                     </button>
 
                     <script>
@@ -520,9 +524,25 @@ if rodar:
                     }})();
                     </script>
                     """,
-                    height=90,
+                    height=70,
                 )
-
+            else:
+                st.markdown(
+                    """
+                    <div style="
+                        display:inline-block;
+                        width:100%;
+                        padding:10px 12px;
+                        background:#f0f0f0;
+                        border:1px solid #d0d0d0;
+                        border-radius:8px;
+                        color:#999;
+                        text-align:center;">
+                        Diário do Executivo
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
