@@ -521,7 +521,7 @@ if rodar:
                     }})();
                     </script>
                     """,
-                    height=65,
+                    height=70,
                 )
             else:
                 st.markdown(
