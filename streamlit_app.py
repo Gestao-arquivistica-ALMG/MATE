@@ -445,7 +445,7 @@ if rodar:
         btn_style = """
             display:block;
             text-align:center;
-            padding:10px;
+            padding:12px 11px;
             border-radius:8px;
             background-color:#e9e9e9;
             text-decoration:none;
