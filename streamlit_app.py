@@ -477,10 +477,10 @@ if rodar:
         with c_btn3:
             data_pub_exec_btn = st.session_state.get("jmg_data_pub_exec")
 
-            pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
-            filename_exec = st.session_state.get("exec_filename")
+        pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
+        filename_exec = st.session_state.get("exec_filename")
 
-            if pdf_bytes_exec and st.button("Diário do Executivo"):
+        if pdf_bytes_exec and st.button("Diário do Executivo"):
 
                     st.success(f"OK: {filename_exec}")
 
@@ -525,9 +525,6 @@ if rodar:
                         """,
                         height=90,
                     )
-
-                except Exception as e:
-                    st.error(f"Falhou: {e}")
 
     except Exception as e:
         st.error("Erro ao processar.")
