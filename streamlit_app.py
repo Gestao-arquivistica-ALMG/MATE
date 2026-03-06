@@ -456,9 +456,9 @@ if rodar:
         with c_btn1:
             st.markdown(
                 f"""
-                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                    Abrir Planilha
-                </a>
+                <button style="{btn_style}" onclick="window.open('{url_com_aba}','_blank')">
+                    Planilha
+                </button>
                 """,
                 unsafe_allow_html=True
             )
@@ -466,13 +466,13 @@ if rodar:
         with c_btn2:
             if diario_url:
                 html_btn2 = f"""
-                <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
+                <button style="{btn_style}" onclick="window.open('{diario_url}','_blank')">
                     Diário do Legislativo
-                </a>
+                </button>
                 """
             else:
                 html_btn2 = f"""
-                <button style="{btn_style} opacity:0.55; cursor:not-allowed;">
+                <button style="{btn_style} opacity:0.55; cursor:not-allowed;" disabled>
                     Diário do Legislativo
                 </button>
                 """
@@ -489,9 +489,9 @@ if rodar:
 
                 components.html(
                     f"""
-                    <button id="openPdfBtnTopExec" style="{btn_style}">
-                    Diário do Executivo
-                    </button>
+                  <button id="openPdfBtnTopExec" style="{btn_style}">
+                  Diário do Executivo
+                  </button>
 
                     <script>
                     (function() {{
