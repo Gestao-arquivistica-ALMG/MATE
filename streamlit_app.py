@@ -472,9 +472,9 @@ if rodar:
                 """
             else:
                 html_btn2 = f"""
-                <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
+                <button style="{btn_style} opacity:0.55; cursor:not-allowed;">
                     Diário do Legislativo
-                </span>
+                </button>
                 """
 
             st.markdown(html_btn2, unsafe_allow_html=True)
