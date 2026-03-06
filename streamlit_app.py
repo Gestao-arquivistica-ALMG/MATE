@@ -489,7 +489,9 @@ if rodar:
 
                 components.html(
                     f"""
-                    <a id="openPdfBtnTopExec" style="{btn_style}; white-space:nowrap; position:relative; top:-2px; cursor:pointer;">
+                    <a id="openPdfBtnTopExec"
+                      href="javascript:void(0)"
+                      style="{btn_style}; white-space:nowrap; position:relative; top:-2px; cursor:pointer; font-family: inherit;">
                     Diário do Executivo
                     </a>
 
