@@ -489,7 +489,7 @@ if rodar:
 
                 components.html(
                     f"""
-                    <a id="openPdfBtnTopExec" style="{btn_style}; white-space:nowrap; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;">
+                    <a id="openPdfBtnTopExec" style="{btn_style}; white-space:nowrap; position:relative; top:-2px;">
                     Diário do Executivo
                     </a>
 
