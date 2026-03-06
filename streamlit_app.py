@@ -410,7 +410,7 @@ if rodar:
 
             spinner = ("⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏")
             frame = int(time.time() * 10) % len(spinner)
-            status_text.write(f"{spinner[frame]} Processando Diários de Minas Gerais… {int(pct_fake)}%")
+            status_text.write(f"{spinner[frame]} Processando Publicações Oficiais de Minas Gerais… {int(pct_fake)}%")
 
             time.sleep(0.1)
 
@@ -456,9 +456,9 @@ if rodar:
         with c_btn1:
             st.markdown(
                 f"""
-                <button style="{btn_style}" onclick="window.open('{url_com_aba}','_blank')">
+                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
                     Planilha
-                </button>
+                </a>
                 """,
                 unsafe_allow_html=True
             )
@@ -466,15 +466,15 @@ if rodar:
         with c_btn2:
             if diario_url:
                 html_btn2 = f"""
-                <button style="{btn_style}" onclick="window.open('{diario_url}','_blank')">
+                <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
                     Diário do Legislativo
-                </button>
+                </a>
                 """
             else:
                 html_btn2 = f"""
-                <button style="{btn_style} opacity:0.55; cursor:not-allowed;" disabled>
+                <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
                     Diário do Legislativo
-                </button>
+                </span>
                 """
 
             st.markdown(html_btn2, unsafe_allow_html=True)
