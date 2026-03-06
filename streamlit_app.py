@@ -341,12 +341,24 @@ if rodar:
     yyyymmdd_check = normalizar_data(entrada_clean)
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
     data_pub_exec = dt_check.strftime("%Y-%m-%d")
-    st.session_state["jmg_data_pub_exec"] = data_pub_exec
-    
+
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
         st.stop()
 
+    # busca o Diário do Executivo
+    try:
+        pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
+            data_publicacao_yyyy_mm_dd=data_pub_exec,
+            timeout_ms=90_000,
+        )
+        st.session_state["exec_pdf_bytes"] = pdf_bytes_exec
+        st.session_state["exec_filename"] = filename_exec
+    except Exception as e:
+        st.session_state.pop("exec_pdf_bytes", None)
+        st.session_state.pop("exec_filename", None)
+        st.warning(f"Falha ao obter Diário do Executivo: {e}")
+    
     # só agora começa a execução visual
     try:
         progress_bar = st.progress(0)
@@ -447,13 +459,13 @@ if rodar:
             if diario_url:
                 html_btn2 = f"""
                 <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                    Abrir Diário
+                    Diário do Legislativo
                 </a>
                 """
             else:
                 html_btn2 = f"""
                 <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
-                    Abrir Diário
+                    Diário do Legislativo
                 </span>
                 """
 
@@ -462,7 +474,7 @@ if rodar:
         with c_btn3:
             data_pub_exec_btn = st.session_state.get("jmg_data_pub_exec")
 
-            if data_pub_exec_btn and st.button("Abrir Executivo", key=f"jmg_btn_open_top_{data_pub_exec_btn}"):
+            if data_pub_exec_btn and st.button("Diário do Executivo", key=f"jmg_btn_open_top_{data_pub_exec_btn}"):
                 try:
                     status_exec = st.empty()
 
