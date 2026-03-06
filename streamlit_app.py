@@ -344,6 +344,10 @@ if rodar:
     yyyymmdd_check = normalizar_data(entrada_clean)
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
     data_pub_exec = dt_check.strftime("%Y-%m-%d")
+    diario_exec_page = (
+        f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?"
+        f"dados=%7B%22dataPublicacaoSelecionada%22:%22{data_pub_exec}T03:00:00.000Z%22%7D"
+    )
 
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
@@ -431,6 +435,7 @@ if rodar:
 
         st.error(f"Aba da Planilha: {result['aba']}")
         st.success(f"Diário do Legislativo: {result['diario_url']}")
+        st.success(f"Diário do Executivo: {diario_exec_page}")
 
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
