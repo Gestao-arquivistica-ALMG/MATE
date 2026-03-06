@@ -450,6 +450,7 @@ if rodar:
             background-color:#e9e9e9;
             text-decoration:none;
             font-weight:400;
+            font-size:14px;
             color:black;
         """
 
