@@ -484,6 +484,52 @@ if rodar:
                     st.session_state.pop("jmg_top_pdf_bytes", None)
                     st.session_state.pop("jmg_top_filename", None)
 
+            # 2) Se o PDF já foi baixado → renderiza botão HTML igual ao outro
+            if "jmg_top_pdf_bytes" in st.session_state:
+                import base64
+
+                b64_exec = base64.b64encode(st.session_state["jmg_top_pdf_bytes"]).decode()
+                safe_name_exec = st.session_state.get("jmg_top_filename", "diario_executivo.pdf")
+
+                components.html(
+                    f"""
+                    <button id="openPdfBtnTop" style="
+                        display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
+                        border:0;cursor:pointer;margin-top:8px;">
+                        Abrir PDF em nova aba
+                    </button>
+
+                    <script>
+                    (function() {{
+                      const b64 = "{b64_exec}";
+                      const fileName = "{safe_name_exec}";
+
+                      function b64ToUint8Array(base64) {{
+                        const binary = atob(base64);
+                        const len = binary.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                        return bytes;
+                      }}
+
+                      document.getElementById("openPdfBtnTop").addEventListener("click", () => {{
+                        const bytes = b64ToUint8Array(b64);
+                        const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                        const url = URL.createObjectURL(blob);
+
+                        const w = window.open(url, "_blank");
+                        if (!w) {{
+                          alert("Popup bloqueado. Permita popups para este site e tente novamente.");
+                          return;
+                        }}
+                        try {{ w.document.title = fileName; }} catch(e) {{}}
+                      }});
+                    }})();
+                    </script>
+                    """,
+                    height=90,
+                )
+
             # 2) Se já tiver PDF em memória, oferece download e botão HTML (user gesture real)
             if st.session_state.get("jmg_top_pdf_bytes") and st.session_state.get("jmg_top_filename"):
                 pdf_bytes_exec = st.session_state["jmg_top_pdf_bytes"]
