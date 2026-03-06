@@ -490,14 +490,7 @@ if rodar:
                 components.html(
                     f"""
                     <button id="openPdfBtnTopExec" style="
-                        display:inline-block;
-                        width:100%;
-                        padding:10px 12px;
-                        background:#f0f0f0;
-                        border:1px solid #d0d0d0;
-                        border-radius:8px;
-                        cursor:pointer;
-                        font-size:16px;">
+
                         Diário do Executivo
                     </button>
 
