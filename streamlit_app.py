@@ -341,8 +341,8 @@ if rodar:
     yyyymmdd_check = normalizar_data(entrada_clean)
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
     data_pub_exec = dt_check.strftime("%Y-%m-%d")
-    diario_exec_url = f"https://www.jornalminasgerais.mg.gov.br/?dataJornal={data_pub_exec}"
-
+    st.session_state["jmg_data_pub_exec"] = data_pub_exec
+    
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
         st.stop()
@@ -460,7 +460,68 @@ if rodar:
             st.markdown(html_btn2, unsafe_allow_html=True)
 
         with c_btn3:
-            st.link_button("Abrir Executivo", url_diario_exec)
+            data_pub_exec_btn = st.session_state.get("jmg_data_pub_exec")
+
+            if data_pub_exec_btn and st.button("Abrir Executivo", key=f"jmg_btn_open_top_{data_pub_exec_btn}"):
+                try:
+                    status_exec = st.empty()
+
+                    def ui_log_exec(msg: str) -> None:
+                        status_exec.write(msg)
+
+                    with st.spinner("Obtendo PDF pela API..."):
+                        pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
+                            data_publicacao_yyyy_mm_dd=data_pub_exec_btn,
+                            timeout_ms=90_000,
+                            log=ui_log_exec,
+                        )
+
+                    st.success(f"OK: {filename_exec}")
+
+                    b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
+                    safe_name_exec = filename_exec.replace("'", "").replace('"', "")
+
+                    components.html(
+                        f"""
+                        <button id="openPdfBtnTopExec" style="
+                            display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
+                            border:0;cursor:pointer;margin-top:8px;">
+                            Abrir PDF em nova aba
+                        </button>
+
+                        <script>
+                        (function() {{
+                          const b64 = "{b64_exec}";
+                          const fileName = "{safe_name_exec}";
+
+                          function b64ToUint8Array(base64) {{
+                            const binary = atob(base64);
+                            const len = binary.length;
+                            const bytes = new Uint8Array(len);
+                            for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                            return bytes;
+                          }}
+
+                          document.getElementById("openPdfBtnTopExec").addEventListener("click", () => {{
+                            const bytes = b64ToUint8Array(b64);
+                            const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                            const url = URL.createObjectURL(blob);
+
+                            const w = window.open(url, "_blank");
+                            if (!w) {{
+                              alert("Popup bloqueado. Permita popups para este site e tente novamente.");
+                              return;
+                            }}
+                            try {{ w.document.title = fileName; }} catch(e) {{}}
+                          }});
+                        }})();
+                        </script>
+                        """,
+                        height=90,
+                    )
+
+                except Exception as e:
+                    st.error(f"Falhou: {e}")
 
     except Exception as e:
         st.error("Erro ao processar.")
