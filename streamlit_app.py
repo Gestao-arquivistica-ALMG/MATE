@@ -321,7 +321,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     col1, col2 = st.columns([2,1], gap=None)
     with col1:
-        rodar = st.form_submit_button("🚀 Gerar Planilha", type="primary")
+        rodar = st.form_submit_button("📋 Gerar Planilha", type="primary")
     with col2:
         limpar = st.form_submit_button("🧹")
 
