@@ -477,19 +477,10 @@ if rodar:
         with c_btn3:
             data_pub_exec_btn = st.session_state.get("jmg_data_pub_exec")
 
-            if data_pub_exec_btn and st.button("Diário do Executivo", key=f"jmg_btn_open_top_{data_pub_exec_btn}"):
-                try:
-                    status_exec = st.empty()
+            pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
+            filename_exec = st.session_state.get("exec_filename")
 
-                    def ui_log_exec(msg: str) -> None:
-                        status_exec.write(msg)
-
-                    with st.spinner("Obtendo PDF pela API..."):
-                        pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
-                            data_publicacao_yyyy_mm_dd=data_pub_exec_btn,
-                            timeout_ms=90_000,
-                            log=ui_log_exec,
-                        )
+            if pdf_bytes_exec and st.button("Diário do Executivo"):
 
                     st.success(f"OK: {filename_exec}")
 
