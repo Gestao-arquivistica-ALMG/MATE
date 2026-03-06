@@ -449,7 +449,7 @@ if rodar:
             border-radius:8px;
             background-color:#e9e9e9;
             text-decoration:none;
-            font-weight:500;
+            font-weight:400;
             color:black;
         """
 
@@ -521,7 +521,7 @@ if rodar:
                     }})();
                     </script>
                     """,
-                    height=60,
+                    height=65,
                 )
             else:
                 st.markdown(
