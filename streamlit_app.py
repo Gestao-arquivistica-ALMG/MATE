@@ -2,8 +2,11 @@ import re
 import streamlit as st
 import threading
 import time
+import base64
+import streamlit.components.v1 as components
 from datetime import datetime
 from mate_pipeline import main, normalizar_data
+from playwright import fetch_diario_executivo_pdf_bytes
 
 # ================= CONFIG =================
 st.set_page_config(
