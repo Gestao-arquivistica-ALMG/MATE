@@ -475,56 +475,53 @@ if rodar:
             st.markdown(html_btn2, unsafe_allow_html=True)
 
         with c_btn3:
-            data_pub_exec_btn = st.session_state.get("jmg_data_pub_exec")
+            pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
+            filename_exec = st.session_state.get("exec_filename")
 
-        pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
-        filename_exec = st.session_state.get("exec_filename")
+            if pdf_bytes_exec and st.button("Diário do Executivo"):
+                st.success(f"OK: {filename_exec}")
 
-        if pdf_bytes_exec and st.button("Diário do Executivo"):
+                b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
+                safe_name_exec = filename_exec.replace("'", "").replace('"', "")
 
-                    st.success(f"OK: {filename_exec}")
+                components.html(
+                    f"""
+                    <button id="openPdfBtnTopExec" style="
+                        display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
+                        border:0;cursor:pointer;margin-top:8px;">
+                        Abrir PDF em nova aba
+                    </button>
 
-                    b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
-                    safe_name_exec = filename_exec.replace("'", "").replace('"', "")
+                    <script>
+                    (function() {{
+                      const b64 = "{b64_exec}";
+                      const fileName = "{safe_name_exec}";
 
-                    components.html(
-                        f"""
-                        <button id="openPdfBtnTopExec" style="
-                            display:inline-block;padding:8px 12px;background:#e9e9e9;border-radius:6px;
-                            border:0;cursor:pointer;margin-top:8px;">
-                            Abrir PDF em nova aba
-                        </button>
+                      function b64ToUint8Array(base64) {{
+                        const binary = atob(base64);
+                        const len = binary.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                        return bytes;
+                      }}
 
-                        <script>
-                        (function() {{
-                          const b64 = "{b64_exec}";
-                          const fileName = "{safe_name_exec}";
+                      document.getElementById("openPdfBtnTopExec").addEventListener("click", () => {{
+                        const bytes = b64ToUint8Array(b64);
+                        const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                        const url = URL.createObjectURL(blob);
 
-                          function b64ToUint8Array(base64) {{
-                            const binary = atob(base64);
-                            const len = binary.length;
-                            const bytes = new Uint8Array(len);
-                            for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                            return bytes;
-                          }}
-
-                          document.getElementById("openPdfBtnTopExec").addEventListener("click", () => {{
-                            const bytes = b64ToUint8Array(b64);
-                            const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                            const url = URL.createObjectURL(blob);
-
-                            const w = window.open(url, "_blank");
-                            if (!w) {{
-                              alert("Popup bloqueado. Permita popups para este site e tente novamente.");
-                              return;
-                            }}
-                            try {{ w.document.title = fileName; }} catch(e) {{}}
-                          }});
-                        }})();
-                        </script>
-                        """,
-                        height=90,
-                    )
+                        const w = window.open(url, "_blank");
+                        if (!w) {{
+                          alert("Popup bloqueado. Permita popups para este site e tente novamente.");
+                          return;
+                        }}
+                        try {{ w.document.title = fileName; }} catch(e) {{}}
+                      }});
+                    }})();
+                    </script>
+                    """,
+                    height=90,
+                )
 
     except Exception as e:
         st.error("Erro ao processar.")
