@@ -441,31 +441,34 @@ if rodar:
             unsafe_allow_html=True
         )
 
-    with c_pdfs:
-        components.html(
-            f'''
-            <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
-                <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-10px;">
-                </a>
-            </div>
+  with c_pdfs:
+      components.html(
+          f'''
+          <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
+              <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
+                  <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-10px;">
+              </a>
+          </div>
 
-            <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
-                <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-2px;">
-                </a>
-            </div>
+          <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
+              <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
+                  <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-2px;">
+              </a>
+          </div>
 
-            <div style="margin:0 0 8px 0; height:16px;"></div>
-            <div style="margin:0 0 8px 0; height:16px;"></div>
+          <div style="margin:0 0 8px 0; height:16px;"></div>
+          <div style="margin:0 0 8px 0; height:16px;"></div>
 
-            <script>
-            (function() {{
-              const b64 = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
-              const fileName = "{st.session_state.get('exec_filename','diario-executivo.pdf')}";
+          <script>
+          (function() {{
 
-              document.getElementById("downloadExecPdf").addEventListener("click", () => {{
-                const binary = atob(b64);
+            const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
+            const fileNameExec = "{st.session_state.get('exec_filename', 'diario-executivo.pdf')}";
+
+            const btnExec = document.getElementById("downloadExecPdf");
+            if (btnExec) {{
+              btnExec.addEventListener("click", () => {{
+                const binary = atob(b64Exec);
                 const len = binary.length;
                 const bytes = new Uint8Array(len);
 
@@ -478,25 +481,28 @@ if rodar:
 
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = fileName;
+                a.download = fileNameExec;
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
               }});
+            }}
 
-              const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
-              const fileNameLeg = "{st.session_state.get('leg_filename','diario-legislativo.pdf')}";
+            const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
+            const fileNameLeg = "{st.session_state.get('leg_filename', 'diario-legislativo.pdf')}";
 
-              document.getElementById("downloadLegPdf").addEventListener("click", () => {
+            const btnLeg = document.getElementById("downloadLegPdf");
+            if (btnLeg) {{
+              btnLeg.addEventListener("click", () => {{
                 const binary = atob(b64Leg);
                 const len = binary.length;
                 const bytes = new Uint8Array(len);
 
-                for (let i = 0; i < len; i++) {
+                for (let i = 0; i < len; i++) {{
                   bytes[i] = binary.charCodeAt(i);
-                }
+                }}
 
-                const blob = new Blob([bytes], { type: "application/pdf" });
+                const blob = new Blob([bytes], {{ type: "application/pdf" }});
                 const url = URL.createObjectURL(blob);
 
                 const a = document.createElement("a");
@@ -505,13 +511,14 @@ if rodar:
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
-              });
-                
-            }})();
-            </script>
-            ''',
-            height=110
-        )
+              }});
+            }}
+
+          }})();
+          </script>
+          ''',
+          height=110
+      )
 
     # só agora começa a execução visual
     try:
