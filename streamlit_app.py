@@ -352,6 +352,18 @@ if rodar:
 
     diario_leg_page = f"https://diariolegislativo.almg.gov.br/{dt_check.year}/L{yyyymmdd_check}.pdf"
 
+    data_br = dt_check.strftime("%d/%m/%Y")
+
+    reuniao_plenario = (
+        f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
+        f"?pesquisou=true&q=&tipo=&dataInicio={data_br}&dataFim={data_br}"
+    )
+
+    reuniao_comissoes = (
+        f"https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"
+        f"?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio={data_br}"
+        f"&dataFim={data_br}&pesquisa=todas&ordem=1&tp=30"
+    )
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
         st.stop()
@@ -359,28 +371,28 @@ if rodar:
     # EXIBE ANTES DO PROCESSAMENTO
 
     st.markdown(
-        f'📥 <a href="{diario_exec_pdf}" target="_blank"> </a> '
-        f'↗️ <a href="{diario_exec_page}" target="_blank"> </a> '
-        f'<a href="{diario_exec_page}" target="_blank">Diário do Executivo</a>',
+        f'<a href="{diario_exec_pdf}" target="_blank" rel="noopener noreferrer">📥</a> '
+        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
+        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">Diário do Executivo</a>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'📥 <a href="{diario_leg_page}" target="_blank"> </a> '
-        f'↗️ <a href="{diario_leg_page}" target="_blank"> </a> '
-        f'<a href="{diario_leg_page}" target="_blank">Diário do Legislativo</a>',
+        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">📥</a> '
+        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
+        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'↗️ <a href="{agenda_plenario}" target="_blank">'
-        f'Reuniões de Plenário</a>',
+        f'<a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer">↗️</a> '
+        f'<a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer">Reuniões de Plenário</a>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'↗️ <a href="{agenda_comissoes}" target="_blank">'
-        f'Reuniões de Comissões</a>',
+        f'<a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer">↗️</a> '
+        f'<a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer">Reuniões de Comissões</a>',
         unsafe_allow_html=True
     )
 
