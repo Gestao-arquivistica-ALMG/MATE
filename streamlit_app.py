@@ -350,7 +350,7 @@ if rodar:
         f"dados=%7B%22dataPublicacaoSelecionada%22:%22{data_pub_exec}T03:00:00.000Z%22%7D"
     )
 
-    diario_leg_page = f"https://diariolegislativo.almg.gov.br/{dt_check.year}/L{data_pub_exec}.pdf"
+    diario_leg_page = f"https://diariolegislativo.almg.gov.br/{dt_check.year}/L{yyyymmdd_check}.pdf"
 
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
