@@ -401,41 +401,27 @@ if rodar:
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
 
-    components.html(
-        f'''
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap');
+    c_exec_1, c_exec_2 = st.columns([20, 1], gap="small")
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 11px;
-            color: #31333F;
-        }
+    with c_exec_1:
+        st.markdown(
+            f'''
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+                <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
+                </a>
+                <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+                    Diário do Executivo
+                </a>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
 
-        a {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 11px;
-            color: #31333F;
-            text-decoration: none;
-            line-height: 1.2;
-        }
-
-        img {
-            vertical-align: middle;
-        }
-        </style>
-        <div style="margin:0 0 8px 0; display:flex; align-items:center; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px; text-decoration:none;">
-                <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-            </a>
-
-            <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                Diário do Executivo
-            </a>
-
-            <a href="javascript:void(0)" id="downloadExecPdf" style="margin-left:6px; text-decoration:none;">
+    with c_exec_2:
+        components.html(
+            f'''
+            <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
                 <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
             </a>
 
@@ -465,9 +451,8 @@ if rodar:
               }});
             }})();
             </script>
-        </div>
-        ''',
-        height=32
+            ''',
+            height=22
     )
 
     st.markdown(
