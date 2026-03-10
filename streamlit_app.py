@@ -3,6 +3,7 @@ import streamlit as st
 import threading
 import time
 import base64
+import requests
 import streamlit.components.v1 as components
 from datetime import datetime
 from mate_pipeline import main, normalizar_data
@@ -381,6 +382,17 @@ if rodar:
         st.session_state.pop("exec_filename", None)
         st.warning(f"Falha ao obter Diário do Executivo: {e}")
 
+    # busca o Diário do Legislativo
+    try:
+        resp_leg = requests.get(diario_leg_page, timeout=30)
+        resp_leg.raise_for_status()
+        st.session_state["leg_pdf_bytes"] = resp_leg.content
+        st.session_state["leg_filename"] = f"L{yyyymmdd_check}.pdf"
+    except Exception as e:
+        st.session_state.pop("leg_pdf_bytes", None)
+        st.session_state.pop("leg_filename", None)
+        st.warning(f"Falha ao obter Diário do Legislativo: {e}")
+
     # EXIBE ANTES DO PROCESSAMENTO
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
@@ -439,8 +451,8 @@ if rodar:
             </div>
 
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
-                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-10px;">
+                <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-2px;">
                 </a>
             </div>
 
