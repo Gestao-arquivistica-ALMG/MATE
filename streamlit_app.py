@@ -371,7 +371,6 @@ if rodar:
     # EXIBE ANTES DO PROCESSAMENTO
 
     st.markdown(
-        f'<a href="{diario_exec_pdf}" target="_blank" rel="noopener noreferrer">📥</a> '
         f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
         f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">Diário do Executivo</a>',
         unsafe_allow_html=True
