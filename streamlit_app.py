@@ -357,17 +357,13 @@ if rodar:
         st.stop()
 
     # EXIBE ANTES DO PROCESSAMENTO
-    st.success(
-        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">'
-        f'Diário do Executivo'
-        f'</a>',
+    st.markdown(
+        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">Diário do Executivo</a>',
         unsafe_allow_html=True
     )
 
-    st.success(
-        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">'
-        f'Diário do Legislativo'
-        f'</a>',
+    st.markdown(
+        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
         unsafe_allow_html=True
     )
 
