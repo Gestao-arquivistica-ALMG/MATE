@@ -403,7 +403,7 @@ if rodar:
 
     components.html(
         f'''
-        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+        <div style="margin:0 0 8px 0; display:flex; align-items:center; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
             <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px; text-decoration:none;">
                 <img src="{open_icon}" style="height:16px; vertical-align:middle;">
             </a>
