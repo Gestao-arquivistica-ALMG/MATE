@@ -403,6 +403,29 @@ if rodar:
 
     components.html(
         f'''
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            color: #31333F;
+        }
+
+        a {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            color: #31333F;
+            text-decoration: none;
+            line-height: 1.2;
+        }
+
+        img {
+            vertical-align: middle;
+        }
+        </style>
         <div style="margin:0 0 8px 0; display:flex; align-items:center; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
             <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px; text-decoration:none;">
                 <img src="{open_icon}" style="height:16px; vertical-align:middle;">
