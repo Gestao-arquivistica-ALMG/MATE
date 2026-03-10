@@ -433,7 +433,8 @@ if rodar:
                 a.remove();
               }});
             }})();
-            </script>            <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+            </script>
+            <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 Diário do Executivo
             </a>
             <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
