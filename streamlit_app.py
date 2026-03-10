@@ -377,7 +377,7 @@ if rodar:
     )
 
     st.markdown(
-        f'<a href="{diario_leg_page}" download rel="noopener noreferrer">📥</a> '
+        f'📥 '
         f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
         f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
         unsafe_allow_html=True
