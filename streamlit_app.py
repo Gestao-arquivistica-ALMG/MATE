@@ -358,12 +358,16 @@ if rodar:
 
     # EXIBE ANTES DO PROCESSAMENTO
     st.markdown(
-        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">Diário do Executivo</a>',
+        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">'
+        f'Diário do Executivo'
+        f'</a>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
+        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">'
+        f'Diário do Legislativo'
+        f'</a>',
         unsafe_allow_html=True
     )
 
