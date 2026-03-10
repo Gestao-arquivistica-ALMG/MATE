@@ -432,13 +432,13 @@ if rodar:
     with c_pdfs:
         components.html(
             f'''
-            <div style="margin:0 0 8px 0; text-align:left; padding-left:2px;">
+            <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
                     <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
                 </a>
             </div>
 
-            <div style="margin:0 0 8px 0; text-align:left; padding-left:2px;">
+            <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
                     <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
                 </a>
