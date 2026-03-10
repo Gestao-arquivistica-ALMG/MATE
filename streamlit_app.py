@@ -387,88 +387,15 @@ if rodar:
         margin-right: 6px;
     """
 
-    st.markdown(
-        f'''
-        <div style="margin:0 0 8px 0;">
-            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
-            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Diário do Executivo</a>
-        </div>
-        ''',
-        unsafe_allow_html=True
-    )
-
-    leg_pdf_bytes = st.session_state.get("leg_pdf_bytes")
-    leg_filename = st.session_state.get("leg_filename")
-
-    if leg_pdf_bytes:
-        b64_leg = base64.b64encode(leg_pdf_bytes).decode("ascii")
-        safe_name_leg = leg_filename.replace("'", "").replace('"', "")
-
-        components.html(
-            f"""
-            <div style="margin:0 0 8px 0;">
-              <a id="downloadLegPdf"
-                href="javascript:void(0)"
-                style="{menu_icon_style}">📥</a>
-              <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer"
-                style="{menu_icon_style}">↗️</a>
-              <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer"
-                style="{menu_link_style}">
-                Diário do Legislativo
-              </a>
-            </div>
-
-            <script>
-            (function() {{
-              const b64 = "{b64_leg}";
-              const fileName = "{safe_name_leg}";
-
-              function b64ToUint8Array(base64) {{
-                const binary = atob(base64);
-                const len = binary.length;
-                const bytes = new Uint8Array(len);
-                for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                return bytes;
-              }}
-
-              const btn = document.getElementById("downloadLegPdf");
-              if (btn) {{
-                btn.addEventListener("click", () => {{
-                  const bytes = b64ToUint8Array(b64);
-                  const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                  const url = URL.createObjectURL(blob);
-
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = fileName;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-
-                  setTimeout(() => URL.revokeObjectURL(url), 1000);
-                }});
-              }}
-            }})();
-            </script>
-            """,
-            height=36,
-        )
-    else:
-        st.markdown(
-            f'''
-            <div style="margin:0 0 8px 0;">
-                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
-                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Diário do Legislativo</a>
-            </div>
-            ''',
-            unsafe_allow_html=True
-        )
+    pdf_icon = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1280px-PDF_file_icon.svg.png"
 
     st.markdown(
         f'''
-        <div style="margin:0 0 8px 0;">
-            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
-            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Reuniões de Plenário</a>
+        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:16px; color:#31333F;">
+            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">↗️ Diário do Executivo</a>
+            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
+                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
+            </a>
         </div>
         ''',
         unsafe_allow_html=True
@@ -476,9 +403,33 @@ if rodar:
 
     st.markdown(
         f'''
-        <div style="margin:0 0 8px 0;">
-            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
-            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Reuniões de Comissões</a>
+        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:16px; color:#31333F;">
+            <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">↗️ Diário do Legislativo</a>
+            <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
+                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
+            </a>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f'''
+        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:16px; color:#31333F;">
+            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+                ↗️ Reuniões de Plenário
+            </a>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f'''
+        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:16px; color:#31333F;">
+            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+                ↗️ Reuniões de Comissões
+            </a>
         </div>
         ''',
         unsafe_allow_html=True
