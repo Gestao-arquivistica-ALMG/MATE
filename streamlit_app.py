@@ -382,28 +382,12 @@ if rodar:
         st.warning(f"Falha ao obter Diário do Executivo: {e}")
 
     # EXIBE ANTES DO PROCESSAMENTO
-    menu_link_style = """
-        font-family: 'Montserrat', sans-serif;
-        font-size: 16px;
-        color: #31333F;
-        text-decoration: none;
-        font-weight: 400;
-    """
-    menu_icon_style = """
-        font-family: 'Montserrat', sans-serif;
-        font-size: 16px;
-        color: #31333F;
-        text-decoration: none;
-        font-weight: 400;
-        margin-right: 6px;
-    """
-
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
 
-    c_exec_left, c_exec_pdf = st.columns([20,1], gap="small")
+    c_links, c_pdfs = st.columns([20, 1], gap="small")
 
-    with c_exec_left:
+    with c_links:
         st.markdown(
             f'''
             <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
@@ -414,16 +398,54 @@ if rodar:
                     Diário do Executivo
                 </a>
             </div>
+
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
+                </a>
+                <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+                    Diário do Legislativo
+                </a>
+            </div>
+
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+                <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
+                </a>
+                <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+                    Reuniões de Plenário
+                </a>
+            </div>
+
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+                <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
+                </a>
+                <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+                    Reuniões de Comissões
+                </a>
+            </div>
             ''',
             unsafe_allow_html=True
         )
 
-    with c_exec_pdf:
+    with c_pdfs:
         components.html(
             f'''
-            <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
-                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
-            </a>
+            <div style="margin:0 0 8px 0;">
+                <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
+                </a>
+            </div>
+
+            <div style="margin:0 0 8px 0;">
+                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
+                </a>
+            </div>
+
+            <div style="margin:0 0 8px 0; height:16px;"></div>
+            <div style="margin:0 0 8px 0; height:16px;"></div>
 
             <script>
             (function() {{
@@ -452,53 +474,8 @@ if rodar:
             }})();
             </script>
             ''',
-            height=22
+            height=110
         )
-
-    st.markdown(
-        f'''
-        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-            </a>
-            <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                Diário do Legislativo
-            </a>
-            <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
-                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
-            </a>
-        </div>
-        ''',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f'''
-        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-            </a>
-            <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                Reuniões de Plenário
-            </a>
-        </div>
-        ''',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f'''
-        <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-            </a>
-            <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                Reuniões de Comissões
-            </a>
-        </div>
-        ''',
-        unsafe_allow_html=True
-    )
 
     # só agora começa a execução visual
     try:
