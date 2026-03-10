@@ -433,9 +433,6 @@ if rodar:
             <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 Reuniões de Plenário
             </a>
-            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
-                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
-            </a>
         </div>
         ''',
         unsafe_allow_html=True
@@ -449,9 +446,6 @@ if rodar:
             </a>
             <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 Reuniões de Comissões
-            </a>
-            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
-                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
             </a>
         </div>
         ''',
