@@ -390,7 +390,7 @@ if rodar:
     with c_links:
         st.markdown(
             f'''
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
                 <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
@@ -399,7 +399,7 @@ if rodar:
                 </a>
             </div>
 
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
                 <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
@@ -408,7 +408,7 @@ if rodar:
                 </a>
             </div>
 
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
                 <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
@@ -417,7 +417,7 @@ if rodar:
                 </a>
             </div>
 
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
                 <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
