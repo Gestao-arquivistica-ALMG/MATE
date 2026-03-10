@@ -370,9 +370,30 @@ if rodar:
 
     # EXIBE ANTES DO PROCESSAMENTO
 
+    menu_link_style = """
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        color: #31333F;
+        text-decoration: none;
+        font-weight: 400;
+    """
+
+    menu_icon_style = """
+        font-family: 'Montserrat', sans-serif;
+        font-size: 16px;
+        color: #31333F;
+        text-decoration: none;
+        font-weight: 400;
+        margin-right: 6px;
+    """
+
     st.markdown(
-        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
-        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">Diário do Executivo</a>',
+        f'''
+        <div style="margin:0 0 8px 0;">
+            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
+            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Diário do Executivo</a>
+        </div>
+        ''',
         unsafe_allow_html=True
     )
 
@@ -388,10 +409,11 @@ if rodar:
             <div style="margin:0 0 8px 0;">
               <a id="downloadLegPdf"
                 href="javascript:void(0)"
-                style="text-decoration:none; margin-right:6px;">📥</a>
+                style="{menu_icon_style}">📥</a>
               <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer"
-                style="text-decoration:none; margin-right:6px;">↗️</a>
-              <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">
+                style="{menu_icon_style}">↗️</a>
+              <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer"
+                style="{menu_link_style}">
                 Diário do Legislativo
               </a>
             </div>
@@ -433,20 +455,32 @@ if rodar:
         )
     else:
         st.markdown(
-            f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
-            f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
+            f'''
+            <div style="margin:0 0 8px 0;">
+                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
+                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Diário do Legislativo</a>
+            </div>
+            ''',
             unsafe_allow_html=True
         )
 
     st.markdown(
-        f'<a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer">↗️</a> '
-        f'<a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer">Reuniões de Plenário</a>',
+        f'''
+        <div style="margin:0 0 8px 0;">
+            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
+            <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Reuniões de Plenário</a>
+        </div>
+        ''',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'<a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer">↗️</a> '
-        f'<a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer">Reuniões de Comissões</a>',
+        f'''
+        <div style="margin:0 0 8px 0;">
+            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="{menu_icon_style}">↗️</a>
+            <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="{menu_link_style}">Reuniões de Comissões</a>
+        </div>
+        ''',
         unsafe_allow_html=True
     )
 
