@@ -401,15 +401,24 @@ if rodar:
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
 
-    c_exec_1, c_exec_2 = st.columns([20, 1], gap="small")
+    c_exec_icon, c_exec_text, c_exec_pdf = st.columns([1, 18, 1], gap="small")
 
-    with c_exec_1:
+    with c_exec_icon:
         st.markdown(
             f'''
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-                <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+            <div style="margin:2px 0 8px 0;">
+                <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    with c_exec_text:
+        st.markdown(
+            '''
+            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F; line-height:16px;">
                 <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                     Diário do Executivo
                 </a>
@@ -418,42 +427,44 @@ if rodar:
             unsafe_allow_html=True
         )
 
-    with c_exec_2:
+    with c_exec_pdf:
         components.html(
             f'''
-            <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
-                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
-            </a>
+            <div style="margin:2px 0 0 0;">
+                <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
+                </a>
 
-            <script>
-            (function() {{
-              const b64 = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
-              const fileName = "{st.session_state.get('exec_filename','diario-executivo.pdf')}";
+                <script>
+                (function() {{
+                  const b64 = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
+                  const fileName = "{st.session_state.get('exec_filename','diario-executivo.pdf')}";
 
-              document.getElementById("downloadExecPdf").addEventListener("click", () => {{
-                const binary = atob(b64);
-                const len = binary.length;
-                const bytes = new Uint8Array(len);
+                  document.getElementById("downloadExecPdf").addEventListener("click", () => {{
+                    const binary = atob(b64);
+                    const len = binary.length;
+                    const bytes = new Uint8Array(len);
 
-                for (let i = 0; i < len; i++) {{
-                  bytes[i] = binary.charCodeAt(i);
-                }}
+                    for (let i = 0; i < len; i++) {{
+                      bytes[i] = binary.charCodeAt(i);
+                    }}
 
-                const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                const url = URL.createObjectURL(blob);
+                    const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                    const url = URL.createObjectURL(blob);
 
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-              }});
-            }})();
-            </script>
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                  }});
+                }})();
+                </script>
+            </div>
             ''',
-            height=22
-    )
+            height=24
+        )
 
     st.markdown(
         f'''
