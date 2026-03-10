@@ -404,10 +404,9 @@ if rodar:
     components.html(
         f'''
         <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="javascript:void(0)" id="downloadExecPdf" style="margin-left:6px; text-decoration:none;">
-                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
+            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px; text-decoration:none;">
+                <img src="{open_icon}" style="height:16px; vertical-align:middle;">
             </a>
-
             <script>
             (function() {{
               const b64 = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
@@ -438,7 +437,7 @@ if rodar:
             <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 Diário do Executivo
             </a>
-            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px; text-decoration:none;">
+            <a href="javascript:void(0)" id="downloadExecPdf" style="margin-left:6px; text-decoration:none;">
                 <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
             </a>
         </div>
