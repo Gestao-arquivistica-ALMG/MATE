@@ -506,7 +506,7 @@ if rodar:
                 a.click();
                 a.remove();
               });
-
+                
             }})();
             </script>
             ''',
