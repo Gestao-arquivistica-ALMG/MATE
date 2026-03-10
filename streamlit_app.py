@@ -579,18 +579,14 @@ if rodar:
             raise err["exc"]
 
         progress_bar.progress(100)
-
-        url_base = result["url"]
-        gid = result["gid"]
-
-        if "/edit" not in url_base:
-            url_base = url_base.rstrip("/") + "/edit"
-
-        url_com_aba = f"{url_base}#gid={gid}"
-
-        diario_url = (result.get("diario_url") or "").strip()
-
-        data_rodape = dt_check.strftime("%d/%m/%Y")
+        status_text.markdown(
+            """
+            <div style="font-family:'Montserrat',sans-serif; font-size:13px; color:#31333F;">
+                Concluído 100%
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         if not result["url"] or result["gid"] is None:
             st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
