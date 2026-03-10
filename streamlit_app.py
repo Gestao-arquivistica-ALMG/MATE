@@ -368,8 +368,20 @@ if rodar:
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
         st.stop()
 
-    # EXIBE ANTES DO PROCESSAMENTO
+    # busca o Diário do Executivo
+    try:
+        pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
+            data_publicacao_yyyy_mm_dd=data_pub_exec,
+            timeout_ms=90_000,
+        )
+        st.session_state["exec_pdf_bytes"] = pdf_bytes_exec
+        st.session_state["exec_filename"] = filename_exec
+    except Exception as e:
+        st.session_state.pop("exec_pdf_bytes", None)
+        st.session_state.pop("exec_filename", None)
+        st.warning(f"Falha ao obter Diário do Executivo: {e}")
 
+    # EXIBE ANTES DO PROCESSAMENTO
     menu_link_style = """
         font-family: 'Montserrat', sans-serif;
         font-size: 16px;
@@ -377,7 +389,6 @@ if rodar:
         text-decoration: none;
         font-weight: 400;
     """
-
     menu_icon_style = """
         font-family: 'Montserrat', sans-serif;
         font-size: 16px;
@@ -451,18 +462,6 @@ if rodar:
         ''',
         unsafe_allow_html=True
     )
-    # busca o Diário do Executivo
-    try:
-        pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
-            data_publicacao_yyyy_mm_dd=data_pub_exec,
-            timeout_ms=90_000,
-        )
-        st.session_state["exec_pdf_bytes"] = pdf_bytes_exec
-        st.session_state["exec_filename"] = filename_exec
-    except Exception as e:
-        st.session_state.pop("exec_pdf_bytes", None)
-        st.session_state.pop("exec_filename", None)
-        st.warning(f"Falha ao obter Diário do Executivo: {e}")
 
     # só agora começa a execução visual
     try:
