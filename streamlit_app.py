@@ -357,17 +357,30 @@ if rodar:
         st.stop()
 
     # EXIBE ANTES DO PROCESSAMENTO
+
     st.markdown(
-        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">'
-        f'Diário do Executivo'
-        f'</a>',
+        f'📥 <a href="{diario_exec_pdf}" target="_blank"> </a> '
+        f'↗️ <a href="{diario_exec_page}" target="_blank"> </a> '
+        f'<a href="{diario_exec_page}" target="_blank">Diário do Executivo</a>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">'
-        f'Diário do Legislativo'
-        f'</a>',
+        f'📥 <a href="{diario_leg_page}" target="_blank"> </a> '
+        f'↗️ <a href="{diario_leg_page}" target="_blank"> </a> '
+        f'<a href="{diario_leg_page}" target="_blank">Diário do Legislativo</a>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f'↗️ <a href="{agenda_plenario}" target="_blank">'
+        f'Reuniões de Plenário</a>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f'↗️ <a href="{agenda_comissoes}" target="_blank">'
+        f'Reuniões de Comissões</a>',
         unsafe_allow_html=True
     )
 
