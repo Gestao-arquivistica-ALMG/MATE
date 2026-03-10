@@ -401,10 +401,10 @@ if rodar:
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
 
-    st.markdown(
+    components.html(
         f'''
         <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="javascript:void(0)" id="downloadExecPdf" style="margin-left:6px;">
+            <a href="javascript:void(0)" id="downloadExecPdf" style="margin-left:6px; text-decoration:none;">
                 <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
             </a>
 
@@ -434,15 +434,16 @@ if rodar:
               }});
             }})();
             </script>
+
             <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 Diário do Executivo
             </a>
-            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
+            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px; text-decoration:none;">
                 <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
             </a>
         </div>
         ''',
-        unsafe_allow_html=True
+        height=32
     )
 
     st.markdown(
