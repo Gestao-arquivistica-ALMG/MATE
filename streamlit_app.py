@@ -515,9 +515,9 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.error(f"Aba da Planilha: {result['aba']}")
-        st.success(f"Diário do Legislativo: {result['diario_url']}")
-        st.success(f"Diário do Executivo: {diario_exec_page}")
+        st.success(f"Aba da Planilha: {result['aba']}")
+        #st.error(f"Diário do Legislativo: {result['diario_url']}")
+        #st.error(f"Diário do Executivo: {diario_exec_page}")
 
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
