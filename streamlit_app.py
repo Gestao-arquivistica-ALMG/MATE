@@ -501,7 +501,14 @@ if rodar:
 
             spinner = ("⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏")
             frame = int(time.time() * 10) % len(spinner)
-            status_text.write(f"{spinner[frame]} Processando Publicações Oficiais de Minas Gerais… {int(pct_fake)}%")
+            status_text.markdown(
+                f"""
+                <div style="font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
+                    {spinner[frame]} Processando Publicações Oficiais de Minas Gerais… {int(pct_fake)}%
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
             time.sleep(0.1)
 
@@ -509,7 +516,14 @@ if rodar:
             raise err["exc"]
 
         progress_bar.progress(100)
-        status_text.write("Concluído 100%")
+        status_text.markdown(
+            """
+            <div style="font-family:'Montserrat',sans-serif; font-size:13px; color:#31333F;">
+                Concluído 100%
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         if not result["url"] or result["gid"] is None:
             st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
