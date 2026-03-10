@@ -353,6 +353,14 @@ if rodar:
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
         st.stop()
 
+    # EXIBE ANTES DO PROCESSAMENTO
+    st.markdown(
+        f'<a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer">'
+        f'Diário do Executivo'
+        f'</a>',
+        unsafe_allow_html=True
+    )
+
     # busca o Diário do Executivo
     try:
         pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
@@ -365,7 +373,7 @@ if rodar:
         st.session_state.pop("exec_pdf_bytes", None)
         st.session_state.pop("exec_filename", None)
         st.warning(f"Falha ao obter Diário do Executivo: {e}")
-    
+
     # só agora começa a execução visual
     try:
         progress_bar = st.progress(0)
