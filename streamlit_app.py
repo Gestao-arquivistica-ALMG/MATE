@@ -376,12 +376,67 @@ if rodar:
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">📥</a> '
-        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
-        f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
-        unsafe_allow_html=True
-    )
+    leg_pdf_bytes = st.session_state.get("leg_pdf_bytes")
+    leg_filename = st.session_state.get("leg_filename")
+
+    if leg_pdf_bytes:
+        b64_leg = base64.b64encode(leg_pdf_bytes).decode("ascii")
+        safe_name_leg = leg_filename.replace("'", "").replace('"', "")
+
+        components.html(
+            f"""
+            <div style="margin:0 0 8px 0;">
+              <a id="downloadLegPdf"
+                href="javascript:void(0)"
+                style="text-decoration:none; margin-right:6px;">📥</a>
+              <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer"
+                style="text-decoration:none; margin-right:6px;">↗️</a>
+              <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">
+                Diário do Legislativo
+              </a>
+            </div>
+
+            <script>
+            (function() {{
+              const b64 = "{b64_leg}";
+              const fileName = "{safe_name_leg}";
+
+              function b64ToUint8Array(base64) {{
+                const binary = atob(base64);
+                const len = binary.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                return bytes;
+              }}
+
+              const btn = document.getElementById("downloadLegPdf");
+              if (btn) {{
+                btn.addEventListener("click", () => {{
+                  const bytes = b64ToUint8Array(b64);
+                  const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                  const url = URL.createObjectURL(blob);
+
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = fileName;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }});
+              }}
+            }})();
+            </script>
+            """,
+            height=36,
+        )
+    else:
+        st.markdown(
+            f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">↗️</a> '
+            f'<a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer">Diário do Legislativo</a>',
+            unsafe_allow_html=True
+        )
 
     st.markdown(
         f'<a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer">↗️</a> '
