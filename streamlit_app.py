@@ -388,7 +388,7 @@ if rodar:
     """
 
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
-    pdf_icon = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1280px-PDF_file_icon.svg.png"
+    pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
 
     st.markdown(
         f'''
