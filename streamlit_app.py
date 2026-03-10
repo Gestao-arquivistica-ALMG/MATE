@@ -408,7 +408,7 @@ if rodar:
     st.markdown(
         f'''
         <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+            <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 <img src="{open_icon}" style="height:16px; vertical-align:middle; margin-right:6px;">
                 Diário do Legislativo
             </a>
@@ -504,7 +504,7 @@ if rodar:
             status_text.markdown(
                 f"""
                 <div style="font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                    {spinner[frame]} Processando Publicações Oficiais de Minas Gerais… {int(pct_fake)}%
+                    {spinner[frame]} Processando publicações oficiais de Minas Gerais… {int(pct_fake)}%
                 </div>
                 """,
                 unsafe_allow_html=True
