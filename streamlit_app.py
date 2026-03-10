@@ -483,6 +483,30 @@ if rodar:
                 a.click();
                 a.remove();
               }});
+
+              const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
+              const fileNameLeg = "{st.session_state.get('leg_filename','diario-legislativo.pdf')}";
+
+              document.getElementById("downloadLegPdf").addEventListener("click", () => {
+                const binary = atob(b64Leg);
+                const len = binary.length;
+                const bytes = new Uint8Array(len);
+
+                for (let i = 0; i < len; i++) {
+                  bytes[i] = binary.charCodeAt(i);
+                }
+
+                const blob = new Blob([bytes], { type: "application/pdf" });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fileNameLeg;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              });
+
             }})();
             </script>
             ''',
