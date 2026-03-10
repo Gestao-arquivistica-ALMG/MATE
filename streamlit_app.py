@@ -404,10 +404,36 @@ if rodar:
     st.markdown(
         f'''
         <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:11px; color:#31333F;">
-            <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                <img src="{open_icon}" style="height:16px; vertical-align:middle;">
+            <a href="javascript:void(0)" id="downloadExecPdf" style="margin-left:6px;">
+                <img src="{pdf_icon}" style="height:16px; vertical-align:middle;">
             </a>
-            <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
+
+            <script>
+            (function() {{
+              const b64 = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
+              const fileName = "{st.session_state.get('exec_filename','diario-executivo.pdf')}";
+
+              document.getElementById("downloadExecPdf").addEventListener("click", () => {{
+                const binary = atob(b64);
+                const len = binary.length;
+                const bytes = new Uint8Array(len);
+
+                for (let i = 0; i < len; i++) {{
+                  bytes[i] = binary.charCodeAt(i);
+                }}
+
+                const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              }});
+            }})();
+            </script>            <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
                 Diário do Executivo
             </a>
             <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-left:6px;">
