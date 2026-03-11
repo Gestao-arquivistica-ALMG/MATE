@@ -603,9 +603,6 @@ if rodar:
 
             time.sleep(0.1)
 
-        if err["exc"] is not None:
-            raise err["exc"]
-
         progress_bar.progress(100)
         status_text.markdown(
             f"""
