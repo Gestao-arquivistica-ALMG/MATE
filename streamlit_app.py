@@ -533,9 +533,6 @@ if rodar:
 
     # só agora começa a execução visual
     try:
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-
         progress_bar.progress(5)
         status_text.write("Inicializando… 5%")
 
