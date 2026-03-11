@@ -335,6 +335,17 @@ if limpar:
     st.rerun()
 
 if rodar:
+    progress_bar = st.progress(1)
+    status_text = st.empty()
+    status_text.markdown(
+        """
+        <div style="font-family:'Montserrat',sans-serif; font-size:13px; color:#31333F;">
+            Inicializando...
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     entrada_clean = (entrada or "").strip()
 
     if not entrada_clean:
