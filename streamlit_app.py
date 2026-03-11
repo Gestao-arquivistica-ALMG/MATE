@@ -335,7 +335,7 @@ if limpar:
     st.rerun()
 
 if rodar:
-    progress_bar = st.progress(1)
+    #progress_bar = st.progress(1)
     status_text = st.empty()
     status_text.markdown(
         """
