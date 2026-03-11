@@ -580,9 +580,18 @@ if rodar:
 
         progress_bar.progress(100)
         status_text.markdown(
-            """
-            <div style="font-family:'Montserrat',sans-serif; font-size:13px; color:#31333F;">
-                Concluído 100%
+            f"""
+            <div style="
+                font-family:'Montserrat',sans-serif;
+                font-size:13px;
+                color:#31333F;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                width:100%;
+            ">
+                <span>Concluído 100%</span>
+                <span>{dt.datetime.now().strftime("%d/%m/%Y")}</span>
             </div>
             """,
             unsafe_allow_html=True
