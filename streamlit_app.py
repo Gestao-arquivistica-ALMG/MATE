@@ -338,16 +338,11 @@ if rodar:
     progress_bar = st.progress(0)
     status_text = st.empty()
 
-    animar = {"run": True}
-
-    def animacao():
-        i = 1
-        while animar["run"]:
-            status_text.write("Inicializando" + "." * i)
-            i = 1 if i == 3 else i + 1
-            time.sleep(0.4)
-
-    threading.Thread(target=animacao, daemon=True).start()
+    status_text.write("Inicializando…")
+    entrada_clean = (entrada or "").strip()
+    if not entrada_clean:
+        st.warning("Informe uma data, palavra ou URL.")
+        st.stop()
 
     entrada_clean = (entrada or "").strip()
 
