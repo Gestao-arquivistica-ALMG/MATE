@@ -562,10 +562,11 @@ if rodar:
     try:
         progress_bar = st.progress(0)
         status_text = st.empty()
+        #links_placeholder = st.empty()
 
-        status_text.empty()
-        progress_bar.progress(5)
-        status_text.write("Inicializando… 5%")
+        #status_text.empty()
+        #progress_bar.progress(5)
+        #status_text.write("Inicializando… 5%")
 
         result = {"url": None, "aba": None, "gid": None, "diario_url": None}
         err = {"exc": None}
