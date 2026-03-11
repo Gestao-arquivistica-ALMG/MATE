@@ -110,21 +110,6 @@ button[kind="secondary"]{
 
 /* ===== BOTÃO MENU OVERLAY (ÚNICO E LIMPO) ===== */
 
-/* botão invisível exatamente em cima do ☰ no cabeçalho */
-button#menu_btn{
-  position: fixed !important;
-  top: 118px !important;                     /* ajuste fino */
-  left: 20px !important; /* ajuste fino: 560/2 = 280 */
-  width: 45px !important;
-  height: 45px !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  color: transparent !important;
-  z-index: 10000 !important;
-}
-
 /* overlay invisível que fecha ao clicar fora */
 button#close_menu_btn{
   position: fixed !important;
