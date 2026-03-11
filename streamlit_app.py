@@ -387,13 +387,13 @@ if rodar:
 
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
-        f"?pesquisou=true&q=&tipo=&dataInicio={data_br}&dataFim={data_br}"
+        f"?pesquisou=true&q=&tipo=&dataInicio={dt_check.strftime('%d/%m/%Y')}&dataFim={dt_check.strftime('%d/%m/%Y')}"
     )
 
     reuniao_comissoes = (
         f"https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"
-        f"?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio={data_br}"
-        f"&dataFim={data_br}&pesquisa=todas&ordem=1&tp=30"
+        f"?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio={dt_check.strftime('%d/%m/%Y')}"
+        f"&dataFim={dt_check.strftime('%d/%m/%Y')}&pesquisa=todas&ordem=1&tp=30"
     )
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
