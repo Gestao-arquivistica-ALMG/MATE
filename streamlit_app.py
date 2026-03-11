@@ -560,7 +560,6 @@ if rodar:
         status_text = st.empty()
 
         result = {"url": None, "aba": None, "gid": None, "diario_url": None}
-        err = {"exc": None}
 
         def run_main():
             try:
