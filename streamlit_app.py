@@ -563,6 +563,8 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
+        animar["run"] = False
+        
         progress_bar.progress(5)
         status_text.write("Inicializando… 5%")
 
