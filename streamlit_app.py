@@ -335,6 +335,9 @@ if limpar:
     st.rerun()
 
 if rodar:
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
     entrada_clean = (entrada or "").strip()
 
     if not entrada_clean:
