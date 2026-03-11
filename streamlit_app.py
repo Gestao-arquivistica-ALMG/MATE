@@ -384,7 +384,7 @@ if rodar:
         f"dados=%7B%22dataPublicacaoSelecionada%22:%22{data_pub_exe}T03:00:00.000Z%22%7D"
     )
 
-    diario_leg_page = f"https://diariolegislativo.almg.gov.br/{dt_check.year}/L{yyyymmdd_check}.pdf"
+    diario_leg_page = f"https://diariolegislativo.almg.gov.br/{yyyymmdd_check[:4]}/L{yyyymmdd_check}.pdf"
 
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
