@@ -208,7 +208,6 @@ button[kind="secondary"][data-testid="baseButton-secondary"]{
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
 
-    # 2) drawer (menu) por cima do overlay
     st.markdown("""
     <div id="almg_menu_drawer" style="
       display: block !important;
