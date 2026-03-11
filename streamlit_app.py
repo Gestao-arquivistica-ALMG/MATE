@@ -282,13 +282,6 @@ if st.session_state.get("menu_open", False):
         <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none; color:#111;">Silegis</a>
         <a href="https://webmail.almg.gov.br/" target="_blank" style="text-decoration:none; color:#111;">Webmail</a>
       </div>
-
-      <div style="margin-top:18px;">
-        <button onclick="window.location.reload()" style="
-          display:none;
-        "></button>
-      </div>
-    </div>
     """, unsafe_allow_html=True)
             
 # ================= HEADER =================
