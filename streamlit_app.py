@@ -235,7 +235,6 @@ if st.session_state.get("menu_open", False):
       width: 260px;
       background: white;
       padding: 20px;
-      z-index: 9999;
       box-shadow: 3px 0 12px rgba(0,0,0,0.2);
     ">
     
