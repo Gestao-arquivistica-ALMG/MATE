@@ -165,22 +165,6 @@ transform:translateX(-100%);
 transition:transform 0.25s ease;
 }
 
-/* overlay invisível que fecha o menu ao clicar fora */
-button#close_menu_btn{
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  padding: 0 !important;
-
-  background: rgba(0,0,0,0.25) !important;
-  border: 0 !important;
-  box-shadow: none !important;
-
-  color: transparent !important; /* some o texto */
-  z-index: 9998 !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
