@@ -610,9 +610,9 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.success(f"")
+        st.toast(f"")
         #st.success(f"Aba da Planilha: {result['aba']}")
-        #st.error(f"Diário do Legislativo: {result['diario_url']}")
+        #st.warning(f"Diário do Legislativo: {result['diario_url']}")
         #st.error(f"Diário do Executivo: {diario_exec_page}")
 
         # --- botões lado a lado: Planilha + Diário ---
