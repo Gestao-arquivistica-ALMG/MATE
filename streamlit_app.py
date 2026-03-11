@@ -376,24 +376,25 @@ if rodar:
     # --- VALIDAÇÃO AQUI ---
     yyyymmdd_check = normalizar_data(entrada_clean)
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
-    data_pub_exec = dt_check.strftime("%Y-%m-%d")
+    data_pub_exe = dt_check.strftime("%Y-%m-%d")
+    data_pub_leg = dt_check.strftime("%d/%m/%Y")
 
-    diario_exec_page = (
+    diario_exe_page = (
         f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?"
-        f"dados=%7B%22dataPublicacaoSelecionada%22:%22{data_pub_exec}T03:00:00.000Z%22%7D"
+        f"dados=%7B%22dataPublicacaoSelecionada%22:%22{data_pub_exe}T03:00:00.000Z%22%7D"
     )
 
     diario_leg_page = f"https://diariolegislativo.almg.gov.br/{dt_check.year}/L{yyyymmdd_check}.pdf"
 
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
-        f"?pesquisou=true&q=&tipo=&dataInicio={dt_check.strftime('%d/%m/%Y')}&dataFim={dt_check.strftime('%d/%m/%Y')}"
+        f"?pesquisou=true&q=&tipo=&dataInicio={data_pub_leg}&dataFim={data_pub_leg}"
     )
 
     reuniao_comissoes = (
         f"https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"
-        f"?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio={dt_check.strftime('%d/%m/%Y')}"
-        f"&dataFim={dt_check.strftime('%d/%m/%Y')}&pesquisa=todas&ordem=1&tp=30"
+        f"?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio={data_pub_leg}"
+        f"&dataFim={data_pub_leg)}&pesquisa=todas&ordem=1&tp=30"
     )
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
@@ -402,7 +403,7 @@ if rodar:
     # busca o Diário do Executivo
     try:
         pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
-            data_publicacao_yyyy_mm_dd=data_pub_exec,
+            data_publicacao_yyyy_mm_dd=data_pub_exe,
             timeout_ms=90_000,
         )
         st.session_state["exec_pdf_bytes"] = pdf_bytes_exec
@@ -435,7 +436,7 @@ if rodar:
         st.markdown(
             f'''
             <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="{diario_exec_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+                <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
                 <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
@@ -638,7 +639,7 @@ if rodar:
         st.warning(f"")
         #st.success(f"Aba da Planilha: {result['aba']}")
         #st.warning(f"Diário do Legislativo: {result['diario_url']}")
-        #st.error(f"Diário do Executivo: {diario_exec_page}")
+        #st.error(f"Diário do Executivo: {diario_exe_page}")
 
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
