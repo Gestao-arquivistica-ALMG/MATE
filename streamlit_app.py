@@ -561,7 +561,6 @@ if rodar:
 
         result = {"url": None, "aba": None, "gid": None, "diario_url": None}
         err = {"exc": None}
-        done = threading.Event()
 
         def run_main():
             try:
