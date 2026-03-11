@@ -335,11 +335,19 @@ if limpar:
     st.rerun()
 
 if rodar:
-    progress_bar = st.progress(0)
+    progress_bar = st.progress(1)
     status_text = st.empty()
-    for i in range(3):
-        status_text.write("Inicializando" + "." * (i + 1))
-        time.sleep(0.3)
+
+    animar = {"run": True}
+
+    def animacao():
+        i = 1
+        while animar["run"]:
+            status_text.write("Inicializando" + "." * i)
+            i = 1 if i == 3 else i + 1
+            time.sleep(0.4)
+
+    threading.Thread(target=animacao, daemon=True).start()
 
     entrada_clean = (entrada or "").strip()
 
@@ -530,6 +538,8 @@ if rodar:
     try:
         progress_bar = st.progress(0)
         status_text = st.empty()
+
+        animar["run"] = False
 
         progress_bar.progress(5)
         status_text.write("Inicializando… 5%")
