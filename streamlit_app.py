@@ -295,7 +295,7 @@ if st.session_state.get("menu_open", False):
             
 # ================= HEADER =================
 st.markdown(
-    '<div class="title" style="font-size:24px; font-weight:2000; font-height:100;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
+    '<div class="title" style="font-size:24px; font-weight:2000; font-height:100;">GERÊNCIA-GERAL DE ARQUIVO</div>',
     unsafe_allow_html=True
 )
 
