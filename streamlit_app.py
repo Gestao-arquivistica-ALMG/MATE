@@ -375,10 +375,6 @@ if rodar:
 
     entrada_clean = (entrada or "").strip()
 
-    if not entrada_clean:
-        st.warning("Informe uma data, palavra ou URL.")
-        st.stop()
-
     # --- VALIDAÇÃO AQUI ---
     yyyymmdd_check = normalizar_data(entrada_clean)
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
@@ -562,14 +558,6 @@ if rodar:
 
     # só agora começa a execução visual
     try:
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        #links_placeholder = st.empty()
-
-        #status_text.empty()
-        #progress_bar.progress(5)
-        #status_text.write("Inicializando… 5%")
-
         result = {"url": None, "aba": None, "gid": None, "diario_url": None}
         err = {"exc": None}
         done = threading.Event()
