@@ -335,6 +335,8 @@ if limpar:
     st.rerun()
 
 if rodar:
+    progress_bar = st.progress(0)
+    status_text = st.empty()
 
     status_text.markdown(
         """
@@ -370,8 +372,6 @@ if rodar:
     if not entrada_clean:
         st.warning("Informe uma data, palavra ou URL.")
         st.stop()
-
-    entrada_clean = (entrada or "").strip()
 
     # --- VALIDAÇÃO AQUI ---
     yyyymmdd_check = normalizar_data(entrada_clean)
