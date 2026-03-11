@@ -563,6 +563,7 @@ if rodar:
         progress_bar = st.progress(0)
         status_text = st.empty()
 
+        status_text.empty()
         progress_bar.progress(5)
         status_text.write("Inicializando… 5%")
 
