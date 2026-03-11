@@ -624,7 +624,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.warning(f"")
+        st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
         #st.success(f"Aba da Planilha: {result['aba']}")
         #st.warning(f"Diário do Legislativo: {result['diario_url']}")
         #st.error(f"Diário do Executivo: {diario_exe_page}")
