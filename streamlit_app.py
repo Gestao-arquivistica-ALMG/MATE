@@ -385,7 +385,6 @@ if rodar:
 
     diario_leg_page = f"https://diariolegislativo.almg.gov.br/{dt_check.year}/L{yyyymmdd_check}.pdf"
 
-
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
         f"?pesquisou=true&q=&tipo=&dataInicio={data_br}&dataFim={data_br}"
