@@ -610,7 +610,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
-        st.toast(f"")
+        st.warning(f"")
         #st.success(f"Aba da Planilha: {result['aba']}")
         #st.warning(f"Diário do Legislativo: {result['diario_url']}")
         #st.error(f"Diário do Executivo: {diario_exec_page}")
