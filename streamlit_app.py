@@ -531,7 +531,7 @@ if rodar:
                 result["gid"] = r.get("gid")
                 result["diario_url"] = r.get("diario_url")
             except Exception as e:
-                st.session_state["mate_error"] = str(e)
+                err["exc"] = e
             finally:
                 done.set()
 
