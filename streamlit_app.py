@@ -558,6 +558,9 @@ if rodar:
 
     # só agora começa a execução visual
     try:
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+
         result = {"url": None, "aba": None, "gid": None, "diario_url": None}
         err = {"exc": None}
         done = threading.Event()
