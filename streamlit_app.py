@@ -151,20 +151,6 @@ button#close_menu_btn *{ display:none !important; }
   box-shadow: 3px 0 12px rgba(0,0,0,0.2);
 }
 
-#almg_menu_drawer_hidden{
-position: fixed;
-left: 0;
-top: 0;
-bottom: 0;
-width:260px;
-background:white;
-padding:20px;
-z-index:9999;
-box-shadow:3px 0 12px rgba(0,0,0,0.2);
-transform:translateX(-100%);
-transition:transform 0.25s ease;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
