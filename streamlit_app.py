@@ -303,9 +303,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-if "menu_open" not in st.session_state:
-    st.session_state.menu_open = False
-
 # ================= CARD =================
 
 with st.form("form_mate", clear_on_submit=False):
