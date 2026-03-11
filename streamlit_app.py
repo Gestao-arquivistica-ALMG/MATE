@@ -629,7 +629,7 @@ if rodar:
             font-weight:400;
             font-size:14px;
             color:black;
-            top:-3px;
+            top:-33px;
         """
 
         btn_style_exec = """
@@ -646,7 +646,7 @@ if rodar:
             cursor:pointer;
             font-family:Arial, Helvetica, sans-serif;
             position:relative;
-            top:-3px;
+            top:-23px;
         """
 
         with c_btn1:
