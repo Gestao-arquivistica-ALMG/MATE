@@ -96,7 +96,6 @@ div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
     min-width:100px !important;
     padding:10px 14px !important;
   }
-}
 
 /* 🧹 Limpar (SECONDARY) */
 div[data-testid="stForm"]
