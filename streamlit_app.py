@@ -610,6 +610,7 @@ if rodar:
 
         url_com_aba = f"{url_base}#gid={gid}"
 
+        st.success(f"")
         #st.success(f"Aba da Planilha: {result['aba']}")
         #st.error(f"Diário do Legislativo: {result['diario_url']}")
         #st.error(f"Diário do Executivo: {diario_exec_page}")
@@ -629,7 +630,6 @@ if rodar:
             font-weight:400;
             font-size:14px;
             color:black;
-            top:70px;
         """
 
         btn_style_exec = """
@@ -646,7 +646,7 @@ if rodar:
             cursor:pointer;
             font-family:Arial, Helvetica, sans-serif;
             position:relative;
-            top:5px;
+            top:-3px;
         """
 
         with c_btn1:
