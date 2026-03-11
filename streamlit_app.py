@@ -629,7 +629,7 @@ if rodar:
             font-weight:400;
             font-size:14px;
             color:black;
-            top:30px;
+            top:70px;
         """
 
         btn_style_exec = """
