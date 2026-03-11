@@ -337,6 +337,7 @@ if limpar:
 if rodar:
     progress_bar = st.progress(0)
     status_text = st.empty()
+    status_text.write("Inicializando…")
 
     entrada_clean = (entrada or "").strip()
 
