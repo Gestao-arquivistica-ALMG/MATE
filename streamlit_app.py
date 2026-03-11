@@ -338,7 +338,36 @@ if rodar:
     progress_bar = st.progress(0)
     status_text = st.empty()
 
-    status_text.write("Inicializando…")
+    status_text.markdown(
+        """
+        <div style="
+            font-family:'Montserrat',sans-serif;
+            font-size:13px;
+            color:#31333F;
+        ">
+            Inicializando<span class="loading-dots"></span>
+        </div>
+
+        <style>
+        .loading-dots::after {
+            content: "";
+            display: inline-block;
+            width: 1.2em;
+            text-align: left;
+            animation: loadingDots 1s steps(4, end) infinite;
+        }
+
+        @keyframes loadingDots {
+            0%   { content: ""; }
+            25%  { content: "."; }
+            50%  { content: ".."; }
+            75%  { content: "..."; }
+            100% { content: ""; }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     entrada_clean = (entrada or "").strip()
     if not entrada_clean:
         st.warning("Informe uma data, palavra ou URL.")
