@@ -583,6 +583,12 @@ if rodar:
 
         pct_fake = 5
 
+        while not done.is_set():
+            if pct_fake < 99:
+                pct_fake += 0.2  # sobe devagar até 99
+            else:
+                pct_fake = 99  # fica fixo em 99
+
             progress_bar.progress(int(pct_fake))
 
             spinner = ("⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏")
