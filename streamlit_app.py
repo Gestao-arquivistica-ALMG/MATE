@@ -327,7 +327,7 @@ with st.form("form_mate", clear_on_submit=False):
     with col1:
         rodar = st.form_submit_button("📝 Gerar Planilha", type="primary")
     with col2:
-        limpar = st.form_submit_button("🧹")
+        limpar = st.form_submit_button("🧹", key="limpar", help="Limpar campos e reiniciar processamento")
 
 # ================= EXECUÇÃO =================
 if limpar:
