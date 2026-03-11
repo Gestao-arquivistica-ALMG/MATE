@@ -431,6 +431,8 @@ if rodar:
         st.session_state.pop("leg_filename", None)
         st.warning(f"Falha ao obter Diário do Legislativo: {e}")
 
+    status_text.empty()
+
     # EXIBE ANTES DO PROCESSAMENTO
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
