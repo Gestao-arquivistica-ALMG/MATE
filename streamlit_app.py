@@ -624,7 +624,39 @@ if rodar:
 
         st.write("")
 
-        c_btn1 = st.container()
+        # --- botões lado a lado: Planilha + Diário ---
+        diario_url = (result.get("diario_url") or "").strip()
+
+        c_btn1 = st.columns(3, gap="small")
+
+        btn_style = """
+            display:block;
+            text-align:center;
+            padding:10px;
+            border-radius:8px;
+            background-color:#e9e9e9;
+            text-decoration:none;
+            font-weight:400;
+            font-size:14px;
+            color:black;
+        """
+
+        btn_style_exec = """
+            display:block;
+            text-align:center;
+            padding:12px 10px;
+            border-radius:8px;
+            background-color:#e9e9e9;
+            text-decoration:none;
+            font-weight:400;
+            font-size:13px;
+            color:black;
+            white-space:nowrap;
+            cursor:pointer;
+            font-family:Arial, Helvetica, sans-serif;
+            position:relative;
+            top:-3px;
+        """
 
         with c_btn1:
             st.markdown(
@@ -635,7 +667,25 @@ if rodar:
                 """,
                 unsafe_allow_html=True
             )
-            
+
+            else:
+                st.markdown(
+                    """
+                    <div style="
+                        display:inline-block;
+                        width:100%;
+                        padding:10px 12px;
+                        background:#f0f0f0;
+                        border:1px solid #d0d0d0;
+                        border-radius:8px;
+                        color:#999;
+                        text-align:center;">
+                        Diário do Executivo
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
