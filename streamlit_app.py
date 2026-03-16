@@ -460,13 +460,13 @@ if rodar:
             f'''
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-5px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-6px;">
                 </a>
             </div>
 
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-5px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-6px;">
                 </a>
             </div>
 
@@ -605,26 +605,18 @@ if rodar:
 
         status_text.markdown(
             f"""
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                font-family:'Montserrat',sans-serif;
-                font-size:13px;
-                color:#31333F;
-                width:100%;
-            ">
+            <div style="display:flex;justify-content:space-between;align-items:center;
+            font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;">
+            
                 <div>Concluído 100%</div>
 
-                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="
-                    text-decoration:none;
-                    color:#31333F;
-                    font-weight:400;
-                ">
-                    Abrir planilha
+                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer"
+                style="text-decoration:none;color:#31333F;font-weight:400;">
+                Abrir planilha
                 </a>
 
                 <div>{result['aba']}</div>
+
             </div>
             """,
             unsafe_allow_html=True
