@@ -383,7 +383,7 @@ if rodar:
                     <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;text-decoration:none;">
                         <img src="{open_icon}" style="height:16px;vertical-align:middle;">
                     </a>
-                    <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
+                    <a href="{diario_exe_page} target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
                         Diário do Executivo
                     </a>
                 </div>
