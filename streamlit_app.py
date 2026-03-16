@@ -338,7 +338,7 @@ if rodar:
         f"?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio={data_reuniao}"
         f"&dataFim={data_reuniao}&pesquisa=todas&ordem=1&tp=30"
     )
-    
+
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
         st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
         st.stop()
