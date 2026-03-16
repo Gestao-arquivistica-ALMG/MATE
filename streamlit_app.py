@@ -5,7 +5,7 @@ import base64
 import requests
 import streamlit.components.v1 as components
 from datetime import datetime
-from mate_pipeline import main, normalizar_data
+from mate_pipeline import main, normalizar_data, proximo_dia_util, yyyymmdd_to_ddmmyyyy
 from playwright import fetch_diario_executivo_pdf_bytes
 
 # ================= CONFIG =================
