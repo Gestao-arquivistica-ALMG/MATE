@@ -433,9 +433,6 @@ if rodar:
                         Reuniões de Comissões
                     </a>
                 </div>
-            ''',
-            height=120,
-        )
 
     with c_pdfs:
         components.html(
