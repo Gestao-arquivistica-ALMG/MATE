@@ -594,6 +594,15 @@ if rodar:
             time.sleep(0.1)
 
         progress_bar.progress(100)
+
+        url_base = result["url"]
+        gid = result["gid"]
+
+        if "/edit" not in url_base:
+            url_base = url_base.rstrip("/") + "/edit"
+
+        url_com_aba = f"{url_base}#gid={gid}"
+
         status_text.markdown(
             f"""
             <div style="
@@ -625,14 +634,6 @@ if rodar:
             st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
             st.write("Retorno:", result)
             st.stop()
-
-        url_base = result["url"]
-        gid = result["gid"]
-
-        if "/edit" not in url_base:
-            url_base = url_base.rstrip("/") + "/edit"
-
-        url_com_aba = f"{url_base}#gid={gid}"
 
         st.write("")
 
