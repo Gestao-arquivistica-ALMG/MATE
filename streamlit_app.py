@@ -627,7 +627,7 @@ if rodar:
         # --- botões lado a lado: Planilha + Diário ---
         diario_url = (result.get("diario_url") or "").strip()
 
-        c_btn1 = st.columns(3, gap="small")
+        c_btn1 = st.container()
 
         btn_style = """
             display:block;
@@ -667,24 +667,6 @@ if rodar:
                 """,
                 unsafe_allow_html=True
             )
-
-            else:
-                st.markdown(
-                    """
-                    <div style="
-                        display:inline-block;
-                        width:100%;
-                        padding:10px 12px;
-                        background:#f0f0f0;
-                        border:1px solid #d0d0d0;
-                        border-radius:8px;
-                        color:#999;
-                        text-align:center;">
-                        Diário do Executivo
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
 
     except Exception as e:
         st.error("Erro ao processar.")
