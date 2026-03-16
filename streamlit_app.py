@@ -320,7 +320,8 @@ if rodar:
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
     data_pub_exe = dt_check.strftime("%Y-%m-%d")
     data_pub_leg = dt_check.strftime("%d/%m/%Y")
-    data_reuniao = result.get("aba")
+    aba_yyyymmdd_check = proximo_dia_util(yyyymmdd_check)
+    data_reuniao = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd_check)
 
     diario_exe_page = (
         f"https://www.jornalminasgerais.mg.gov.br/edicao-do-dia?"
