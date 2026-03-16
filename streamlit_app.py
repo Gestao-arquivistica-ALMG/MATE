@@ -378,7 +378,7 @@ if rodar:
         st.markdown(
             f'''
             <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
+                <a href="javascript:void(0)" id="downloadExecPdfLeft" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
                 <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
@@ -441,26 +441,34 @@ if rodar:
               const fileNameExec = "{st.session_state.get('exec_filename', 'diario-executivo.pdf')}";
 
               const btnExec = document.getElementById("downloadExecPdf");
+              const btnExecLeft = document.getElementById("downloadExecPdfLeft");
+
+              function baixarExecPdf() {{
+                const binary = atob(b64Exec);
+                const len = binary.length;
+                const bytes = new Uint8Array(len);
+
+                for (let i = 0; i < len; i++) {{
+                  bytes[i] = binary.charCodeAt(i);
+                }}
+
+                const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fileNameExec;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              }}
+
               if (btnExec) {{
-                btnExec.addEventListener("click", () => {{
-                  const binary = atob(b64Exec);
-                  const len = binary.length;
-                  const bytes = new Uint8Array(len);
+                btnExec.addEventListener("click", baixarExecPdf);
+              }}
 
-                  for (let i = 0; i < len; i++) {{
-                    bytes[i] = binary.charCodeAt(i);
-                  }}
-
-                  const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                  const url = URL.createObjectURL(blob);
-
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = fileNameExec;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                }});
+              if (btnExecLeft) {{
+                btnExecLeft.addEventListener("click", baixarExecPdf);
               }}
 
               const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
