@@ -208,6 +208,7 @@ button[kind="secondary"][data-testid="baseButton-secondary"]{
 # ================= MENU (OVERLAY NO CORPO) =================
 if st.session_state.get("menu_open", False):
 
+    # 2) drawer (menu) por cima do overlay
     st.markdown("""
     <div id="almg_menu_drawer" style="
       display: block !important;
@@ -377,7 +378,7 @@ if rodar:
         st.markdown(
             f'''
             <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="javascript:void(0)" id="downloadExecPdfLeft" style="margin-right:6px; text-decoration:none;">
+                <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
                     <img src="{open_icon}" style="height:16px; vertical-align:middle;">
                 </a>
                 <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
