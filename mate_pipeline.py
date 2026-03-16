@@ -364,6 +364,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         # Entrada é DATA (ou palavra-chave / dia da semana)
         yyyymmdd = normalizar_data(entrada)          # data do Diário (PDF)
         aba_yyyymmdd = proximo_dia_util(yyyymmdd)    # data de Trabalho (ABA)
+        data_reuniao = yyyymmdd_to_ddmmyyyy(aba_yyyymmdd)
         diario = yyyymmdd_to_ddmmyyyy(yyyymmdd)      # data de Diário (PLANILHA)
 
         # --- DIÁRIO - 2 dias úteis ---
