@@ -606,16 +606,18 @@ if rodar:
         status_text.markdown(
             f"""
         <div style="display:flex;justify-content:space-between;align-items:center;
-        font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;">
+        font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;line-height:1.6;">
 
-        <div>Concluído 100%</div>
+        <span>Concluído 100%</span>
 
+        <span>
         <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer"
         style="text-decoration:none;color:#31333F;font-weight:400;">
         Abrir planilha
         </a>
+        </span>
 
-        <div>{result['aba']}</div>
+        <span>{result['aba']}</span>
 
         </div>
         """,
