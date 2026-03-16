@@ -640,25 +640,8 @@ if rodar:
             background-color:#e9e9e9;
             text-decoration:none;
             font-weight:400;
-            font-size:14px;
+            font-size:20px;
             color:black;
-        """
-
-        btn_style_exec = """
-            display:block;
-            text-align:center;
-            padding:12px 10px;
-            border-radius:8px;
-            background-color:#e9e9e9;
-            text-decoration:none;
-            font-weight:400;
-            font-size:13px;
-            color:black;
-            white-space:nowrap;
-            cursor:pointer;
-            font-family:Arial, Helvetica, sans-serif;
-            position:relative;
-            top:-3px;
         """
 
         with c_btn1:
