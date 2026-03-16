@@ -629,34 +629,7 @@ if rodar:
             st.write("Retorno:", result)
             st.stop()
 
-        st.write("")
-
-        # --- botões lado a lado: Planilha + Diário ---
-        diario_url = (result.get("diario_url") or "").strip()
-
-        c_btn1 = st.container()
-
-        btn_style = """
-            display:block;
-            text-align:center;
-            padding:10px;
-            border-radius:8px;
-            background-color:#e9e9e9;
-            text-decoration:none;
-            font-weight:400;
-            font-size:16px;
-            color:black;
-        """
-
-        with c_btn1:
-            st.markdown(
-                f"""
-                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                    Abrir planilha
-                </a>
-                """,
-                unsafe_allow_html=True
-            )
+        #st.write("")
 
     except Exception as e:
         st.error("Erro ao processar.")
