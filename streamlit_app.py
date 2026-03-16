@@ -662,7 +662,7 @@ if rodar:
             st.markdown(
                 f"""
                 <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                    Abrir Planilha
+                    Abrir planilha
                 </a>
                 """,
                 unsafe_allow_html=True
