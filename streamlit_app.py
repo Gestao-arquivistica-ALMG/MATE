@@ -624,39 +624,7 @@ if rodar:
 
         st.write("")
 
-        # --- botões lado a lado: Planilha + Diário ---
-        diario_url = (result.get("diario_url") or "").strip()
-
-        c_btn1, c_btn2, c_btn3 = st.columns(3, gap="small")
-
-        btn_style = """
-            display:block;
-            text-align:center;
-            padding:10px;
-            border-radius:8px;
-            background-color:#e9e9e9;
-            text-decoration:none;
-            font-weight:400;
-            font-size:14px;
-            color:black;
-        """
-
-        btn_style_exec = """
-            display:block;
-            text-align:center;
-            padding:12px 10px;
-            border-radius:8px;
-            background-color:#e9e9e9;
-            text-decoration:none;
-            font-weight:400;
-            font-size:13px;
-            color:black;
-            white-space:nowrap;
-            cursor:pointer;
-            font-family:Arial, Helvetica, sans-serif;
-            position:relative;
-            top:-3px;
-        """
+        c_btn1 = st.container()
 
         with c_btn1:
             st.markdown(
@@ -667,87 +635,7 @@ if rodar:
                 """,
                 unsafe_allow_html=True
             )
-
-        with c_btn2:
-            if diario_url:
-                html_btn2 = f"""
-                <a href="{diario_url}" target="_blank" rel="noopener noreferrer" style="{btn_style}">
-                    Diário do Legislativo
-                </a>
-                """
-            else:
-                html_btn2 = f"""
-                <span style="{btn_style} opacity:0.55; cursor:not-allowed;">
-                    Diário do Legislativo
-                </span>
-                """
-
-            st.markdown(html_btn2, unsafe_allow_html=True)
-
-        with c_btn3:
-            pdf_bytes_exec = st.session_state.get("exec_pdf_bytes")
-            filename_exec = st.session_state.get("exec_filename")
-
-            if pdf_bytes_exec:
-                b64_exec = base64.b64encode(pdf_bytes_exec).decode("ascii")
-                safe_name_exec = filename_exec.replace("'", "").replace('"', "")
-
-                components.html(
-                    f"""
-                    <a id="openPdfBtnTopExec"
-                      href="javascript:void(0)"
-                      style="{btn_style_exec}">
-                    Diário do Executivo
-                    </a>
-
-                    <script>
-                    (function() {{
-                      const b64 = "{b64_exec}";
-                      const fileName = "{safe_name_exec}";
-
-                      function b64ToUint8Array(base64) {{
-                        const binary = atob(base64);
-                        const len = binary.length;
-                        const bytes = new Uint8Array(len);
-                        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                        return bytes;
-                      }}
-
-                      document.getElementById("openPdfBtnTopExec").addEventListener("click", () => {{
-                        const bytes = b64ToUint8Array(b64);
-                        const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                        const url = URL.createObjectURL(blob);
-
-                        const w = window.open(url, "_blank");
-                        if (!w) {{
-                          alert("Popup bloqueado. Permita popups para este site e tente novamente.");
-                          return;
-                        }}
-                        try {{ w.document.title = fileName; }} catch(e) {{}}
-                      }});
-                    }})();
-                    </script>
-                    """,
-                    height=70,
-                )
-            else:
-                st.markdown(
-                    """
-                    <div style="
-                        display:inline-block;
-                        width:100%;
-                        padding:10px 12px;
-                        background:#f0f0f0;
-                        border:1px solid #d0d0d0;
-                        border-radius:8px;
-                        color:#999;
-                        text-align:center;">
-                        Diário do Executivo
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
+            
     except Exception as e:
         st.error("Erro ao processar.")
         st.exception(e)
