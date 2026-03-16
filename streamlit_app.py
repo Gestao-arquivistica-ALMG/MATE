@@ -605,20 +605,20 @@ if rodar:
 
         status_text.markdown(
             f"""
-            <div style="display:flex;justify-content:space-between;align-items:center;
-            font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;">
-            
-                <div>Concluído 100%</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;
+        font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;">
 
-                <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer"
-                style="text-decoration:none;color:#31333F;font-weight:400;">
-                Abrir planilha
-                </a>
+        <div>Concluído 100%</div>
 
-                <div>{result['aba']}</div>
+        <a href="{url_com_aba}" target="_blank" rel="noopener noreferrer"
+        style="text-decoration:none;color:#31333F;font-weight:400;">
+        Abrir planilha
+        </a>
 
-            </div>
-            """,
+        <div>{result['aba']}</div>
+
+        </div>
+        """,
             unsafe_allow_html=True
         )
 
