@@ -378,78 +378,60 @@ if rodar:
     c_links, c_pdfs = st.columns([1, 2], gap=None)
 
     with c_links:
-        components.html(
-            f'''
-            <div style="font-family:'Montserrat',sans-serif;font-size:12px;color:#31333F;">
+    components.html(
+        f'''
+        <div style="
+            font-family:'Montserrat',sans-serif;
+            font-size:13px;
+            color:#31333F;
+            line-height:1.6;
+        ">
 
-                <div style="margin:0 0 8px 0;">
-                    <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
-                    </a>
-                    <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
-                        Diário do Executivo
-                    </a>
-                </div>
+            <div style="margin:0 0 8px 0;">
+                <a href="javascript:void(0)" id="openExecTop"
+                style="margin-right:6px;text-decoration:none;vertical-align:middle;">
+                    <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                </a>
+                <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer"
+                style="text-decoration:none;color:#31333F;font-family:'Montserrat',sans-serif;font-size:13px;">
+                    Diário do Executivo
+                </a>
+            </div>
 
-                <div style="margin:0 0 8px 0;">
-                    <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
-                    </a>
-                    <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
-                        Diário do Legislativo
-                    </a>
-                </div>
+            <div style="margin:0 0 8px 0;">
+                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer"
+                style="margin-right:6px;text-decoration:none;vertical-align:middle;">
+                    <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                </a>
+                <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html"
+                target="_blank" rel="noopener noreferrer"
+                style="text-decoration:none;color:#31333F;font-family:'Montserrat',sans-serif;font-size:13px;">
+                    Diário do Legislativo
+                </a>
+            </div>
 
-                <div style="margin:0 0 8px 0;">
-                    <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
-                    </a>
-                    <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
-                        Reuniões de Plenário
-                    </a>
-                </div>
+            <div style="margin:0 0 8px 0;">
+                <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer"
+                style="margin-right:6px;text-decoration:none;vertical-align:middle;">
+                    <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                </a>
+                <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
+                target="_blank" rel="noopener noreferrer"
+                style="text-decoration:none;color:#31333F;font-family:'Montserrat',sans-serif;font-size:13px;">
+                    Reuniões de Plenário
+                </a>
+            </div>
 
-                <div style="margin:0 0 8px 0;">
-                    <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
-                    </a>
-                    <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
-                        Reuniões de Comissões
-                    </a>
-                </div>
-
-                <script>
-                (function() {{
-                const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
-                const fileNameExec = "{st.session_state.get('exec_filename', 'diario-executivo.pdf').replace("'", "").replace('"', "")}";
-
-                const btnExecTop = document.getElementById("openExecTop");
-
-                function b64ToUint8Array(base64) {{
-                    const binary = atob(base64);
-                    const len = binary.length;
-                    const bytes = new Uint8Array(len);
-                    for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                    return bytes;
-                }}
-
-                if (btnExecTop && b64Exec) {{
-                    btnExecTop.addEventListener("click", () => {{
-                    const bytes = b64ToUint8Array(b64Exec);
-                    const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                    const url = URL.createObjectURL(blob);
-
-                    const w = window.open(url, "_blank");
-                    if (!w) {{
-                        alert("Popup bloqueado. Permita popups para este site e tente novamente.");
-                        return;
-                    }}
-                    try {{ w.document.title = fileNameExec; }} catch(e) {{}}
-                    }});
-                }}
-                }})();
-                </script>
-
+            <div style="margin:0 0 8px 0;">
+                <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer"
+                style="margin-right:6px;text-decoration:none;vertical-align:middle;">
+                    <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                </a>
+                <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"
+                target="_blank" rel="noopener noreferrer"
+                style="text-decoration:none;color:#31333F;font-family:'Montserrat',sans-serif;font-size:13px;">
+                    Reuniões de Comissões
+                </a>
             </div>
             ''',
             height=120,
