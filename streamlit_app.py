@@ -375,45 +375,75 @@ if rodar:
     c_links, c_pdfs = st.columns([1, 2], gap=None)
 
     with c_links:
-        st.markdown(
+        components.html(
             f'''
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="javascript:void(0)" id="downloadExecPdfLeft" style="margin-right:6px; text-decoration:none;">
-                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-                </a>
-                <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                    Diário do Executivo
-                </a>
-            </div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:12px;color:#31333F">
 
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-                </a>
-                <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                    Diário do Legislativo
-                </a>
-            </div>
+                <div style="margin:0 0 8px 0;">
+                    <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;text-decoration:none;">
+                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    </a>
+                    <span>Diário do Executivo</span>
+                </div>
 
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-                </a>
-                <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                    Reuniões de Plenário
-                </a>
-            </div>
+                <div style="margin:0 0 8px 0;">
+                    <a href="{diario_leg_page}" target="_blank" style="margin-right:6px;text-decoration:none;">
+                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    </a>
+                    <span>Diário do Legislativo</span>
+                </div>
 
-            <div style="margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:12px; color:#31333F;">
-                <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px; text-decoration:none;">
-                    <img src="{open_icon}" style="height:16px; vertical-align:middle;">
-                </a>
-                <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#31333F;">
-                    Reuniões de Comissões
-                </a>
+                <div style="margin:0 0 8px 0;">
+                    <a href="{reuniao_plenario}" target="_blank" style="margin-right:6px;text-decoration:none;">
+                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    </a>
+                    <span>Reuniões de Plenário</span>
+                </div>
+
+                <div style="margin:0 0 8px 0;">
+                    <a href="{reuniao_comissoes}" target="_blank" style="margin-right:6px;text-decoration:none;">
+                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    </a>
+                    <span>Reuniões de Comissões</span>
+                </div>
+
+            <script>
+
+            const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
+            const fileNameExec = "{st.session_state.get('exec_filename','diario-executivo.pdf')}";
+
+            const btn = document.getElementById("openExecTop");
+
+            if(btn) {{
+
+                btn.addEventListener("click", () => {{
+
+                    if(!b64Exec) return;
+
+                    const binary = atob(b64Exec);
+                    const len = binary.length;
+                    const bytes = new Uint8Array(len);
+
+                    for(let i=0;i<len;i++) bytes[i] = binary.charCodeAt(i);
+
+                    const blob = new Blob([bytes], {{type:"application/pdf"}});
+                    const url = URL.createObjectURL(blob);
+
+                    const w = window.open(url,"_blank");
+
+                    if(!w) {{
+                        alert("Popup bloqueado.");
+                    }}
+
+                }});
+
+            }}
+
+            </script>
+
             </div>
             ''',
-            unsafe_allow_html=True
+            height=120
         )
 
     with c_pdfs:
