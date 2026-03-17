@@ -375,7 +375,7 @@ if rodar:
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
     pdf_icon = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcAfrx37j4CuKi12fymiEDw35IRZj62mplHM0PeeGo2w&s"
 
-    c_links, c_pdfs = st.columns([1.2, 1.8], gap=None)
+    c_links, c_pdfs = st.columns([1.1, 1.9], gap=None)
 
     with c_links:
         components.html(
@@ -484,7 +484,7 @@ if rodar:
 
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-4px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-3px;">
                 </a>
             </div>
 
