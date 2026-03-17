@@ -511,7 +511,7 @@ if rodar:
               }}
 
               const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
-              const fileNameLeg = "{st.session_state.get('leg_filename', 'diario-legislativo.pdf')}";
+              const fileNameLeg = "{st.session_state.get('leg_filename', 'diario-legislativo.pdf').replace('"','').replace("'",'')}";
 
               const btnLeg = document.getElementById("downloadLegPdf");
               if (btnLeg) {{
