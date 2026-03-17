@@ -162,12 +162,12 @@ with c1:
         <div style="
             margin-top:-70px;
             display:flex;
-            justify-content:flex-start;
             align-items:left;
+            justify-content:flex-start;
             pointer-events:none;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-               style="height:200px;width:500px;">
+               style="height:45px;width:100px;">
         </div>
         """,
         unsafe_allow_html=True,
