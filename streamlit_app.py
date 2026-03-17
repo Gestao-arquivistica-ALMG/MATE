@@ -171,7 +171,6 @@ with c3:
     st.markdown(
         """
         <div style="
-            display:flex;
             align-items:center;
             justify-content:flex-end;
             height:56px;
