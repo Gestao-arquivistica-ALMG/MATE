@@ -373,7 +373,7 @@ if rodar:
 
     # EXIBE ANTES DO PROCESSAMENTO
     open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
-    pdf_icon = "https://static.vecteezy.com/system/resources/previews/017/197/488/non_2x/pdf-icon-on-transparent-background-free-png.png"
+    pdf_icon = "https://www.flaticon.com/br/icone-gratis/pdf_4726010"
 
     c_links, c_pdfs = st.columns([1.2, 1.8], gap=None)
 
