@@ -144,47 +144,28 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([2.5, 5, 7.5], gap="small")
+c1, c2, c3 = st.columns([2, 6, 2], gap="small")
 
 with c1:
-    # LOGO vira o botão do menu
     if st.button(
-        " ",
+        "☰",
         key="btn_menu_toggle",
         use_container_width=True,
     ):
         st.session_state.menu_open = not st.session_state.menu_open
         st.rerun()
 
-    # desenha o logo por cima do botão
-    st.markdown(
-        """
-        <div style="
-            margin-top:-70px;
-            display:flex;
-            align-items:left;
-            justify-content:flex-start;
-            pointer-events:none;
-        ">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7_4LGRVcOLvKaXJymjoZd74lGA-pghgfRbQ&s"
-               style="height:15px;width:15px;">
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
 with c2:
     st.markdown(
         """
         <div style="
-            margin-top:-70px;
             display:flex;
-            align-items:left;
+            align-items:center;
             justify-content:flex-start;
-            pointer-events:none;
+            height:60px;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-               style="height:63px;width:126px;">
+               style="height:50px;">
         </div>
         """,
         unsafe_allow_html=True,
@@ -193,13 +174,38 @@ with c2:
 with c3:
     st.markdown(
         """
-        <div style="display:flex; align-items:center; justify-content:flex-end; height:45px; gap:12px; font-size:24px;">
+        <div style="
+            display:flex;
+            align-items:center;
+            justify-content:flex-end;
+            height:60px;
+            gap:14px;
+            font-size:22px;
+        ">
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
           <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+st.markdown("""
+<style>
+div[data-testid="stHorizontalBlock"]{
+  background:white;
+  padding:6px 18px;
+  border-radius:12px;
+  align-items:center;
+}
+
+/* botão do menu */
+button[kind="secondary"]{
+  font-size:22px !important;
+  height:45px !important;
+  border-radius:8px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # style do "container" do header (1 caixa branca como antes)
 st.markdown("""
