@@ -178,6 +178,7 @@ with c3:
             gap:8px;
         ">
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
+             title="Silegis"
              style="
                 text-decoration:none;
                 width:25px;
@@ -190,6 +191,7 @@ with c3:
              "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:25px; display:block; transform:translateY(-7px);"></a>
 
           <a href="https://intra.almg.gov.br/" target="_blank"
+             title="intraALMG"
              style="
                 text-decoration:none;
                 width:100px;
