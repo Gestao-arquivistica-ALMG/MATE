@@ -230,7 +230,7 @@ button[kind="secondary"]{
   color:#666666 !important;
   font-size:20px !important;
   font-weight:500 !important;
-  padding:0 !important;
+  padding:5 !important;
   box-shadow:none !important;
 }
 
