@@ -180,8 +180,8 @@ with c3:
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
              style="
                 text-decoration:none;
-                width:36px;
-                height:36px;
+                width:25px;
+                height:25px;
                 display:flex;
                 align-items:center;
                 justify-content:center;
