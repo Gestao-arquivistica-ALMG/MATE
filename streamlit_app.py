@@ -160,7 +160,7 @@ with c1:
     st.markdown(
         """
         <div style="
-            margin-top:-70px;
+            margin-top:-20px;
             align-items:left;
             pointer-events:none;
         ">
