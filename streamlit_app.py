@@ -187,7 +187,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:22px; display:block; transform:translateY(-2px);"></a>
+             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:25px; display:block; transform:translateY(-5px);"></a>
 
           <a href="https://intra.almg.gov.br/" target="_blank"
              style="
