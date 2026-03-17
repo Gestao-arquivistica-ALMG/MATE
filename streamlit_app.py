@@ -192,8 +192,8 @@ with c3:
           <a href="https://intra.almg.gov.br/" target="_blank"
              style="
                 text-decoration:none;
-                width:36px;
-                height:36px;
+                width:50px;
+                height:100px;
                 display:flex;
                 align-items:center;
                 justify-content:center;
