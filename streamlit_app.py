@@ -226,7 +226,7 @@ div[data-testid="stHorizontalBlock"] > div{
 
 /* remove espaço interno das colunas */
 div[data-testid="column"]{
-  padding-left:0 !important;
+  padding-left:5 !important;
 }
 
 /* botão menu */
