@@ -389,7 +389,7 @@ if rodar:
                 font-size:13px;
                 color:#31333F;
                 text-decoration:none;
-                font-weight:600;
+                font-weight:500;
             }}
 
             .link-line img {{
