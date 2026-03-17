@@ -536,7 +536,6 @@ if rodar:
             """,
             height=110
         )
-        
     # só agora começa a execução visual
     try:
         progress_bar = st.progress(0)
