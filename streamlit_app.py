@@ -161,9 +161,7 @@ with c1:
         """
         <div style="
             margin-top:-70px;
-            display:flex;
             align-items:left;
-            justify-content:flex-start;
             pointer-events:none;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
