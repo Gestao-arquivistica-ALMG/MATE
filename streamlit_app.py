@@ -433,11 +433,6 @@ if rodar:
                     </a>
                 </div>
 
-            </div>
-            """,
-            height=120,
-        )
-
                 <script>
                 (function() {{
                 const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
