@@ -221,8 +221,8 @@ div[data-testid="stHorizontalBlock"] > div{
 
 /* botão menu */
 button[kind="secondary"]{
-  height:27px !important;
-  min-height:25px !important;
+  height:26px !important;
+  min-height:26px !important;
   line-height:1 !important;
   border-radius:8px !important;
   border:1px solid #d0d0d0 !important;
@@ -230,7 +230,7 @@ button[kind="secondary"]{
   color:#666666 !important;
   font-size:20px !important;
   font-weight:500 !important;
-  padding:5 !important;
+  padding:0 !important;
   box-shadow:none !important;
 }
 
