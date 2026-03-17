@@ -196,8 +196,8 @@ with c3:
              title="intraALMG"
              style="
                 text-decoration:none;
-                width:50px;
-                height:50px;
+                width:100px;
+                height:100px;
                 display:flex;
                 align-items:center;
                 justify-content:center;
