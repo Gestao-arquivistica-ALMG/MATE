@@ -525,13 +525,13 @@ if rodar:
             f"""
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-10px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-9px;">
                 </a>
             </div>
 
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-10px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-9px;">
                 </a>
             </div>
 
