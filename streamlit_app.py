@@ -167,7 +167,7 @@ with c1:
             pointer-events:none;
         ">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7_4LGRVcOLvKaXJymjoZd74lGA-pghgfRbQ&s"
-               style="height:63px;width:126px;">
+               style="height:15px;width:15px;">
         </div>
         """,
         unsafe_allow_html=True,
