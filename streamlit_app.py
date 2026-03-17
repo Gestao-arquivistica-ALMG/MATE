@@ -224,11 +224,6 @@ div[data-testid="stHorizontalBlock"] > div{
   align-items:center;
 }
 
-/* remove espaço interno das colunas */
-div[data-testid="column"]{
-  padding-left:5 !important;
-}
-
 /* botão menu */
 button[kind="secondary"]{
   height:28px !important;
