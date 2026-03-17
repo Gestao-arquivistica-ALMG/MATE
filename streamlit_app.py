@@ -144,7 +144,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([0.7, 7, 6], gap="small")
+c1, c2, c3 = st.columns([0.7, 7, 5], gap="small")
 
 with c1:
     if st.button("☰", key="btn_menu_toggle", use_container_width=True):
@@ -214,7 +214,7 @@ st.markdown("""
 <style>
 div[data-testid="stHorizontalBlock"]{
   background:white;
-  padding:10px 8px 10px 4px;
+  padding:10px 18px;
   border-radius:14px;
   align-items:center !important;
 }
