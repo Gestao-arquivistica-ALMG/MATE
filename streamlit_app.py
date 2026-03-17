@@ -160,12 +160,12 @@ with c1:
     st.markdown(
         """
         <div style="
-            margin-top:-20px;
+            margin-top:-70px;
             align-items:left;
             pointer-events:none;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-               style="height:90px;width:200px;">
+               style="height:200px;width:500px;">
         </div>
         """,
         unsafe_allow_html=True,
