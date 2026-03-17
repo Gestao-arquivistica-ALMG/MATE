@@ -144,14 +144,10 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([0.7, 6, 2], gap="small")
+c1, c2, c3 = st.columns([1.4, 6.8, 1.8], gap="small")
 
 with c1:
-    if st.button(
-        "☰",
-        key="btn_menu_toggle",
-        use_container_width=True,
-    ):
+    if st.button("☰", key="btn_menu_toggle", use_container_width=True):
         st.session_state.menu_open = not st.session_state.menu_open
         st.rerun()
 
@@ -162,10 +158,10 @@ with c2:
             display:flex;
             align-items:center;
             justify-content:flex-start;
-            height:60px;
+            height:56px;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-               style="height:50px;">
+               style="height:44px; display:block;">
         </div>
         """,
         unsafe_allow_html=True,
@@ -178,12 +174,32 @@ with c3:
             display:flex;
             align-items:center;
             justify-content:flex-end;
-            height:60px;
-            gap:14px;
-            font-size:22px;
+            height:56px;
+            gap:8px;
         ">
-          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none;">🔍</a>
-          <a href="https://intra.almg.gov.br/" target="_blank" style="text-decoration:none;">👤</a>
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
+             style="
+                text-decoration:none;
+                width:36px;
+                height:36px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:8px;
+                font-size:22px;
+             ">🔍</a>
+
+          <a href="https://intra.almg.gov.br/" target="_blank"
+             style="
+                text-decoration:none;
+                width:36px;
+                height:36px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:8px;
+                font-size:22px;
+             ">👤</a>
         </div>
         """,
         unsafe_allow_html=True,
@@ -193,37 +209,39 @@ st.markdown("""
 <style>
 div[data-testid="stHorizontalBlock"]{
   background:white;
-  padding:6px 18px;
-  border-radius:12px;
+  padding:10px 18px;
+  border-radius:14px;
+  align-items:center !important;
+}
+
+div[data-testid="stHorizontalBlock"] > div{
+  display:flex;
   align-items:center;
 }
 
-/* botão do menu */
+/* botão menu */
 button[kind="secondary"]{
-  font-size:22px !important;
-  height:45px !important;
+  height:40px !important;
+  min-height:40px !important;
   border-radius:8px !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# style do "container" do header (1 caixa branca como antes)
-st.markdown("""
-<style>
-/* aplica no row acima (Streamlit) */
-div[data-testid="stHorizontalBlock"]{
-  max-width:100%;
-  margin:0 auto 0 auto;
-  background:white;
-  padding:2px 18px;
-  border-radius:12px;
-}
-button[kind="secondary"][data-testid="baseButton-secondary"]{
-  color:#cc0000 !important;
-  font-size:26px !important;
-  width:200px !important;
-  height:100px !important;
+  border:1px solid #d0d0d0 !important;
+  background:#f7f7f7 !important;
+  color:#666666 !important;
+  font-size:20px !important;
+  font-weight:500 !important;
   padding:0 !important;
+  box-shadow:none !important;
+}
+
+button[kind="secondary"]:hover{
+  border:1px solid #cc0000 !important;
+  color:#cc0000 !important;
+  background:#fff5f5 !important;
+}
+
+/* links dos ícones */
+a:hover{
+  background:#f5f5f5;
 }
 </style>
 """, unsafe_allow_html=True)
