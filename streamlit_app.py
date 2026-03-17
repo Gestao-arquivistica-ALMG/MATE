@@ -144,7 +144,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([2.5, 7.5], gap="small")
+c1, c2, c3 = st.columns([2.5, 5, 7.5], gap="small")
 
 with c1:
     # LOGO vira o botão do menu
@@ -166,7 +166,7 @@ with c1:
             justify-content:flex-start;
             pointer-events:none;
         ">
-          <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7_4LGRVcOLvKaXJymjoZd74lGA-pghgfRbQ&s"
                style="height:63px;width:126px;">
         </div>
         """,
@@ -174,6 +174,23 @@ with c1:
     )
 
 with c2:
+    st.markdown(
+        """
+        <div style="
+            margin-top:-70px;
+            display:flex;
+            align-items:left;
+            justify-content:flex-start;
+            pointer-events:none;
+        ">
+          <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+               style="height:63px;width:126px;">
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c3:
     st.markdown(
         """
         <div style="display:flex; align-items:center; justify-content:flex-end; height:45px; gap:12px; font-size:24px;">
