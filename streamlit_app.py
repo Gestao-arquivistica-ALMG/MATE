@@ -380,7 +380,7 @@ if rodar:
     with c_links:
         components.html(
             f"""
-            <div style="display:flex;justify-content:space-between;font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;">
+            <div style="justify-content:space-between;font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;width:100%;">
 
                 <div style="margin:0 0 8px 0;">
                     <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;text-decoration:none;">
