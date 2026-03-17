@@ -161,6 +161,8 @@ with c1:
         """
         <div style="
             margin-top:-70px;
+            display:flex;
+            justify-content:flex-start;
             align-items:left;
             pointer-events:none;
         ">
