@@ -183,7 +183,7 @@ with c3:
                 width:25px;
                 height:25px;
                 display:flex;
-                align-items:center;
+                align-items:flex-start;
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
