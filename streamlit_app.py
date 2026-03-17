@@ -380,43 +380,63 @@ if rodar:
     with c_links:
         components.html(
             f"""
-            <div style="align-items:center;font-family:'Montserrat',sans-serif;font-size:13px;color:#31333F;font-weight:500;width:100%;">
+            <style>
+            .link-line a {{
+                font-family:'Montserrat',sans-serif;
+                font-size:13px;
+                color:#31333F;
+                text-decoration:none;
+                font-weight:500;
+            }}
+
+            .link-line img {{
+                height:16px;
+                vertical-align:middle;
+            }}
+            </style>
+
+            <div class="link-line">
 
                 <div style="margin:0 0 8px 0;">
-                    <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;">
+                        <img src="{open_icon}">
                     </a>
-                    <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
+                    <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer">
                         Diário do Executivo
                     </a>
                 </div>
 
                 <div style="margin:0 0 8px 0;">
-                    <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
+                        <img src="{open_icon}">
                     </a>
-                    <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
+                    <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer">
                         Diário do Legislativo
                     </a>
                 </div>
 
                 <div style="margin:0 0 8px 0;">
-                    <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
+                        <img src="{open_icon}">
                     </a>
-                    <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
+                    <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Plenário
                     </a>
                 </div>
 
                 <div style="margin:0 0 8px 0;">
-                    <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;text-decoration:none;">
-                        <img src="{open_icon}" style="height:16px;vertical-align:middle;">
+                    <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
+                        <img src="{open_icon}">
                     </a>
-                    <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:#31333F;">
+                    <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Comissões
                     </a>
                 </div>
+
+            </div>
+            """,
+            height=120,
+        )
 
                 <script>
                 (function() {{
