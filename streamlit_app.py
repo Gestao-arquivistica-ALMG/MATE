@@ -418,11 +418,6 @@ if rodar:
                     </a>
                 </div>
 
-        <span>{result['aba']}</span>
-
-        </div>
-
-
                 <script>
                 (function() {{
                 const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
