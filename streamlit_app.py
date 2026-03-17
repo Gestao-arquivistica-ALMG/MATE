@@ -457,7 +457,7 @@ if rodar:
 
     with c_pdfs:
         components.html(
-            f'''
+            f"""
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
                     <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-6px;">
@@ -476,19 +476,18 @@ if rodar:
             <script>
             (function() {{
 
-              const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
-              const fileNameExec = "{st.session_state.get('exec_filename', 'diario-executivo.pdf')}";
+            const b64Exec = "{base64.b64encode(st.session_state.get('exec_pdf_bytes', b'')).decode('ascii')}";
+            const fileNameExec = "{st.session_state.get('exec_filename', 'diario-executivo.pdf').replace('"','').replace("'",'')}";
 
-              const btnExec = document.getElementById("downloadExecPdf");
-              const btnExecLeft = document.getElementById("downloadExecPdfLeft");
+            const btnExec = document.getElementById("downloadExecPdf");
 
-              function baixarExecPdf() {{
+            function baixarExecPdf() {{
                 const binary = atob(b64Exec);
                 const len = binary.length;
                 const bytes = new Uint8Array(len);
 
                 for (let i = 0; i < len; i++) {{
-                  bytes[i] = binary.charCodeAt(i);
+                bytes[i] = binary.charCodeAt(i);
                 }}
 
                 const blob = new Blob([bytes], {{ type: "application/pdf" }});
@@ -500,48 +499,44 @@ if rodar:
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
-              }}
+            }}
 
-              if (btnExec) {{
+            if (btnExec) {{
                 btnExec.addEventListener("click", baixarExecPdf);
-              }}
+            }}
 
-              if (btnExecLeft) {{
-                btnExecLeft.addEventListener("click", baixarExecPdf);
-              }}
+            const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
+            const fileNameLeg = "{st.session_state.get('leg_filename', 'diario-legislativo.pdf').replace('"','').replace("'",'')}";
 
-              const b64Leg = "{base64.b64encode(st.session_state.get('leg_pdf_bytes', b'')).decode('ascii')}";
-              const fileNameLeg = "{st.session_state.get('leg_filename', 'diario-legislativo.pdf').replace('"','').replace("'",'')}";
-
-              const btnLeg = document.getElementById("downloadLegPdf");
-              if (btnLeg) {{
+            const btnLeg = document.getElementById("downloadLegPdf");
+            if (btnLeg) {{
                 btnLeg.addEventListener("click", () => {{
-                  const binary = atob(b64Leg);
-                  const len = binary.length;
-                  const bytes = new Uint8Array(len);
+                const binary = atob(b64Leg);
+                const len = binary.length;
+                const bytes = new Uint8Array(len);
 
-                  for (let i = 0; i < len; i++) {{
+                for (let i = 0; i < len; i++) {{
                     bytes[i] = binary.charCodeAt(i);
-                  }}
+                }}
 
-                  const blob = new Blob([bytes], {{ type: "application/pdf" }});
-                  const url = URL.createObjectURL(blob);
+                const blob = new Blob([bytes], {{ type: "application/pdf" }});
+                const url = URL.createObjectURL(blob);
 
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = fileNameLeg;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = fileNameLeg;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
                 }});
-              }}
+            }}
 
             }})();
             </script>
             """,
             height=110
         )
-
+        
     # só agora começa a execução visual
     try:
         progress_bar = st.progress(0)
