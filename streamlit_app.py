@@ -214,7 +214,7 @@ st.markdown("""
 <style>
 div[data-testid="stHorizontalBlock"]{
   background:white;
-  padding:10px 18px;
+  padding:10px 8px 10px 4px;
   border-radius:14px;
   align-items:center !important;
 }
@@ -222,6 +222,11 @@ div[data-testid="stHorizontalBlock"]{
 div[data-testid="stHorizontalBlock"] > div{
   display:flex;
   align-items:center;
+}
+
+/* remove espaço interno das colunas */
+div[data-testid="column"]{
+  padding-left:0 !important;
 }
 
 /* botão menu */
