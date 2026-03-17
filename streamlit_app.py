@@ -167,7 +167,7 @@ with c1:
             pointer-events:none;
         ">
           <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-               style="height:65px;width:130px;">
+               style="height:63px;width:126px;">
         </div>
         """,
         unsafe_allow_html=True,
