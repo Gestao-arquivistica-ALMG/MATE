@@ -199,7 +199,8 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"></a>
+             "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"
+                    style="height:24px; width:auto; display:block;"></a>
         </div>
         """,
         unsafe_allow_html=True,
