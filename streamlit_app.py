@@ -466,8 +466,8 @@ if rodar:
                 </div>
 
                 <div style="margin:0 0 8px 0;">
-                    <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-top:6px;">
-                        <img src="{open_icon}" style="vertical-align:middle; transform:translateY(-10px);">
+                    <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
+                        <img src="{open_icon}">
                     </a>
                     <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Plenário
@@ -475,8 +475,8 @@ if rodar:
                 </div>
 
                 <div style="margin:0 0 8px 0;">
-                    <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-:6px;">
-                        <img src="{open_icon}" style="vertical-align:middle; transform:translateY(-10px);">
+                    <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
+                        <img src="{open_icon}">
                     </a>
                     <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Comissões
@@ -525,13 +525,13 @@ if rodar:
             f"""
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadExecPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-3px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-5px;">
                 </a>
             </div>
 
             <div style="margin:0 0 8px 0; display:flex; justify-content:flex-start;">
                 <a href="javascript:void(0)" id="downloadLegPdf" style="text-decoration:none;">
-                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-3px;">
+                    <img src="{pdf_icon}" style="height:16px; vertical-align:middle; position:relative; top:-5px;">
                 </a>
             </div>
 
