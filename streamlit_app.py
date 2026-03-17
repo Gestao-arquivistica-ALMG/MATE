@@ -174,7 +174,7 @@ with c3:
         """
         <div style="
             display:flex;
-            align-items:right;
+            align-items:center;
             justify-content:flex-end;
             height:56px;
             gap:8px;
@@ -196,8 +196,8 @@ with c3:
              title="intraALMG"
              style="
                 text-decoration:none;
-                width:100px;
-                height:100px;
+                width:50px;
+                height:50px;
                 display:flex;
                 align-items:center;
                 justify-content:center;
