@@ -199,7 +199,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             ">👤</a>
+             "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"></a>
         </div>
         """,
         unsafe_allow_html=True,
