@@ -187,13 +187,13 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             ">🔍</a>
+             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico"></a>
 
           <a href="https://intra.almg.gov.br/" target="_blank"
              style="
                 text-decoration:none;
-                width:50px;
-                height:100px;
+                width:36px;
+                height:36px;
                 display:flex;
                 align-items:center;
                 justify-content:center;
