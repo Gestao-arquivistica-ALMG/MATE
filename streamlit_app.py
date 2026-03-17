@@ -467,7 +467,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-top:6px;">
-                        <img src="{open_icon}" style="vertical-align:middle; transform:translateY(-2px);">
+                        <img src="{open_icon}" style="vertical-align:middle; transform:translateY(-5px);">
                     </a>
                     <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Plenário
@@ -476,7 +476,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-:6px;">
-                        <img src="{open_icon}" style="vertical-align:middle; transform:translateY(-2px);">
+                        <img src="{open_icon}" style="vertical-align:middle; transform:translateY(-5px);">
                     </a>
                     <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Comissões
