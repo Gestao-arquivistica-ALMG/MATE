@@ -179,19 +179,6 @@ with c3:
             height:56px;
             gap:8px;
         ">
-          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
-             title="Silegis"
-             style="
-                text-decoration:none;
-                width:25px;
-                height:25px;
-                display:flex;
-                align-items:flex-start;
-                justify-content:center;
-                border-radius:8px;
-                font-size:22px;
-             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:25px; display:block; transform:translateY(-7px);"></a>
-
           <a href="https://intra.almg.gov.br/" target="_blank"
              title="intraALMG"
              style="
@@ -205,6 +192,18 @@ with c3:
                 font-size:22px;
              "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"
                     style="height:24px; width:auto; display:block;"></a>
+          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
+             title="Silegis"
+             style="
+                text-decoration:none;
+                width:25px;
+                height:25px;
+                display:flex;
+                align-items:flex-start;
+                justify-content:center;
+                border-radius:8px;
+                font-size:22px;
+             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:25px; display:block; transform:translateY(-7px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
