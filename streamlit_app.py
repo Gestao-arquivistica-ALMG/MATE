@@ -215,7 +215,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:20px; display:block; transform:translateY(0px);"></a>
+             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:23px; display:block; transform:translateY(0px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
