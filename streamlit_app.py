@@ -194,19 +194,6 @@ with c3:
              "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"
                     style="height:24px; width:auto; display:block;"></a>
             -->
-          <a href="https://webmail.almg.gov.br/" target="_blank"
-             title="Silegis"
-             style="
-                text-decoration:none;
-                width:30px;
-                height:30px;
-                display:block;
-                align-items:flex-start;
-                justify-content:center;
-                border-radius:8px;
-                font-size:22px;
-                transform:translateY(-4px);
-             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo="></a>
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
              title="Silegis"
              style="
@@ -220,6 +207,19 @@ with c3:
                 font-size:22px;
                 transform:translateY(-4px);
              "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico"></a>
+          <a href="https://webmail.almg.gov.br/" target="_blank"
+             title="Silegis"
+             style="
+                text-decoration:none;
+                width:30px;
+                height:30px;
+                display:block;
+                align-items:flex-start;
+                justify-content:center;
+                border-radius:8px;
+                font-size:22px;
+                transform:translateY(-4px);
+             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo="></a>
         </div>
         """,
         unsafe_allow_html=True,
