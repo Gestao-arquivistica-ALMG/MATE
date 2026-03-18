@@ -174,7 +174,7 @@ with c3:
         """
         <div style="
             display:flex;
-            align-items:top;
+            align-items:flex-start;
             justify-content:flex-end;
             height:56px;
             gap:8px;
