@@ -449,7 +449,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;">
-                        <img src="{open_icon}" style="height:16px; vertical-align:middle; position:relative; top:-2px;">
+                        <img src="{open_icon}" style="height:18px; vertical-align:middle; position:relative; top:-2px;">
                     </a>
                     <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer">
                         Diário do Executivo
@@ -458,7 +458,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="{diario_leg_page}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
-                        <img src="{open_icon}" style="height:20px; vertical-align:middle; position:relative; top:-2px;">
+                        <img src="{open_icon}" style="height:18px; vertical-align:middle; position:relative; top:-2px;">
                     </a>
                     <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" rel="noopener noreferrer">
                         Diário do Legislativo
@@ -467,7 +467,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="{reuniao_plenario}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
-                        <img src="{open_icon}" style="height:20px; vertical-align:middle; position:relative; top:-2px;">
+                        <img src="{open_icon}" style="height:18px; vertical-align:middle; position:relative; top:-2px;">
                     </a>
                     <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Plenário
@@ -476,7 +476,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="{reuniao_comissoes}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">
-                        <img src="{open_icon}" style="height:16px; vertical-align:middle; position:relative; top:-2px;">
+                        <img src="{open_icon}" style="height:18px; vertical-align:middle; position:relative; top:-2px;">
                     </a>
                     <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" rel="noopener noreferrer">
                         Reuniões de Comissões
