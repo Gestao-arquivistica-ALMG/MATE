@@ -204,6 +204,18 @@ with c3:
                 border-radius:8px;
                 font-size:22px;
              "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:25px; display:block; transform:translateY(0px);"></a>
+          <a href="https://webmail.almg.gov.br/" target="_blank"
+             title="Silegis"
+             style="
+                text-decoration:none;
+                width:25px;
+                height:25px;
+                display:flex;
+                align-items:flex-start;
+                justify-content:center;
+                border-radius:8px;
+                font-size:22px;
+             "><img src="https://play-lh.googleusercontent.com/_r36vqsCZr8B2llodEqsChNfPqh3ebLgukW1qUxNDkXKA49_slkxxuafbz_xEHqYyHhF=w240-h480-rw" style="height:25px; display:block; transform:translateY(0px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
