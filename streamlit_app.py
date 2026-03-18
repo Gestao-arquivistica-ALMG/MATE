@@ -215,7 +215,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjTM6utYQV-uGZx_GdO7s1NWGnnVN7EPCksA&s" style="height:30px; display:block; transform:translateY(0px);"></a>
+             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" style="height:35px; display:block; transform:translateY(0px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
