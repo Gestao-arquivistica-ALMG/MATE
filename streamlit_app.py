@@ -419,7 +419,7 @@ if rodar:
     status_text.empty()
 
     # EXIBE ANTES DO PROCESSAMENTO
-    open_icon = "https://cdn-icons-png.flaticon.com/512/4949/4949024.png"
+    open_icon = "https://www.almg.gov.br/favicon.ico"
     pdf_icon = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcAfrx37j4CuKi12fymiEDw35IRZj62mplHM0PeeGo2w&s"
 
     c_links, c_pdfs = st.columns([1.2, 1.8], gap=None)
