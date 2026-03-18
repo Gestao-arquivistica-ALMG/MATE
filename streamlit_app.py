@@ -213,12 +213,12 @@ with c3:
                 text-decoration:none;
                 width:27px;
                 height:27px;
-                display:flex;
+                display:block;
                 align-items:flex-start;
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-                transform:translateY(0px);
+                transform:translateY(-4px);
              "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico"></a>
         </div>
         """,
