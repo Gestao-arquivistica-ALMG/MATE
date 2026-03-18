@@ -203,7 +203,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" style="height:30px; display:block; transform:translateY(0px);"></a>
+             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" style="height:40px; display:block; transform:translateY(0px);"></a>
           <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
              title="Silegis"
              style="
