@@ -211,14 +211,15 @@ with c3:
              title="Silegis"
              style="
                 text-decoration:none;
-                width:25px;
-                height:25px;
-                display:flex;
+                width:30px;
+                height:30px;
+                display:block;
                 align-items:flex-start;
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico" style="height:30px; display:block; transform:translateY(0px);"></a>
+                transform:translateY(0px);
+             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico"></a>
         </div>
         """,
         unsafe_allow_html=True,
