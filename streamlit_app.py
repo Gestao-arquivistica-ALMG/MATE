@@ -215,7 +215,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://play-lh.googleusercontent.com/_r36vqsCZr8B2llodEqsChNfPqh3ebLgukW1qUxNDkXKA49_slkxxuafbz_xEHqYyHhF=w240-h480-rw" style="height:25px; display:block; transform:translateY(0px);"></a>
+             "><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTSNIdoiBRSu5Yv925YtH8qTmy7JPgok6Zjw&s" style="height:25px; display:block; transform:translateY(0px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
