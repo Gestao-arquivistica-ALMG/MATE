@@ -449,7 +449,7 @@ if rodar:
 
                 <div style="margin:0 0 8px 0;">
                     <a href="javascript:void(0)" id="openExecTop" style="margin-right:6px;">
-                        <img src="{open_icon}" style="height:16px; vertical-align:middle; position:relative; top:-9px;">
+                        <img src="{open_icon}" style="height:16px; vertical-align:middle; position:relative; top:-2px;">
                     </a>
                     <a href="{diario_exe_page}" target="_blank" rel="noopener noreferrer">
                         Diário do Executivo
