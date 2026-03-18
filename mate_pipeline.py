@@ -1438,20 +1438,27 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         tab_name = yyyymmdd_to_ddmmyyyy(aba_key_from_diario_key(diario_key))
         sh = gc.open_by_url(spreadsheet_url_or_id) if spreadsheet_url_or_id.startswith("http") else gc.open_by_key(spreadsheet_url_or_id)
 
-        # cria aba com sufixo incremental se o nome-base já existir
+        # cria sempre uma nova aba; se o nome já existir, adiciona sufixo (1), (2), ...
         existing_titles = {w.title for w in sh.worksheets()}
 
-        final_tab_name = tab_name
-        if final_tab_name in existing_titles:
-            i = 1
-            while f"{tab_name} ({i})" in existing_titles:
-                i += 1
-            final_tab_name = f"{tab_name} ({i})"
+        base_tab_name = tab_name
+        final_tab_name = base_tab_name
+        i = 1
 
-        ws = sh.add_worksheet(title=final_tab_name, rows=max(20, 20 + len(itens)), cols=25)
+        while final_tab_name in existing_titles:
+            final_tab_name = f"{base_tab_name} ({i})"
+            i += 1
+
+        ws = sh.add_worksheet(
+            title=final_tab_name,
+            rows=max(20, 20 + len(itens)),
+            cols=25
+        )
         _with_backoff(ws.update_index, 1)
 
         tab_name = final_tab_name
+
+        print(f"NOVA ABA CRIADA: {tab_name}")
 
         sheet_id = ws.id
 
