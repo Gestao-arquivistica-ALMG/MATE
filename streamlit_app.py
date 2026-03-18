@@ -378,7 +378,11 @@ if rodar:
         st.stop()
 
     # --- VALIDAÇÃO AQUI ---
-    yyyymmdd_check = normalizar_data(entrada_clean)
+    try:
+        yyyymmdd_check = normalizar_data(entrada_clean)
+    except ValueError as e:
+        st.error(str(e))
+        st.stop()
     dt_check = datetime.strptime(yyyymmdd_check, "%Y%m%d").date()
     data_pub_exe = dt_check.strftime("%Y-%m-%d")
     data_pub_leg = dt_check.strftime("%d/%m/%Y")
