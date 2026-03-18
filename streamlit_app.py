@@ -161,7 +161,7 @@ with c2:
             height:56px;
         ">
         <a href="https://www.almg.gov.br/" target="_blank"
-            title="Silegis">
+            title="ALMG">
         <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
             style="height:40px; display:block; transform:translateY(-12px);">
         </div>
