@@ -1457,10 +1457,19 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         _with_backoff(ws.update_index, 1)
 
         tab_name = final_tab_name
-
-        print(f"NOVA ABA CRIADA: {tab_name}")
-
         sheet_id = ws.id
+
+        print("DEBUG ABA BASE:", base_tab_name)
+        print("DEBUG ABA FINAL:", final_tab_name)
+        print("DEBUG SHEET ID:", sheet_id)
+
+        try:
+            import streamlit as st
+            st.write("DEBUG ABA BASE:", base_tab_name)
+            st.write("DEBUG ABA FINAL:", final_tab_name)
+            st.write("DEBUG SHEET ID:", sheet_id)
+        except Exception:
+            pass
 
         # --- GUARDA-CHUVA: garante grid mínimo antes de qualquer merge/unmerge ---
         MIN_ROWS = 1
