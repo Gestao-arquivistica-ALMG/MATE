@@ -144,7 +144,7 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 # "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2, c3 = st.columns([0.7, 8, 5], gap="small")
+c1, c2, c3 = st.columns([0.7, 8, 6], gap="small")
 
 with c1:
     if st.button("☰", key="btn_menu_toggle", use_container_width=True):
@@ -215,7 +215,7 @@ with c3:
                 justify-content:center;
                 border-radius:8px;
                 font-size:22px;
-             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" style="height:50px; display:block; transform:translateY(3px);"></a>
+             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" style="height:50px; display:block; transform:translateY(0px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
