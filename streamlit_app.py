@@ -408,7 +408,7 @@ if rodar:
     )
 
     if dt_check.weekday() in (6, 0):  # domingo ou segunda
-        st.error("Não há Diário do Legislativo para a data informada. Informe uma data válida.")
+        st.error("Não há publicação para a data informada. Informe uma data válida.")
         st.stop()
 
     # busca o Diário do Executivo
