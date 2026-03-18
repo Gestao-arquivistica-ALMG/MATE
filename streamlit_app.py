@@ -198,8 +198,8 @@ with c3:
              title="Silegis"
              style="
                 text-decoration:none;
-                width:25px;
-                height:25px;
+                width:30px;
+                height:30px;
                 display:flex;
                 align-items:flex-start;
                 justify-content:center;
