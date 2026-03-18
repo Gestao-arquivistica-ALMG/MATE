@@ -200,7 +200,7 @@ with c3:
                 text-decoration:none;
                 width:30px;
                 height:30px;
-                display:flex;
+                display:block;
                 align-items:flex-start;
                 justify-content:center;
                 border-radius:8px;
