@@ -686,7 +686,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            if c.startswith("PARECER"):
+            if linha.strip().startswith("PARECER"):
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
