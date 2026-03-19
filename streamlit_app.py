@@ -152,6 +152,11 @@ c1, c2 = st.columns([8, 8], gap="small")
 #        st.rerun()
 
 with c1:
+    st.markdown(
+        """
+        """,
+        unsafe_allow_html=True,
+    )
 
 with c2:
     st.markdown(
