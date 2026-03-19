@@ -2081,17 +2081,14 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 # coluna F (dropdown + ?)
                 reqs.append(_dv_req(5, row1, LISTA_DROPDOWN_5, strict=False))
                 reqs.append(_set_value_req(5, row1, "?"))
-                reqs.append(_cf_req(5, row1, bg_hex="#ffffff", fg_hex="#cc0000", index=0))
-
+                
                 # coluna G (dropdown + ?)
                 reqs.append(_dv_req(6, row1, LISTA_DROPDOWN_5, strict=False))
                 reqs.append(_set_value_req(6, row1, "?"))
-                reqs.append(_cf_req(6, row1, bg_hex="#ffffff", fg_hex="#cc0000", index=0))
-
+                
                 # coluna H (SÓ ? — SEM dropdown)
                 reqs.append(_set_value_req(7, row1, "?"))  # 7 = H
-                reqs.append(_cf_req(7, row1, bg_hex="#ffffff", fg_hex="#cc0000", index=0))
-
+                
                 # coluna I (checkbox) — só itens
                 for req in _checkbox_req(sheet_id, 8, row1, default_checked=False):  # 8 = I
                     reqs.append(req)
@@ -2184,8 +2181,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         end_items_row   = start_extra_row - 1
         extra_end_row   = start_extra_row + (len(extras) if extras else 0) - 1
 
-        # ITENS (OUTs): H=8, I=6
+        # ITENS (OUTs): F,G,H,I em vermelho fixo (sem condicional) | fontes: F,G,H=8 | I=6
         if end_items_row >= start_items_row:
+            reqs.append(req_text(sheet_id, f"F{start_items_row}:F{end_items_row}", "Inconsolata", 8, "#cc0000"))
+            reqs.append(req_text(sheet_id, f"G{start_items_row}:G{end_items_row}", "Inconsolata", 8, "#cc0000"))
             reqs.append(req_text(sheet_id, f"H{start_items_row}:H{end_items_row}", "Inconsolata", 8, "#cc0000"))
             reqs.append(req_text(sheet_id, f"I{start_items_row}:I{end_items_row}", "Inconsolata", 6, "#cc0000"))
 
