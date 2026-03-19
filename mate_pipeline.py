@@ -719,39 +719,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            # ---------------------------
-            # Estrutural: TRAMITAÇÃO
-            # ---------------------------
-            if c == C_TRAMITACAO:
-                in_tramitacao = True
-                sub_tramitacao = None
-                apresentacao_ativa = False
-                sub_apresentacao = None
-                ordem += 1
-                eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-                viu_corresp_cab = False
-                continue
-
-            # ---------------------------
-            # Marcadores RECEBIMENTO/APRESENTAÇÃO dentro de TRAMITAÇÃO
-            # ---------------------------
-            if in_tramitacao and (c == C_RECEBIMENTO or c == C_APRESENTACAO):
-                sub_tramitacao = c
-                apresentacao_ativa = (c == C_APRESENTACAO)
-                sub_apresentacao = None
-                ordem += 1
-                eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-                viu_corresp_cab = False
-                continue
-
-            # ---------------------------
-            # APRESENTAÇÃO fora de TRAMITAÇÃO: só marca contexto
-            # ---------------------------
-            if (not in_tramitacao) and (c == C_APRESENTACAO):
-                apresentacao_ativa = True
-                sub_apresentacao = None
-                continue
-
             # se aparecer um “corte natural” fora da lógica, zera apresentação
             if apresentacao_ativa and c in {C_TRAMITACAO, C_ATA, C_ATAS, C_MATERIA_ADM}:
                 apresentacao_ativa = False
