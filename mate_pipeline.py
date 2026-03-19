@@ -773,6 +773,14 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                         sub_apresentacao = tipo
                     continue
 
+                # gatilho REQ
+                if (k1.startswith(C_REQUERIMENTOS) or k2.startswith(C_REQUERIMENTOS) or k3.startswith(C_REQUERIMENTOS)):
+                    if sub_apresentacao != "REQ":
+                        ordem += 1
+                        eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao), True, top_flag))
+                        sub_apresentacao = "REQ"
+                    continue
+
             # ---------------------------
             # OUTs diretos (fora de APRESENTAÇÃO)
             # ---------------------------
