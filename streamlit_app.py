@@ -152,22 +152,6 @@ c1, c2 = st.columns([8, 8], gap="small")
 #        st.rerun()
 
 with c1:
-    st.markdown(
-        """
-        <div style="
-            display:flex;
-            align-items:center;
-            justify-content:flex-start;
-            height:56px;
-        ">
-        <a href="https://www.almg.gov.br/" target="_blank"
-            title="ALMG">
-        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-            style="height:40px; display:block; transform:translateY(-12px);"></a>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 with c2:
     st.markdown(
