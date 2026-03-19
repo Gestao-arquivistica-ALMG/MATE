@@ -579,52 +579,51 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             }
         }
 
-    # OUTs
+    # OUTS // TÍTULOS
+    C_ACORDO_LIDERES = "ACORDODELIDERES"
     C_LEITURA_COMUNICACOES = "LEITURADECOMUNICACOES"
     C_DESPACHO_REQUERIMENTOS = "DESPACHODEREQUERIMENTOS"
     C_DECISAO_PRESIDENCIA = "DECISAODAPRESIDENCIA"
-    C_ACORDO_LIDERES = "ACORDODELIDERES"
-    C_COMUNIC_PRESIDENCIA = "COMUNICACAODAPRESIDENCIA"
-    C_PROPOSICOES_NAO_RECEBIDAS = "PROPOSICOESNAORECEBIDAS"
-    C_PROPOSICOES_DE_LEI = "PROPOSICOESDELEI"
-    C_RESOLUCAO = "RESOLUCAO"
-
-    C_MANIFESTACAO = "MANIFESTACAO"
-    C_MANIFESTACOES = "MANIFESTACOES"
-    MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
-
-    C_REQ_APROV = "REQUERIMENTOAPROVADO"
-    C_REQS_APROV = "REQUERIMENTOSAPROVADOS"
-    REQ_APROV_KEYS = {C_REQ_APROV, C_REQS_APROV}
-
     C_ERRATA = "ERRATA"
     C_ERRATAS = "ERRATAS"
-    ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
-
+    C_COMUNIC_PRESIDENCIA = "COMUNICACAODAPRESIDENCIA"
+    C_MANIFESTACAO = "MANIFESTACAO"
+    C_MANIFESTACOES = "MANIFESTACOES"
+    C_PROPOSICOES_NAO_RECEBIDAS = "PROPOSICOESNAORECEBIDAS"
+    C_PROPOSICOES_DE_LEI = "PROPOSICOESDELEI"
     C_RECEB_EMENDAS_SUBST = "RECEBIMENTODEEMENDASESUBSTITUTIVO"
     C_RECEB_EMENDAS_SUBSTS = "RECEBIMENTODEEMENDASESUBSTITUTIVOS"
     C_RECEB_EMENDA = "RECEBIMENTODEEMENDA"
+    C_REQ_APROV = "REQUERIMENTOAPROVADO"
+    C_REQS_APROV = "REQUERIMENTOSAPROVADOS"
+    C_RESOLUCAO = "RESOLUCAO"
+
     EMENDAS_KEYS = {C_RECEB_EMENDAS_SUBST, C_RECEB_EMENDAS_SUBSTS, C_RECEB_EMENDA}
+    ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
+    MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
+    REQ_APROV_KEYS = {C_REQ_APROV, C_REQS_APROV}
 
-    # CONTEXTO (não geram saída)
-    C_TRAMITACAO = "TRAMITACAODEPROPOSICOES"
-    C_RECEBIMENTO = "RECEBIMENTODEPROPOSICOES"
-    C_APRESENTACAO = "APRESENTACAODEPROPOSICOES"
-    # CONTEXTO ESPECIAL
-    C_CORRESP_CAB = "CORRESPONDENCIADESPACHADAPELO1SECRETARIO"
-    C_OFICIOS = "OFICIOS"
-    # GATILHOS (dependem de contexto)
-    C_REQUERIMENTOS = "REQUERIMENTOS"
-    C_PROJETO_DE_LEI = "PROJETODELEI"
-    C_PROJETOS_DE_LEI = "PROJETOSDELEI"
-
-    # CUTS
+    # CUTS REAIS
     C_ATA = "ATA"
     C_ATAS = "ATAS"
     C_MATERIA_ADM = "MATERIAADMINISTRATIVA"
     C_QUESTAO_ORDEM = "QUESTAODEORDEM"
+    CUT_KEYS = {C_ATA, C_ATAS, C_MATERIA_ADM, C_QUESTAO_ORDEM}
 
-    CUT_KEYS = {C_TRAMITACAO, C_RECEBIMENTO, C_APRESENTACAO, C_ATA, C_ATAS, C_MATERIA_ADM, C_QUESTAO_ORDEM}
+    # CUTS DE CONTEXTO
+    C_TRAMITACAO = "TRAMITACAODEPROPOSICOES"
+    C_RECEBIMENTO = "RECEBIMENTODEPROPOSICOES"
+    C_APRESENTACAO = "APRESENTACAODEPROPOSICOES"
+    CONTEXT_CUT_KEYS = {C_TRAMITACAO, C_RECEBIMENTO, C_APRESENTACAO}
+
+    # CONTEXTO ESPECIAL
+    C_CORRESP_CAB = "CORRESPONDENCIADESPACHADAPELO1SECRETARIO"
+    C_OFICIOS = "OFICIOS"
+    
+    # GATILHOS (dependem de contexto)
+    C_REQUERIMENTOS = "REQUERIMENTOS"
+    C_PROJETO_DE_LEI = "PROJETODELEI"
+    C_PROJETOS_DE_LEI = "PROJETOSDELEI"
 
     def prefix_tramitacao(label: str, in_tramitacao: bool) -> str:
         if in_tramitacao:
@@ -671,13 +670,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             k2 = win_keys(linhas, li, 2)
             k3 = win_keys(linhas, li, 3)
 
-            # ---------------------------
-            # CUTs “reais”
-            # ---------------------------
+            # CUTs reais
             if c in CUT_KEYS:
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-                # encerra contextos
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
@@ -685,12 +681,40 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            if linha.strip().startswith("PARECER"):
+            if ln.strip().startswith("PARECER"):
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
+                sub_apresentacao = None
+                viu_corresp_cab = False
+                continue
+
+            # CUTs de contexto
+            if c == C_TRAMITACAO:
+                in_tramitacao = True
+                sub_tramitacao = None
+                apresentacao_ativa = False
+                sub_apresentacao = None
+                ordem += 1
+                eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
+                viu_corresp_cab = False
+                continue
+
+            if in_tramitacao and (c == C_RECEBIMENTO or c == C_APRESENTACAO):
+                sub_tramitacao = c
+                apresentacao_ativa = (c == C_APRESENTACAO)
+                sub_apresentacao = None
+                ordem += 1
+                eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
+                viu_corresp_cab = False
+                continue
+
+            if (not in_tramitacao) and (c == C_APRESENTACAO):
+                ordem += 1
+                eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
+                apresentacao_ativa = True
                 sub_apresentacao = None
                 viu_corresp_cab = False
                 continue
