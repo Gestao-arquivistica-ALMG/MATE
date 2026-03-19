@@ -341,7 +341,7 @@ if limpar:
 if rodar:
     entrada_clean = (entrada or "").strip()
     if not entrada_clean:
-        st.warning("Informe uma data, palavra ou URL.")
+        st.warning("Informe uma data válida.")
         st.stop()
 
     # --- VALIDAÇÃO AQUI ---
