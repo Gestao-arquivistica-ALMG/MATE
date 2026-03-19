@@ -622,9 +622,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_OFICIOS = "OFICIOS"
     
     # GATILHOS (dependem de contexto)
-    C_REQUERIMENTOS = "REQUERIMENTOS"
+    C_PEC = "PROPOSTADEEMENDAACONSTITUICAO"
     C_PROJETO_DE_LEI = "PROJETODELEI"
     C_PROJETOS_DE_LEI = "PROJETOSDELEI"
+    C_REQUERIMENTOS = "REQUERIMENTOS"
 
     def prefix_tramitacao(label: str, in_tramitacao: bool) -> str:
         if in_tramitacao:
@@ -635,6 +636,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     def label_apresentacao(tipo_bloco: str, in_tramitacao: bool) -> str:
         if tipo_bloco == "PL":
             base = "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI"
+        elif tipo_bloco == "PEC":
+            base = "APRESENTAÇÃO DE PROPOSIÇÕES: PROPOSTA DE EMENDA À CONSTITUIÇÃO"
         else:
             base = "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS"
         return prefix_tramitacao(base, in_tramitacao)
@@ -752,20 +755,22 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 if (
                     k1.startswith(C_PROJETO_DE_LEI) or k1.startswith(C_PROJETOS_DE_LEI) or
                     k2.startswith(C_PROJETO_DE_LEI) or k2.startswith(C_PROJETOS_DE_LEI) or
-                    k3.startswith(C_PROJETO_DE_LEI) or k3.startswith(C_PROJETOS_DE_LEI)
+                    k3.startswith(C_PROJETO_DE_LEI) or k3.startswith(C_PROJETOS_DE_LEI) or
+                    k1.startswith(C_PEC) or k2.startswith(C_PEC) or k3.startswith(C_PEC)
                 ):
-                    if sub_apresentacao != "PL":
-                        ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", label_apresentacao("PL", in_tramitacao), True, top_flag))
-                        sub_apresentacao = "PL"
-                    continue
+                    if (
+                        k1.startswith(C_PEC) or
+                        k2.startswith(C_PEC) or
+                        k3.startswith(C_PEC)
+                    ):
+                        tipo = "PEC"
+                    else:
+                        tipo = "PL"
 
-                # gatilho REQ
-                if (k1.startswith(C_REQUERIMENTOS) or k2.startswith(C_REQUERIMENTOS) or k3.startswith(C_REQUERIMENTOS)):
-                    if sub_apresentacao != "REQ":
+                    if sub_apresentacao != tipo:
                         ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao), True, top_flag))
-                        sub_apresentacao = "REQ"
+                        eventos.append((pag_num, ordem, "OUT", label_apresentacao(tipo, in_tramitacao), True, top_flag))
+                        sub_apresentacao = tipo
                     continue
 
             # ---------------------------
