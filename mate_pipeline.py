@@ -3377,7 +3377,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     INDIRECT("C"&ROW())="";
     LEFT(INDIRECT("C"&ROW());6)="DIÁRIO";
     LEFT(INDIRECT("C"&ROW());8)="REUNIÕES";
-    INDIRECT("C"&ROW())="REQUERIMENTOS DE COMISSÃO";
+    INDIRECT("C"&ROW())="REQUERIMENTOS DE COMISSÕES";
     INDIRECT("C"&ROW())="LANÇAMENTOS DE TRAMITAÇÃO";
     INDIRECT("C"&ROW())="CADASTRO DE E-MAILS";
     INDIRECT("C"&ROW())="OFÍCIOS DA SECRETARIA-GERAL DA MESA";
