@@ -154,14 +154,14 @@ st.markdown(
 target="_blank"
 title="Silegis"
 class="header-icon-link silegis-link">
-<img src="https://silegis.almg.gov.br/silegismg/favicon.ico" class="header-icon-img">
+<img src="https://silegis.almg.gov.br/silegismg/favicon.ico" class="header-icon-silegis">
 </a>
 
 <a href="https://webmail.almg.gov.br/"
 target="_blank"
 title="Webmail"
 class="header-icon-link webmail-link">
-<img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" class="header-icon-img">
+<img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" class="header-icon-webmail">
 </a>
 </div>
 </div>""",
@@ -217,9 +217,16 @@ width:30px;
 height:30px;
 }
 
-.header-icon-img{
-width:100%;
-height:100%;
+.header-icon-silegis{
+width:26px;
+height:26px;
+display:block;
+object-fit:contain;
+}
+
+.header-icon-webmail{
+width:30px;
+height:30px;
 display:block;
 object-fit:contain;
 }
