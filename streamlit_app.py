@@ -165,7 +165,7 @@ with c2:
             display:flex;
             align-items:center;
             justify-content:flex-start;
-            height:5px;
+            height:60px;
         ">
         <a href="https://www.almg.gov.br/" target="_blank"
             title="ALMG">
@@ -176,7 +176,7 @@ with c2:
             display:flex;
             align-items:flex-start;
             justify-content:flex-end;
-            height:56px;
+            height:60px;
             gap:8px;
         ">
           <!--
