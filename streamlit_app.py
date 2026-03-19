@@ -163,7 +163,7 @@ with c1:
         <a href="https://www.almg.gov.br/" target="_blank"
             title="ALMG">
         <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-            style="height:40px; display:block; transform:translateY(-12px);">
+            style="height:40px; display:block; transform:translateY(-12px);"></a>
         </div>
         """,
         unsafe_allow_html=True,
@@ -172,6 +172,17 @@ with c1:
 with c2:
     st.markdown(
         """
+        <div style="
+            display:flex;
+            align-items:center;
+            justify-content:flex-start;
+            height:56px;
+        ">
+        <a href="https://www.almg.gov.br/" target="_blank"
+            title="ALMG">
+        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+            style="height:40px; display:block; transform:translateY(-12px);"></a>
+        </div>
         <div style="
             display:flex;
             align-items:flex-start;
@@ -194,10 +205,6 @@ with c2:
              "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"
                     style="height:24px; width:auto; display:block;"></a>
             -->
-        <a href="https://www.almg.gov.br/" target="_blank" title="ALMG">
-        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-            style="height:40px; display:block; align-items:center; justify-content:flex-start; transform:translateY(-12px);">
-        </a>
         <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
             title="Silegis"
             style="
