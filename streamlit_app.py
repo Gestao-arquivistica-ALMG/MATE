@@ -163,9 +163,9 @@ with c2:
         """
         <div style="
             display:flex;
-            align-items:flex-start;
+            align-items:center;
             justify-content:flex-start;
-            height:56px;
+            height:5px;
         ">
         <a href="https://www.almg.gov.br/" target="_blank"
             title="ALMG">
