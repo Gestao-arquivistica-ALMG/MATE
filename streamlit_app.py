@@ -163,7 +163,7 @@ with c2:
         """
         <div style="
             display:flex;
-            align-items:center;
+            align-items:flex-start;
             justify-content:flex-start;
             height:56px;
         ">
