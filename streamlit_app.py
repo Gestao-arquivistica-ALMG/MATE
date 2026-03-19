@@ -229,7 +229,7 @@ width:30px;
 height:30px;
 display:block;
 object-fit:contain;
-transform:translateY(8px);
+transform:translateY(9px);
 }
 
 .header-icon-link:hover{
