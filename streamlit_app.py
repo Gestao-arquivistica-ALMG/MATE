@@ -194,9 +194,13 @@ with c2:
              "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"
                     style="height:24px; width:auto; display:block;"></a>
             -->
-          <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
-             title="Silegis"
-             style="
+        <a href="https://www.almg.gov.br/" target="_blank" title="ALMG">
+        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+            style="height:40px; display:block; transform:translateY(-12px);">
+        </a>
+        <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
+            title="Silegis"
+            style="
                 text-decoration:none;
                 width:26px;
                 height:26px;
@@ -207,9 +211,9 @@ with c2:
                 font-size:22px;
                 transform:translateY(-4px);
              "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico"></a>
-          <a href="https://webmail.almg.gov.br/" target="_blank"
-             title="Webmail"
-             style="
+        <a href="https://webmail.almg.gov.br/" target="_blank"
+            title="Webmail"
+            style="
                 text-decoration:none;
                 width:30px;
                 height:30px;
