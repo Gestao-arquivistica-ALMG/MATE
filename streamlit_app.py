@@ -179,21 +179,6 @@ with c2:
             height:60px;
             gap:8px;
         ">
-          <!--
-          <a href="https://intra.almg.gov.br/" target="_blank"
-             title="intraALMG"
-             style="
-                text-decoration:none;
-                width:100px;
-                height:100px;
-                display:flex;
-                align-items:flex-start;
-                justify-content:center;
-                border-radius:8px;
-                font-size:22px;
-             "><img src="https://intra.almg.gov.br/.content/imagens/logo-intra.svg"
-                    style="height:24px; width:auto; display:block;"></a>
-            -->
         <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
             title="Silegis"
             style="
