@@ -1974,29 +1974,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             }
 
         def _cf_req(col0: int, row1: int, bg_hex: str, fg_hex: str, index: int = 0):
-            """Conditional formatting: pinta a célula quando NÃO estiver vazia (vale p/ qualquer opção do dropdown)."""
-            return {
-                "addConditionalFormatRule": {
-                    "rule": {
-                        "ranges": [{
-                            "sheetId": sheet_id,
-                            "startRowIndex": row1 - 1,
-                            "endRowIndex": row1,
-                            "startColumnIndex": col0,
-                            "endColumnIndex": col0 + 1,
-                        }],
-                        "booleanRule": {
-                            "condition": {"type": "NOT_BLANK"},
-                            "format": {
-                                "backgroundColor": _hex_to_rgb01(bg_hex),
-                                "textFormat": {"foregroundColor": _hex_to_rgb01(fg_hex)},
-                            },
-                        },
-                    },
-                    "index": index,
-                }
-            }
-
+            return None
+            
         def _cf_left_of_c_req(row1: int, bg_hex: str, fg_hex: str, index: int = 0):
             """
             Pinta a célula B{row1} (à esquerda da coluna C) com as mesmas cores do dropdown da coluna C.
