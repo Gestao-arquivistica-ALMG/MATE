@@ -2790,7 +2790,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             "index": 3}})
 
         reqs.append({"addConditionalFormatRule": {"rule": {"ranges": [{"sheetId": sheet_id, "startRowIndex": 5, "endRowIndex": ws.row_count, "startColumnIndex": 0, "endColumnIndex": 25}],
-            "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^REQUERIMENTOS DE COMISSÃO")'}]},
+            "booleanRule": {"condition": {"type": "CUSTOM_FORMULA", "values": [{"userEnteredValue": '=REGEXMATCH($C6;"^REQUERIMENTOS DE COMISSÕES")'}]},
                 "format": {"backgroundColor": {"red": 255/255, "green": 153/255, "blue": 0/255}, "textFormat": {"foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}, "bold": True}}}},
             "index": 4}})
 
