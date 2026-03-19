@@ -202,9 +202,12 @@ flex:0 0 auto;
 }
 
 .header-icon-link{
-display:block;
-text-decoration:none;
-line-height:0;
+display:flex;
+align-items:center;
+justify-content:center;
+width:28px;
+height:28px;
+border-radius:6px;
 }
 
 .silegis-link{
@@ -218,9 +221,8 @@ height:30px;
 }
 
 .header-icon-img{
-width:100%;
-height:100%;
-display:block;
+max-width:70%;
+max-height:70%;
 object-fit:contain;
 }
 
