@@ -143,114 +143,121 @@ button#close_menu_btn *{ display:none !important; }
 if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
-# "cabeçalho" feito com layout Streamlit (sem HTML clicável)
-c1, c2 = st.columns([1, 14], gap="small")
+st.markdown(
+    """
+    <div class="header-almg">
+        <a href="https://www.almg.gov.br/" target="_blank" title="ALMG" class="header-left">
+            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
+                 class="logo-almg">
+        </a>
 
-#with c1:
-#    if st.button("☰", key="btn_menu_toggle", use_container_width=True):
-#        st.session_state.menu_open = not st.session_state.menu_open
-#        st.rerun()
+        <div class="header-right">
+            <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
+               target="_blank"
+               title="Silegis"
+               class="header-icon-link silegis-link">
+                <img src="https://silegis.almg.gov.br/silegismg/favicon.ico" class="header-icon-img">
+            </a>
 
-with c1:
-    st.markdown(
-        """
-        """,
-        unsafe_allow_html=True,
-    )
-
-with c2:
-    st.markdown(
-        """
-        <div style="
-            display:flex;
-            align-items:center;
-            justify-content:flex-start;
-            height:60px;
-        ">
-        <a href="https://www.almg.gov.br/" target="_blank"
-            title="ALMG">
-        <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-            style="height:40px; display:block; transform:translateY(-12px);"></a>
+            <a href="https://webmail.almg.gov.br/"
+               target="_blank"
+               title="Webmail"
+               class="header-icon-link webmail-link">
+                <img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo="
+                     class="header-icon-img">
+            </a>
         </div>
-        <div style="
-            display:flex;
-            align-items:flex-start;
-            justify-content:flex-end;
-            height:60px;
-            gap:8px;
-        ">
-        <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
-            title="Silegis"
-            style="
-                text-decoration:none;
-                width:26px;
-                height:26px;
-                display:block;
-                align-items:flex-start;
-                justify-content:center;
-                border-radius:8px;
-                font-size:22px;
-                transform:translateY(-4px);
-             "><img src="https://silegis.almg.gov.br/silegismg/favicon.ico"></a>
-        <a href="https://webmail.almg.gov.br/" target="_blank"
-            title="Webmail"
-            style="
-                text-decoration:none;
-                width:30px;
-                height:30px;
-                display:block;
-                align-items:flex-start;
-                justify-content:center;
-                border-radius:8px;
-                font-size:22px;
-                transform:translateY(-4px);
-             "><img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo="></a>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-st.markdown("""
-<style>
-div[data-testid="stHorizontalBlock"]{
-  background:white;
-  padding:10px 18px;
-  border-radius:14px;
-  align-items:center !important;
-}
+st.markdown(
+    """
+    <style>
+    .header-almg{
+        display:flex;
+        align-items:flex-start;
+        width:100%;
+        background:white;
+        padding:10px 18px;
+        border-radius:14px;
+        box-sizing:border-box;
+        gap:12px;
+    }
 
-div[data-testid="stHorizontalBlock"] > div{
-  display:flex;
-  align-items:center;
-}
+    .header-left{
+        display:block;
+        text-decoration:none;
+        flex:0 0 auto;
+    }
 
-/* botão menu */
-button[kind="secondary"]{
-  height:28px !important;
-  min-height:28px !important;
-  line-height:1 !important;
-  border-radius:8px !important;
-  border:1px solid #d0d0d0 !important;
-  background:#f7f7f7 !important;
-  color:#666666 !important;
-  font-size:20px !important;
-  font-weight:500 !important;
-  padding:0 !important;
-  box-shadow:none !important;
-}
+    .logo-almg{
+        height:40px;
+        display:block;
+    }
 
-button[kind="secondary"]:hover{
-  border:1px solid #cc0000 !important;
-  color:#cc0000 !important;
-  background:#fff5f5 !important;
-}
+    .header-right{
+        margin-left:auto;
+        display:flex;
+        align-items:flex-start;
+        justify-content:flex-end;
+        gap:8px;
+        flex:0 0 auto;
+    }
 
-/* links dos ícones */
-a:hover{
-  background:#f5f5f5;
-}
-</style>
-""", unsafe_allow_html=True)
+    .header-icon-link{
+        display:block;
+        text-decoration:none;
+        line-height:0;
+    }
+
+    .silegis-link{
+        width:26px;
+        height:26px;
+    }
+
+    .webmail-link{
+        width:30px;
+        height:30px;
+    }
+
+    .header-icon-img{
+        width:100%;
+        height:100%;
+        display:block;
+        object-fit:contain;
+    }
+
+    .header-icon-link:hover{
+        background:#f5f5f5;
+        border-radius:8px;
+    }
+
+    @media (max-width: 640px){
+        .header-almg{
+            padding:8px 12px;
+            gap:10px;
+        }
+
+        .logo-almg{
+            height:30px;
+        }
+
+        .silegis-link{
+            width:22px;
+            height:22px;
+        }
+
+        .webmail-link{
+            width:24px;
+            height:24px;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ================= MENU (OVERLAY NO CORPO) =================
 #if st.session_state.get("menu_open", False):
