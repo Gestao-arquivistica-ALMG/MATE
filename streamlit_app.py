@@ -196,7 +196,7 @@ with c2:
             -->
         <a href="https://www.almg.gov.br/" target="_blank" title="ALMG">
         <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-            style="height:40px; display:block; transform:translateY(-12px);">
+            style="height:40px; display:block; align-items:center; justify-content:flex-start; transform:translateY(-12px);">
         </a>
         <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank"
             title="Silegis"
