@@ -1481,7 +1481,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             ["", ""],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REUNIÕES DE COMISSÕES")'],
             ["", ""],
-            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÃO")'],
+            ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/"; "REQUERIMENTOS DE COMISSÕES")'],
             ["-", "DROPDOWN_8"],
             ['=TEXT(A5;"dd/mm/yyyy")', '=HYPERLINK("https://silegis.almg.gov.br/silegismg/#/processos"; "LANÇAMENTOS DE TRAMITAÇÃO")'],
             ["-", "DROPDOWN_2"],   # <- linha do dropdown 2 (coluna C) + dropdown 3 (coluna D)
@@ -1609,7 +1609,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         MERGE_TITLES = (
             "REUNIÕES DE PLENÁRIO",
             "REUNIÕES DE COMISSÕES",
-            "REQUERIMENTOS DE COMISSÃO",
+            "REQUERIMENTOS DE COMISSÕES",
             "LANÇAMENTOS DE TRAMITAÇÃO",
             "CADASTRO DE E-MAILS",
         )
@@ -2134,7 +2134,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 "DIÁRIO DO LEGISLATIVO",
                 "REUNIÕES DE PLENÁRIO",
                 "REUNIÕES DE COMISSÕES",
-                "REQUERIMENTOS DE COMISSÃO",
+                "REQUERIMENTOS DE COMISSÕES",
                 "LANÇAMENTOS DE TRAMITAÇÃO",
                 "CADASTRO DE E-MAILS",
                 "IMPLANTAÇÃO DE TEXTOS",
@@ -2905,7 +2905,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     INDIRECT("C"&ROW())="REUNIÕES DE COMISSÕES";HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio="&TO_TEXT(INDIRECT("B"&ROW()))&"&dataFim="&TO_TEXT(INDIRECT("B"&ROW()))&"&pesquisa=todas&ordem=1&tp=30";IMAGE("https://www.almg.gov.br/favicon.ico";4;15;15));
 
-    INDIRECT("C"&ROW())="REQUERIMENTOS DE COMISSÃO";HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio="&TO_TEXT($V$2)&"&dataFim="&TO_TEXT($V$2)&"&pesquisa=todas&ordem=1&tp=30";IMAGE("https://www.almg.gov.br/favicon.ico";4;15;15));
+    INDIRECT("C"&ROW())="REQUERIMENTOS DE COMISSÕES";HYPERLINK("https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/?pesquisou=true&q=&tpComissao=&idComissao=&dataInicio="&TO_TEXT($V$2)&"&dataFim="&TO_TEXT($V$2)&"&pesquisa=todas&ordem=1&tp=30";IMAGE("https://www.almg.gov.br/favicon.ico";4;15;15));
     INDIRECT("C"&ROW())="OFÍCIOS DA SECRETARIA-GERAL DA MESA";HYPERLINK("https://stl.almg.gov.br/";IMAGE("https://www.almg.gov.br/favicon.ico";4;15;15));
     INDIRECT("C"&ROW())="LANÇAMENTOS DE PRECLUSÃO DE PRAZO";HYPERLINK("https://webmail.almg.gov.br/";IMAGE("https://www.almg.gov.br/favicon.ico";4;15;15));
     INDIRECT("C"&ROW())="LANÇAMENTOS DE TRAMITAÇÃO";HYPERLINK("https://www.almg.gov.br/";IMAGE("https://www.almg.gov.br/favicon.ico";4;15;15));
