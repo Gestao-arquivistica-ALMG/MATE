@@ -144,118 +144,112 @@ if "menu_open" not in st.session_state:
     st.session_state.menu_open = False
 
 st.markdown(
-    """
-    <div class="header-almg">
-        <a href="https://www.almg.gov.br/" target="_blank" title="ALMG" class="header-left">
-            <img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg"
-                 class="logo-almg">
-        </a>
+"""<div class="header-almg">
+<a href="https://www.almg.gov.br/" target="_blank" title="ALMG" class="header-left">
+<img src="https://www.almg.gov.br/system/modules/br.gov.almg.portal/resources/img/logo/logo.svg" class="logo-almg">
+</a>
 
-        <div class="header-right">
-            <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
-               target="_blank"
-               title="Silegis"
-               class="header-icon-link silegis-link">
-                <img src="https://silegis.almg.gov.br/silegismg/favicon.ico" class="header-icon-img">
-            </a>
+<div class="header-right">
+<a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos"
+target="_blank"
+title="Silegis"
+class="header-icon-link silegis-link">
+<img src="https://silegis.almg.gov.br/silegismg/favicon.ico" class="header-icon-img">
+</a>
 
-            <a href="https://webmail.almg.gov.br/"
-               target="_blank"
-               title="Webmail"
-               class="header-icon-link webmail-link">
-                <img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo="
-                     class="header-icon-img">
-            </a>
-        </div>
-    </div>
-    """,
+<a href="https://webmail.almg.gov.br/"
+target="_blank"
+title="Webmail"
+class="header-icon-link webmail-link">
+<img src="https://media.istockphoto.com/id/1162427212/pt/vetorial/email-icon-flat-red-round-button-vector-illustration.jpg?s=612x612&w=0&k=20&c=hQI86uzzJFZukdsj5YVW0cV0QD1ceyj7ybOGlWVHiGo=" class="header-icon-img">
+</a>
+</div>
+</div>""",
     unsafe_allow_html=True,
 )
 
 st.markdown(
-    """
-    <style>
-    .header-almg{
-        display:flex;
-        align-items:flex-start;
-        width:100%;
-        background:white;
-        padding:10px 18px;
-        border-radius:14px;
-        box-sizing:border-box;
-        gap:12px;
-    }
+"""<style>
+.header-almg{
+display:flex;
+align-items:center;
+width:100%;
+background:white;
+padding:10px 18px;
+border-radius:14px;
+box-sizing:border-box;
+gap:12px;
+}
 
-    .header-left{
-        display:block;
-        text-decoration:none;
-        flex:0 0 auto;
-    }
+.header-left{
+display:block;
+text-decoration:none;
+flex:0 0 auto;
+}
 
-    .logo-almg{
-        height:40px;
-        display:block;
-    }
+.logo-almg{
+height:40px;
+display:block;
+}
 
-    .header-right{
-        margin-left:auto;
-        display:flex;
-        align-items:flex-start;
-        justify-content:flex-end;
-        gap:8px;
-        flex:0 0 auto;
-    }
+.header-right{
+margin-left:auto;
+display:flex;
+align-items:center;
+justify-content:flex-end;
+gap:8px;
+flex:0 0 auto;
+}
 
-    .header-icon-link{
-        display:block;
-        text-decoration:none;
-        line-height:0;
-    }
+.header-icon-link{
+display:block;
+text-decoration:none;
+line-height:0;
+}
 
-    .silegis-link{
-        width:26px;
-        height:26px;
-    }
+.silegis-link{
+width:26px;
+height:26px;
+}
 
-    .webmail-link{
-        width:30px;
-        height:30px;
-    }
+.webmail-link{
+width:30px;
+height:30px;
+}
 
-    .header-icon-img{
-        width:100%;
-        height:100%;
-        display:block;
-        object-fit:contain;
-    }
+.header-icon-img{
+width:100%;
+height:100%;
+display:block;
+object-fit:contain;
+}
 
-    .header-icon-link:hover{
-        background:#f5f5f5;
-        border-radius:8px;
-    }
+.header-icon-link:hover{
+background:#f5f5f5;
+border-radius:8px;
+}
 
-    @media (max-width: 640px){
-        .header-almg{
-            padding:8px 12px;
-            gap:10px;
-        }
+@media (max-width: 640px){
+.header-almg{
+padding:8px 12px;
+gap:10px;
+}
 
-        .logo-almg{
-            height:30px;
-        }
+.logo-almg{
+height:30px;
+}
 
-        .silegis-link{
-            width:22px;
-            height:22px;
-        }
+.silegis-link{
+width:22px;
+height:22px;
+}
 
-        .webmail-link{
-            width:24px;
-            height:24px;
-        }
-    }
-    </style>
-    """,
+.webmail-link{
+width:24px;
+height:24px;
+}
+}
+</style>""",
     unsafe_allow_html=True,
 )
 
