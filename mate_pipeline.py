@@ -680,7 +680,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             k3 = win_keys(linhas, li, 3)
 
             # CUTs reais
-            if c in CUT_KEYS:
+            if c in CUT_KEYS and not in_tramitacao:
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
@@ -690,7 +690,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            if ln.strip().startswith("PARECER"):
+            if ln.strip().startswith("PARECER") and not in_tramitacao:
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
@@ -741,7 +741,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # OUT contextual: CORRESPONDÊNCIA: OFÍCIOS
-            if viu_corresp_cab and c == C_OFICIOS:
+            if viu_corresp_cab and c == C_OFICIOS and not in_tramitacao:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
                 viu_corresp_cab = False
@@ -791,7 +791,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             # ---------------------------
 
             # OFÍCIOS (comum)
-            if c == C_OFICIOS:
+            if c == C_OFICIOS and not in_tramitacao:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "OFÍCIOS", True, top_flag))
                 in_tramitacao = False
