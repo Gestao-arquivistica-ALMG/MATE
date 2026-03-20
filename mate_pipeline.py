@@ -651,10 +651,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         base = f"APRESENTAÇÃO DE PROPOSIÇÕES: {miolo}"
         return prefix_tramitacao(base, in_tramitacao)
 
-RE_ATA_COMISSAO = re.compile(
-    r"ATA DA \d+ª REUNIÃO.*?COMISSÃO DE (.+?)\s+NA .*?EM (\d{1,2})/(\d{1,2})/(\d{4})",
-    re.IGNORECASE
-)
+    RE_ATA_COMISSAO = re.compile(
+        r"ATA DA \d+ª REUNIÃO.*?COMISSÃO DE (.+?)\s+NA .*?EM (\d{1,2})/(\d{1,2})/(\d{4})",
+        re.IGNORECASE
+    )
 
 COMISSAO_SIGLA = {
     "PARTICIPAÇÃO POPULAR": "PPO",
