@@ -693,7 +693,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             if ln.strip().startswith("PARECER"):
                 if in_tramitacao:
                     ordem += 1
-                    eventos.append((pag_num, ordem, "OUT", prefix_tramitacao(ln.strip(), in_tramitacao), True, top_flag))
+                    eventos.append((pag_num, ordem, "OUT", "TRAMITAÇÃO DE PROPOSIÇÕES: PARECER PARA", True, top_flag))
                     continue
                 else:
                     ordem += 1
