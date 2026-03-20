@@ -218,15 +218,15 @@ height:30px;
 }
 
 .header-icon-silegis{
-width:26px;
-height:26px;
+width:31px;
+height:31px;
 display:block;
 object-fit:contain;
 }
 
 .header-icon-webmail{
-width:30px;
-height:30px;
+width:35px;
+height:35px;
 display:block;
 object-fit:contain;
 transform:translateY(7px);
