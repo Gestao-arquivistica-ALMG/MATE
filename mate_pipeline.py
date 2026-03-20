@@ -682,7 +682,7 @@ def extrai_rqc_label(txt: str):
     data_fmt = normaliza_data_curta(m.group(2), m.group(3), m.group(4))
     return f"REQUERIMENTOS DE COMISSÃO: {sigla}, {data_fmt}"
 
-    reader = PdfReader(pdf_path)
+reader = PdfReader(pdf_path)
 
     # eventos: (pag, ordem, tipo, label_out, fim_sobreposto, top_flag)
     eventos = []
