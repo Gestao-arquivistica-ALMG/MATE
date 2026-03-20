@@ -690,15 +690,20 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            if ln.strip().startswith("PARECER") and not in_tramitacao:
-                ordem += 1
-                eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-                in_tramitacao = False
-                sub_tramitacao = None
-                apresentacao_ativa = False
-                sub_apresentacao = None
-                viu_corresp_cab = False
-                continue
+            if ln.strip().startswith("PARECER"):
+                if in_tramitacao:
+                    ordem += 1
+                    eventos.append((pag_num, ordem, "OUT", prefix_tramitacao(ln.strip(), in_tramitacao), True, top_flag))
+                    continue
+                else:
+                    ordem += 1
+                    eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
+                    in_tramitacao = False
+                    sub_tramitacao = None
+                    apresentacao_ativa = False
+                    sub_apresentacao = None
+                    viu_corresp_cab = False
+                    continue
 
             # CUTs de contexto
             if c == C_TRAMITACAO:
