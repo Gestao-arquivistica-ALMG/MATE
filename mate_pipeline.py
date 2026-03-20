@@ -725,7 +725,6 @@ reader = PdfReader(pdf_path)
             w3_up = w3.upper()
 
             rqc_label = extrai_rqc_label(w1) or extrai_rqc_label(w2) or extrai_rqc_label(w3)
-            
             if rqc_label:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", rqc_label, True, top_flag))
