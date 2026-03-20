@@ -584,6 +584,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_LEITURA_COMUNICACOES = "LEITURADECOMUNICACOES"
     C_DESPACHO_REQUERIMENTOS = "DESPACHODEREQUERIMENTOS"
     C_DECISAO_PRESIDENCIA = "DECISAODAPRESIDENCIA"
+    C_DECISAO_DE_PRESIDENCIA = "DECISAODEPRESIDENCIA"
     C_ERRATA = "ERRATA"
     C_ERRATAS = "ERRATAS"
     C_COMUNIC_PRESIDENCIA = "COMUNICACAODAPRESIDENCIA"
@@ -598,6 +599,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_REQS_APROV = "REQUERIMENTOSAPROVADOS"
     C_RESOLUCAO = "RESOLUCAO"
 
+    DECISAO_KEYS = {C_DECISAO_PRESIDENCIA, C_DECISAO_DE_PRESIDENCIA,}
     EMENDAS_KEYS = {C_RECEB_EMENDAS_SUBST, C_RECEB_EMENDAS_SUBSTS, C_RECEB_EMENDA}
     ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
     MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
@@ -946,7 +948,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # DECISÃO DA PRESIDÊNCIA
-            if c == C_DECISAO_PRESIDENCIA:
+            if c in DECISAO_KEYS:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "DECISÃO DA PRESIDÊNCIA", True, top_flag))
                 in_tramitacao = False
