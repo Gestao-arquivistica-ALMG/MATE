@@ -438,9 +438,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     print("Data:", diario)
 
-    # ================================================================================================
-    # ---- 3) Extração e detecção de títulos ----
-    # ================================================================================================
+    # ====================================================================================================================================================================================================
+    # ============================================================================================= EXTRACTION =============================================================================================
+    # ====================================================================================================================================================================================================
+
 
     def limpa_linha(s: str) -> str:
         s = s.replace("\u00a0", " ")
@@ -650,47 +651,38 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         base = f"APRESENTAÇÃO DE PROPOSIÇÕES: {miolo}"
         return prefix_tramitacao(base, in_tramitacao)
 
-        RE_ATA_COMISSAO = re.compile(
-            r"ATA DA \d+ª REUNIÃO (?:ORDINÁRIA|EXTRAORDINÁRIA) DA COMISSÃO DE (.+?) "
-            r"NA \d+ª SESSÃO LEGISLATIVA ORDINÁRIA DA \d+ª LEGISLATURA, EM (\d{1,2})/(\d{1,2})/(\d{4})",
-            re.IGNORECASE
-        )
+RE_ATA_COMISSAO = re.compile(
+    r"ATA DA \d+ª REUNIÃO.*?COMISSÃO DE (.+?).*?EM (\d{1,2})/(\d{1,2})/(\d{4})",
+    re.IGNORECASE
+)
 
-        COMISSAO_SIGLA = {
-            "PARTICIPAÇÃO POPULAR": "PPO",
-            "TRANSPORTE, COMUNICAÇÃO E OBRAS PÚBLICAS": "TPA",
-            "ADMINISTRAÇÃO PÚBLICA": "APU",
-            "MINAS E ENERGIA": "MEN",
-            "SAÚDE": "SAU",
-            "CONSTITUIÇÃO E JUSTIÇA": "CCJ",
-            "SEGURANÇA PÚBLICA": "SPU",
-        }
+COMISSAO_SIGLA = {
+    "PARTICIPAÇÃO POPULAR": "PPO",
+    "TRANSPORTE, COMUNICAÇÃO E OBRAS PÚBLICAS": "TPA",
+    "ADMINISTRAÇÃO PÚBLICA": "APU",
+    "MINAS E ENERGIA": "MEN",
+    "SAÚDE": "SAU",
+    "CONSTITUIÇÃO E JUSTIÇA": "CCJ",
+    "SEGURANÇA PÚBLICA": "SPU",
+}
 
-        def normaliza_data_curta(d: str, m: str, a: str) -> str:
-            return f"{int(d):02d}/{int(m):02d}/{int(a):04d}"
+def normaliza_data_curta(d: str, m: str, a: str) -> str:
+    return f"{int(d):02d}/{int(m):02d}/{int(a):04d}"
 
-        def extrai_ata_comissao_label(txt: str) -> str | None:
-            m = RE_ATA_COMISSAO.search((txt or "").strip())
-            if not m:
-                return None
-            nome_comissao = m.group(1).strip().upper()
-            sigla = COMISSAO_SIGLA.get(nome_comissao)
-            if not sigla:
-                return None
-            data_fmt = normaliza_data_curta(m.group(2), m.group(3), m.group(4))
-            return f"REQUERIMENTOS DE COMISSÃO: {sigla}, {data_fmt}"
+def extrai_rqc_label(txt: str):
+    m = RE_ATA_COMISSAO.search((txt or "").strip())
+    if not m:
+        return None
 
-        def eh_gatilho_req_comissao(txt: str) -> bool:
-            t = (txt or "").upper()
-            return (
-                "SÃO RECEBIDOS PELA PRESIDÊNCIA" in t and "REQUERIMENTOS" in t
-            ) or (
-                "SÃO APROVADOS OS REQUERIMENTOS" in t
-            ) or (
-                "APROVADOS OS SEGUINTES REQUERIMENTOS" in t
-            )
+    nome_comissao = m.group(1).strip().upper()
+    sigla = COMISSAO_SIGLA.get(nome_comissao)
+    if not sigla:
+        return None
 
-    reader = PdfReader(pdf_path)
+    data_fmt = normaliza_data_curta(m.group(2), m.group(3), m.group(4))
+    return f"REQUERIMENTOS DE COMISSÃO: {sigla}, {data_fmt}"
+
+reader = PdfReader(pdf_path)
 
     # eventos: (pag, ordem, tipo, label_out, fim_sobreposto, top_flag)
     eventos = []
@@ -702,8 +694,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     apresentacao_ativa = False     # True se estamos em APRESENTAÇÃO
     sub_apresentacao = None        # None | "PL" | "REQ"
     viu_corresp_cab = False
-    ata_comissao_pendente = None   # (pag_num, top_flag, label_out)
-    req_comissao_emitido = False
     pegou_leis = False
     MAX_PAG_LEIS = 40
 
@@ -734,10 +724,16 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             w2_up = w2.upper()
             w3_up = w3.upper()
 
-            ata_label = extrai_ata_comissao_label(w1) or extrai_ata_comissao_label(w2) or extrai_ata_comissao_label(w3)
-            if ata_label:
-                ata_comissao_pendente = (pag_num, top_flag, ata_label)
-                req_comissao_emitido = False
+            rqc_label = extrai_rqc_label(w1) or extrai_rqc_label(w2) or extrai_rqc_label(w3)
+            if rqc_label:
+                ordem += 1
+                eventos.append((pag_num, ordem, "OUT", rqc_label, True, top_flag))
+                in_tramitacao = False
+                sub_tramitacao = None
+                apresentacao_ativa = False
+                sub_apresentacao = None
+                viu_corresp_cab = False
+                continue
 
             # CUTs reais
             if c in CUT_KEYS and not in_tramitacao:
@@ -748,8 +744,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 apresentacao_ativa = False
                 sub_apresentacao = None
                 viu_corresp_cab = False
-                ata_comissao_pendente = None
-                req_comissao_emitido = False
                 continue
 
             # CUTs de contexto
@@ -1015,18 +1009,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            # ---------------------------
-            # REQUERIMENTOS DE COMISSÃO
-            # ---------------------------
-            if ata_comissao_pendente and not req_comissao_emitido:
-                gatilho_req = eh_gatilho_req_comissao(w1) or eh_gatilho_req_comissao(w2) or eh_gatilho_req_comissao(w3)
-                if gatilho_req:
-                    pag_ata, top_ata, label_ata = ata_comissao_pendente
-                    ordem += 1
-                    eventos.append((pag_ata, ordem, "OUT", label_ata, True, top_ata))
-                    req_comissao_emitido = True
-                    continue
-
     # ---- ordena eventos ----
     eventos.sort(key=lambda x: (x[0], x[1]))
 
@@ -1144,8 +1126,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
     itens = itens or []
 
-    # PARTE 1B ===================================================================================================================================================================================
-    # ========================================================================================== 5) GOOGLE SHEETS ========================================================================================
+    # ====================================================================================================================================================================================================
+    # ============================================================================================= GOOGLE SHEETS ========================================================================================
     # ====================================================================================================================================================================================================
 
     def rgb_hex_to_api(hex_str: str):
