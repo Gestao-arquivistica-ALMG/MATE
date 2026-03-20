@@ -652,7 +652,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         return prefix_tramitacao(base, in_tramitacao)
 
 RE_ATA_COMISSAO = re.compile(
-    r"ATA DA \d+ª REUNIÃO.*?COMISSÃO DE (.+?).*?EM (\d{1,2})/(\d{1,2})/(\d{4})",
+    r"ATA DA \d+ª REUNIÃO (?:ORDINÁRIA|EXTRAORDINÁRIA) DA COMISSÃO DE (.+?) "
+    r"NA \d+ª SESSÃO LEGISLATIVA ORDINÁRIA DA \d+ª LEGISLATURA, EM (\d{1,2})/(\d{1,2})/(\d{4})",
     re.IGNORECASE
 )
 
