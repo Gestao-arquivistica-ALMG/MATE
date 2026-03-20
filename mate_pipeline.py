@@ -210,7 +210,7 @@ def normalizar_data(entrada: str) -> str:
 
     else:
         raise ValueError(
-            "Entrada inválida. Informe uma data válida"
+            "Entrada incorreta. Informe uma data válida"
         )
 
     datetime.strptime(yyyymmdd, "%Y%m%d")
