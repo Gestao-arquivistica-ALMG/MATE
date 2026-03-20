@@ -626,6 +626,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_PROJETO_DE_LEI = "PROJETODELEI"
     C_PROJETOS_DE_LEI = "PROJETOSDELEI"
     C_REQUERIMENTOS = "REQUERIMENTOS"
+    C_PARECER_PARA = "PARECERPARA"
 
     def prefix_tramitacao(label: str, in_tramitacao: bool) -> str:
         if in_tramitacao:
@@ -702,23 +703,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 viu_corresp_cab = False
                 continue
 
-            if ln.strip().startswith("PARECER"):
-                print("DEBUG PARECER:", pag_num, "in_tramitacao=", in_tramitacao, "ln=", ln.strip())
-                if in_tramitacao:
-                    ordem += 1
-                    eventos.append((pag_num, ordem, "OUT", "TRAMITAÇÃO DE PROPOSIÇÕES: PARECER PARA", True, top_flag))
-                    print("DEBUG EVENTO ADICIONADO:", eventos[-1])
-                    continue
-                else:
-                    ordem += 1
-                    eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
-                    in_tramitacao = False
-                    sub_tramitacao = None
-                    apresentacao_ativa = False
-                    sub_apresentacao = None
-                    viu_corresp_cab = False
-                    continue
-
             # CUTs de contexto
             if c == C_TRAMITACAO:
                 in_tramitacao = True
@@ -772,7 +756,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # ---------------------------
-            # APRESENTAÇÃO / TRAMITAÇÃO -> subdivisão material (PL / PEC / REQ)
+            # APRESENTAÇÃO / TRAMITAÇÃO -> subdivisão material
             # somente quando o título estiver em MAIÚSCULAS
             # ---------------------------
             if apresentacao_ativa or in_tramitacao:
@@ -794,6 +778,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                     (is_all_caps_text(w3) and k3.startswith(C_REQUERIMENTOS))
                 )
 
+                has_parecer = (
+                    (is_all_caps_text(w1) and k1.startswith(C_PARECER_PARA)) or
+                    (is_all_caps_text(w2) and k2.startswith(C_PARECER_PARA)) or
+                    (is_all_caps_text(w3) and k3.startswith(C_PARECER_PARA))
+                )
+
                 if has_pl or has_pec:
                     tipo = "PEC" if has_pec else "PL"
 
@@ -808,6 +798,13 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                         ordem += 1
                         eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao, apresentacao_ativa), True, top_flag))
                         sub_apresentacao = "REQ"
+                    continue
+
+                if has_parecer and in_tramitacao:
+                    if sub_apresentacao != "PARECER":
+                        ordem += 1
+                        eventos.append((pag_num, ordem, "OUT", "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES", True, top_flag))
+                        sub_apresentacao = "PARECER"
                     continue
 
             # ---------------------------
