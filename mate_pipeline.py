@@ -669,20 +669,20 @@ COMISSAO_SIGLA = {
 def normaliza_data_curta(d: str, m: str, a: str) -> str:
     return f"{int(d):02d}/{int(m):02d}/{int(a):04d}"
 
-def extrai_rqc_label(txt: str):
-    m = RE_ATA_COMISSAO.search((txt or "").strip())
-    if not m:
-        return None
+    def extrai_rqc_label(txt: str):
+        m = RE_ATA_COMISSAO.search((txt or "").strip())
+        if not m:
+            return None
 
-    nome_comissao = m.group(1).strip().upper()
-    sigla = COMISSAO_SIGLA.get(nome_comissao)
-    if not sigla:
-        return None
+        nome_comissao = m.group(1).strip().upper()
+        sigla = COMISSAO_SIGLA.get(nome_comissao)
+        if not sigla:
+            return None
 
-    data_fmt = normaliza_data_curta(m.group(2), m.group(3), m.group(4))
-    return f"REQUERIMENTOS DE COMISSÃO: {sigla}, {data_fmt}"
+        data_fmt = normaliza_data_curta(m.group(2), m.group(3), m.group(4))
+        return f"REQUERIMENTOS DE COMISSÃO: {sigla}, {data_fmt}"
 
-reader = PdfReader(pdf_path)
+    reader = PdfReader(pdf_path)
 
     # eventos: (pag, ordem, tipo, label_out, fim_sobreposto, top_flag)
     eventos = []
@@ -696,7 +696,7 @@ reader = PdfReader(pdf_path)
     viu_corresp_cab = False
     pegou_leis = False
     MAX_PAG_LEIS = 40
-
+    
     def is_all_caps_text(s: str) -> bool:
         s = (s or "").strip()
         return bool(s) and s == s.upper()
