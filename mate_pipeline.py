@@ -664,6 +664,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     pegou_leis = False
     MAX_PAG_LEIS = 40
 
+    def is_all_caps_text(s: str) -> bool:
+        s = (s or "").strip()
+        return bool(s) and s == s.upper()
+
     for i, page in enumerate(reader.pages):
         texto = page.extract_text() or ""
         linhas = [limpa_linha(x) for x in texto.splitlines() if limpa_linha(x)]
@@ -678,6 +682,14 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             k1 = win_keys(linhas, li, 1)
             k2 = win_keys(linhas, li, 2)
             k3 = win_keys(linhas, li, 3)
+
+            w1 = " ".join(linhas[li:li+1]).strip()
+            w2 = " ".join(linhas[li:li+2]).strip()
+            w3 = " ".join(linhas[li:li+3]).strip()
+
+            w1_up = w1.upper()
+            w2_up = w2.upper()
+            w3_up = w3.upper()
 
             # CUTs reais
             if c in CUT_KEYS and not in_tramitacao:
@@ -760,24 +772,30 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # ---------------------------
-            # APRESENTAÇÃO -> subdivisão material (PL vs REQ)
+            # APRESENTAÇÃO / TRAMITAÇÃO -> subdivisão material (PL / PEC / REQ)
+            # somente quando o título estiver em MAIÚSCULAS
             # ---------------------------
             if apresentacao_ativa or in_tramitacao:
-                # gatilho PL
-                if (
-                    k1.startswith(C_PROJETO_DE_LEI) or k1.startswith(C_PROJETOS_DE_LEI) or
-                    k2.startswith(C_PROJETO_DE_LEI) or k2.startswith(C_PROJETOS_DE_LEI) or
-                    k3.startswith(C_PROJETO_DE_LEI) or k3.startswith(C_PROJETOS_DE_LEI) or
-                    k1.startswith(C_PEC) or k2.startswith(C_PEC) or k3.startswith(C_PEC)
-                ):
-                    if (
-                        k1.startswith(C_PEC) or
-                        k2.startswith(C_PEC) or
-                        k3.startswith(C_PEC)
-                    ):
-                        tipo = "PEC"
-                    else:
-                        tipo = "PL"
+                has_pl = (
+                    (is_all_caps_text(w1) and (k1.startswith(C_PROJETO_DE_LEI) or k1.startswith(C_PROJETOS_DE_LEI))) or
+                    (is_all_caps_text(w2) and (k2.startswith(C_PROJETO_DE_LEI) or k2.startswith(C_PROJETOS_DE_LEI))) or
+                    (is_all_caps_text(w3) and (k3.startswith(C_PROJETO_DE_LEI) or k3.startswith(C_PROJETOS_DE_LEI)))
+                )
+
+                has_pec = (
+                    (is_all_caps_text(w1) and k1.startswith(C_PEC)) or
+                    (is_all_caps_text(w2) and k2.startswith(C_PEC)) or
+                    (is_all_caps_text(w3) and k3.startswith(C_PEC))
+                )
+
+                has_req = (
+                    (is_all_caps_text(w1) and k1.startswith(C_REQUERIMENTOS)) or
+                    (is_all_caps_text(w2) and k2.startswith(C_REQUERIMENTOS)) or
+                    (is_all_caps_text(w3) and k3.startswith(C_REQUERIMENTOS))
+                )
+
+                if has_pl or has_pec:
+                    tipo = "PEC" if has_pec else "PL"
 
                     if sub_apresentacao != tipo:
                         ordem += 1
@@ -785,8 +803,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                         sub_apresentacao = tipo
                     continue
 
-                # gatilho REQ
-                if (k1.startswith(C_REQUERIMENTOS) or k2.startswith(C_REQUERIMENTOS) or k3.startswith(C_REQUERIMENTOS)):
+                if has_req:
                     if sub_apresentacao != "REQ":
                         ordem += 1
                         eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao, apresentacao_ativa), True, top_flag))
