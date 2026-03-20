@@ -652,7 +652,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         return prefix_tramitacao(base, in_tramitacao)
 
 RE_ATA_COMISSAO = re.compile(
-    r"ATA DA \d+ª REUNIÃO.*?COMISSÃO DE (.+?)\s+NA .*?EM (\d{1,2})/(\d{1,2})/(\d{4})",
+    r"ATA DA \d+ª REUNIÃO.*?COMISSÃO DE (.+?).*?EM (\d{1,2})/(\d{1,2})/(\d{4})",
     re.IGNORECASE
 )
 
@@ -719,23 +719,13 @@ reader = PdfReader(pdf_path)
             w1 = " ".join(linhas[li:li+1]).strip()
             w2 = " ".join(linhas[li:li+2]).strip()
             w3 = " ".join(linhas[li:li+3]).strip()
-            w4 = " ".join(linhas[li:li+4]).strip()
-            w5 = " ".join(linhas[li:li+5]).strip()
-            w6 = " ".join(linhas[li:li+6]).strip()
 
             w1_up = w1.upper()
             w2_up = w2.upper()
             w3_up = w3.upper()
 
-            rqc_label = (
-                extrai_rqc_label(w1) or
-                extrai_rqc_label(w2) or
-                extrai_rqc_label(w3) or
-                extrai_rqc_label(w4) or
-                extrai_rqc_label(w5) or
-                extrai_rqc_label(w6)
-            )
-
+            rqc_label = extrai_rqc_label(w1) or extrai_rqc_label(w2) or extrai_rqc_label(w3)
+            
             if rqc_label:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", rqc_label, True, top_flag))
