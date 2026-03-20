@@ -633,13 +633,18 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         return label
 
 
-    def label_apresentacao(tipo_bloco: str, in_tramitacao: bool) -> str:
+    def label_apresentacao(tipo_bloco: str, in_tramitacao: bool, apresentacao_ativa: bool) -> str:
         if tipo_bloco == "PL":
-            base = "APRESENTAÇÃO DE PROPOSIÇÕES: PROJETOS DE LEI"
+            miolo = "PROJETOS DE LEI"
         elif tipo_bloco == "PEC":
-            base = "APRESENTAÇÃO DE PROPOSIÇÕES: PROPOSTA DE EMENDA À CONSTITUIÇÃO"
+            miolo = "PROPOSTA DE EMENDA À CONSTITUIÇÃO"
         else:
-            base = "APRESENTAÇÃO DE PROPOSIÇÕES: REQUERIMENTOS"
+            miolo = "REQUERIMENTOS"
+
+        if in_tramitacao and not apresentacao_ativa:
+            return f"TRAMITAÇÃO DE PROPOSIÇÕES: {miolo}"
+
+        base = f"APRESENTAÇÃO DE PROPOSIÇÕES: {miolo}"
         return prefix_tramitacao(base, in_tramitacao)
 
 
@@ -750,7 +755,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             # ---------------------------
             # APRESENTAÇÃO -> subdivisão material (PL vs REQ)
             # ---------------------------
-            if apresentacao_ativa:
+            if apresentacao_ativa or in_tramitacao:
                 # gatilho PL
                 if (
                     k1.startswith(C_PROJETO_DE_LEI) or k1.startswith(C_PROJETOS_DE_LEI) or
@@ -769,7 +774,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
 
                     if sub_apresentacao != tipo:
                         ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", label_apresentacao(tipo, in_tramitacao), True, top_flag))
+                        eventos.append((pag_num, ordem, "OUT", label_apresentacao(tipo, in_tramitacao, apresentacao_ativa), True, top_flag))
                         sub_apresentacao = tipo
                     continue
 
@@ -777,7 +782,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 if (k1.startswith(C_REQUERIMENTOS) or k2.startswith(C_REQUERIMENTOS) or k3.startswith(C_REQUERIMENTOS)):
                     if sub_apresentacao != "REQ":
                         ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao), True, top_flag))
+                        eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao, apresentacao_ativa), True, top_flag))
                         sub_apresentacao = "REQ"
                     continue
 
