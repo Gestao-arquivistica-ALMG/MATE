@@ -710,6 +710,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             ln_up = ln.upper().strip()
             c = compact_key(ln)
             top_flag = is_top_event(li, linhas)
+            if C_PARTE_ORDEM_DIA in c:
+                top_flag = True
 
             # janela compactada (p/ títulos quebrados)
             k1 = win_keys(linhas, li, 1)
