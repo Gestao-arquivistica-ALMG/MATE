@@ -636,7 +636,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_PROJETOS_DE_LEI = "PROJETOSDELEI"
     C_REQUERIMENTOS = "REQUERIMENTOS"
     C_PARECER_PARA = "PARECERPARA"
-    C_PARECERES_SOBRE_VETO = "PARECERESSOBREOVETO"
+    C_PARECER_SOBRE_VETO = "PARECERSOBREOVETO"
 
     def prefix_tramitacao(label: str, in_tramitacao: bool) -> str:
         if in_tramitacao:
