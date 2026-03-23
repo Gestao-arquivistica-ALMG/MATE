@@ -866,7 +866,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                         sub_apresentacao = "REQ"
                     continue
 
-                if in_tramitacao and has_parecer_sobre_veto:
+                if has_parecer_sobre_veto:
                     if sub_apresentacao != "PARECER_VETO":
                         ordem += 1
                         eventos.append((
