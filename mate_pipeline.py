@@ -636,6 +636,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_PROJETOS_DE_LEI = "PROJETOSDELEI"
     C_REQUERIMENTOS = "REQUERIMENTOS"
     C_PARECER_PARA = "PARECERPARA"
+    C_PARECERES_SOBRE_VETO = "PARECERESSOBREOVETO"
 
     def prefix_tramitacao(label: str, in_tramitacao: bool) -> str:
         if in_tramitacao:
@@ -823,10 +824,16 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                     (is_all_caps_text(w3) and k3.startswith(C_REQUERIMENTOS))
                 )
 
-                has_parecer = (
+                has_parecer_para = (
                     (is_all_caps_text(w1) and k1.startswith(C_PARECER_PARA)) or
                     (is_all_caps_text(w2) and k2.startswith(C_PARECER_PARA)) or
                     (is_all_caps_text(w3) and k3.startswith(C_PARECER_PARA))
+                )
+
+                has_parecer_sobre_veto = (
+                    (is_all_caps_text(w1) and k1.startswith(C_PARECER_SOBRE_VETO)) or
+                    (is_all_caps_text(w2) and k2.startswith(C_PARECER_SOBRE_VETO)) or
+                    (is_all_caps_text(w3) and k3.startswith(C_PARECER_SOBRE_VETO))
                 )
 
                 if has_pl or has_pec:
@@ -859,11 +866,17 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                         sub_apresentacao = "REQ"
                     continue
 
-                if has_parecer and in_tramitacao:
-                    if sub_apresentacao != "PARECER":
+                if in_tramitacao and (has_parecer_para or has_parecer_sobre_veto):
+                    label_parecer = (
+                        "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES SOBRE VETO"
+                        if has_parecer_sobre_veto
+                        else "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES"
+                    )
+
+                    if sub_apresentacao != label_parecer:
                         ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES", True, top_flag))
-                        sub_apresentacao = "PARECER"
+                        eventos.append((pag_num, ordem, "OUT", label_parecer, True, top_flag))
+                        sub_apresentacao = label_parecer
                     continue
 
             # ---------------------------
