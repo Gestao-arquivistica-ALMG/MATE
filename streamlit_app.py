@@ -673,7 +673,7 @@ if rodar:
         url_base = result["url"]
         gid = result["gid"]
 
-        if "/edit" not in url_base:
+        if not url_base or "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
 
         url_com_aba = f"{url_base}#gid={gid}"
