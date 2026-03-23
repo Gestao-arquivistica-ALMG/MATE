@@ -599,7 +599,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_REQS_APROV = "REQUERIMENTOSAPROVADOS"
     C_RESOLUCAO = "RESOLUCAO"
 
-    DECISAO_KEYS = {C_DECISAO_PRESIDENCIA, C_DECISAO_DE_PRESIDENCIA,}
+    DECISAO_KEYS = {C_DECISAO_PRESIDENCIA, C_DECISAO_DE_PRESIDENCIA}
     EMENDAS_KEYS = {C_RECEB_EMENDAS_SUBST, C_RECEB_EMENDAS_SUBSTS, C_RECEB_EMENDA}
     ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
     MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
@@ -623,7 +623,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     # CONTEXTO ESPECIAL
     C_CORRESP_CAB = "CORRESPONDENCIADESPACHADAPELO1SECRETARIO"
     C_OFICIOS = "OFICIOS"
-    
+
     # GATILHOS (dependem de contexto)
     C_PEC = "PROPOSTADEEMENDAACONSTITUICAO"
     C_PROJETO_DE_LEI = "PROJETODELEI"
@@ -635,7 +635,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         if in_tramitacao:
             return f"TRAMITAÇÃO DE PROPOSIÇÕES: {label}"
         return label
-
 
     def label_apresentacao(tipo_bloco: str, in_tramitacao: bool, apresentacao_ativa: bool) -> str:
         if tipo_bloco == "PL":
@@ -656,18 +655,18 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         re.IGNORECASE
     )
 
-COMISSAO_SIGLA = {
-    "PARTICIPAÇÃO POPULAR": "PPO",
-    "TRANSPORTE, COMUNICAÇÃO E OBRAS PÚBLICAS": "TPA",
-    "ADMINISTRAÇÃO PÚBLICA": "APU",
-    "MINAS E ENERGIA": "MEN",
-    "SAÚDE": "SAU",
-    "CONSTITUIÇÃO E JUSTIÇA": "CCJ",
-    "SEGURANÇA PÚBLICA": "SPU",
-}
+    COMISSAO_SIGLA = {
+        "PARTICIPAÇÃO POPULAR": "PPO",
+        "TRANSPORTE, COMUNICAÇÃO E OBRAS PÚBLICAS": "TPA",
+        "ADMINISTRAÇÃO PÚBLICA": "APU",
+        "MINAS E ENERGIA": "MEN",
+        "SAÚDE": "SAU",
+        "CONSTITUIÇÃO E JUSTIÇA": "CCJ",
+        "SEGURANÇA PÚBLICA": "SPU",
+    }
 
-def normaliza_data_curta(d: str, m: str, a: str) -> str:
-    return f"{int(d):02d}/{int(m):02d}/{int(a):04d}"
+    def normaliza_data_curta(d: str, m: str, a: str) -> str:
+        return f"{int(d):02d}/{int(m):02d}/{int(a):04d}"
 
     def extrai_rqc_label(txt: str):
         m = RE_ATA_COMISSAO.search((txt or "").strip())
@@ -696,7 +695,7 @@ def normaliza_data_curta(d: str, m: str, a: str) -> str:
     viu_corresp_cab = False
     pegou_leis = False
     MAX_PAG_LEIS = 40
-    
+
     def is_all_caps_text(s: str) -> bool:
         s = (s or "").strip()
         return bool(s) and s == s.upper()
@@ -719,10 +718,6 @@ def normaliza_data_curta(d: str, m: str, a: str) -> str:
             w1 = " ".join(linhas[li:li+1]).strip()
             w2 = " ".join(linhas[li:li+2]).strip()
             w3 = " ".join(linhas[li:li+3]).strip()
-
-            w1_up = w1.upper()
-            w2_up = w2.upper()
-            w3_up = w3.upper()
 
             rqc_label = extrai_rqc_label(w1) or extrai_rqc_label(w2) or extrai_rqc_label(w3)
             if rqc_label:
@@ -791,7 +786,6 @@ def normaliza_data_curta(d: str, m: str, a: str) -> str:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
                 viu_corresp_cab = False
-                # encerra contextos gerais
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
@@ -832,14 +826,28 @@ def normaliza_data_curta(d: str, m: str, a: str) -> str:
 
                     if sub_apresentacao != tipo:
                         ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", label_apresentacao(tipo, in_tramitacao, apresentacao_ativa), True, top_flag))
+                        eventos.append((
+                            pag_num,
+                            ordem,
+                            "OUT",
+                            label_apresentacao(tipo, in_tramitacao, apresentacao_ativa),
+                            True,
+                            top_flag
+                        ))
                         sub_apresentacao = tipo
                     continue
 
                 if has_req:
                     if sub_apresentacao != "REQ":
                         ordem += 1
-                        eventos.append((pag_num, ordem, "OUT", label_apresentacao("REQ", in_tramitacao, apresentacao_ativa), True, top_flag))
+                        eventos.append((
+                            pag_num,
+                            ordem,
+                            "OUT",
+                            label_apresentacao("REQ", in_tramitacao, apresentacao_ativa),
+                            True,
+                            top_flag
+                        ))
                         sub_apresentacao = "REQ"
                     continue
 
@@ -957,7 +965,14 @@ def normaliza_data_curta(d: str, m: str, a: str) -> str:
             # COMUNICAÇÃO DA PRESIDÊNCIA (com prefixo se dentro de TRAMITAÇÃO)
             if c == C_COMUNIC_PRESIDENCIA:
                 ordem += 1
-                eventos.append((pag_num, ordem, "OUT", prefix_tramitacao("COMUNICAÇÃO DA PRESIDÊNCIA", in_tramitacao), True, top_flag))
+                eventos.append((
+                    pag_num,
+                    ordem,
+                    "OUT",
+                    prefix_tramitacao("COMUNICAÇÃO DA PRESIDÊNCIA", in_tramitacao),
+                    True,
+                    top_flag
+                ))
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
