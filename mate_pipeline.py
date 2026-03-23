@@ -612,7 +612,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     C_MATERIA_ADM = "MATERIAADMINISTRATIVA"
     C_QUESTAO_ORDEM = "QUESTAODEORDEM"
     C_ENCERRAMENTO = "ENCERRAMENTO"
-    C_PARTE_ORDEM_DIA = "PARTEORDEMDODIA"
+    C_PARTE_ORDEM_DIA = "2ªPARTE(ORDEMDODIA)"
     CUT_KEYS = {C_ATA, C_ATAS, C_COMUNICACOES, C_MATERIA_ADM, C_QUESTAO_ORDEM, C_PARTE_ORDEM_DIA, C_ENCERRAMENTO}
 
     # CUTS DE CONTEXTO
@@ -734,7 +734,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # CUTs reais
-            if c in CUT_KEYS or c.endswith(C_PARTE_ORDEM_DIA):
+            if c in CUT_KEYS:
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
