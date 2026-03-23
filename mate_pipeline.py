@@ -734,7 +734,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # CUTs reais
-            if c in CUT_KEYS:
+            if c in CUT_KEYS or c.endswith(C_PARTE_ORDEM_DIA):
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
