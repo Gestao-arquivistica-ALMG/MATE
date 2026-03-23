@@ -866,9 +866,9 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                         sub_apresentacao = "REQ"
                     continue
 
-                if in_tramitacao and (has_parecer_para or has_parecer_sobre_veto):
+                if (in_tramitacao and has_parecer_para) or has_parecer_sobre_veto:
                     label_parecer = (
-                        "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES SOBRE VETO"
+                        "PARECERES SOBRE VETO"
                         if has_parecer_sobre_veto
                         else "TRAMITAÇÃO DE PROPOSIÇÕES: PARECERES"
                     )
