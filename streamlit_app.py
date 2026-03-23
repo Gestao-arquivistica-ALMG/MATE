@@ -670,13 +670,17 @@ if rodar:
 
         progress_bar.progress(100)
 
-        url_base = result["url"]
-        gid = result["gid"]
+        url_base = (result.get("url") or "").strip()
+        gid = result.get("gid")
+
+        if not url_base:
+            st.error("Processo concluído sem URL da planilha.")
+            st.stop()
 
         if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
 
-        url_com_aba = f"{url_base}#gid={gid}"
+        url_com_aba = f"{url_base}#gid={gid}" if gid is not None else url_base
 
         status_text.markdown(
             f"""
