@@ -731,7 +731,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # CUTs reais
-            if c in CUT_KEYS and not in_tramitacao:
+            if c in CUT_KEYS
                 ordem += 1
                 eventos.append((pag_num, ordem, "CUT", None, False, top_flag))
                 in_tramitacao = False
