@@ -404,7 +404,11 @@ if rodar:
         f"&dataFim={data_reuniao}&pesquisa=todas&ordem=1&tp=30"
     )
 
-    if dt_check.weekday() in (6, 0):  # domingo ou segunda
+    # valida se o Diário do Legislativo existe de fato na data informada
+    try:
+        resp_leg_check = requests.get(diario_leg_page, timeout=30)
+        resp_leg_check.raise_for_status()
+    except Exception:
         st.error("Não há publicação para a data informada. Informe uma data válida.")
         st.stop()
 
