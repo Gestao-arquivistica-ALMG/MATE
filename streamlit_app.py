@@ -667,7 +667,7 @@ if rodar:
         gid = result["gid"]
 
         if not url_base:
-            st.warning("Não há Diário do Legislativo na data informada.")
+            st.error("Não há Diário do Legislativo na data informada.")
             st.stop()
 
         if "/edit" not in url_base:
