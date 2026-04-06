@@ -423,7 +423,7 @@ if rodar:
     except Exception as e:
         st.session_state.pop("exec_pdf_bytes", None)
         st.session_state.pop("exec_filename", None)
-        st.warning("Não há Diário do Executivo na data informada.")
+        st.error("Não há Diário do Executivo na data informada.")
 
     status_text.empty()
 
