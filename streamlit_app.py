@@ -393,10 +393,6 @@ if rodar:
 
     diario_leg_page = f"https://diariolegislativo.almg.gov.br/{yyyymmdd_check[:4]}/L{yyyymmdd_check}.pdf"
 
-        if not url_base:
-            st.error("Não há Diário do Legislativo na data informada.")
-            st.stop()
-
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
         f"?pesquisou=true&q=&tipo=&dataInicio={data_reuniao}&dataFim={data_reuniao}"
@@ -669,6 +665,10 @@ if rodar:
 
         url_base = result["url"]
         gid = result["gid"]
+
+        if not url_base:
+            st.error("Não há Diário do Legislativo na data informada.")
+            st.stop()
 
         if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
