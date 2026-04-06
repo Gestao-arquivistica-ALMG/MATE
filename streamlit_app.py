@@ -393,10 +393,6 @@ if rodar:
 
     diario_leg_page = f"https://diariolegislativo.almg.gov.br/{yyyymmdd_check[:4]}/L{yyyymmdd_check}.pdf"
 
-        if not url_base:
-            st.error("Não há Diário do Legislativo na data informada.")
-            st.stop()
-
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
         f"?pesquisou=true&q=&tipo=&dataInicio={data_reuniao}&dataFim={data_reuniao}"
@@ -410,10 +406,12 @@ if rodar:
 
     # valida se o Diário do Legislativo existe de fato na data informada
     try:
-        resp_leg_check = requests.get(diario_leg_page, timeout=30)
-        resp_leg_check.raise_for_status()
+        resp_leg = requests.get(diario_leg_page, timeout=30)
+        resp_leg.raise_for_status()
+        st.session_state["leg_pdf_bytes"] = resp_leg.content
+        st.session_state["leg_filename"] = f"L{yyyymmdd_check}.pdf"
     except Exception:
-        st.error("Não há publicação para a data informada. Informe uma data válida.")
+        st.error("Não há Diário do Legislativo na data informada.")
         st.stop()
 
     # busca o Diário do Executivo
