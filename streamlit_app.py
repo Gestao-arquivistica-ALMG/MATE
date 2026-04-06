@@ -426,8 +426,8 @@ if rodar:
         st.session_state.pop("exec_pdf_bytes", None)
         st.session_state.pop("exec_filename", None)
         st.warning("Não há Diário do Executivo na data informada.")
-        if erro_dl:
-            st.error("Não há Diário do Legislativo na data informada.")
+    if erro_dl:
+        st.error("Não há Diário do Legislativo na data informada.")
 
     status_text.empty()
 
