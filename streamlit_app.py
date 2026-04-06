@@ -404,7 +404,17 @@ if rodar:
         f"&dataFim={data_reuniao}&pesquisa=todas&ordem=1&tp=30"
     )
 
-    # busca o Diário do Executivo
+    # valida se o Diário do Legislativo existe de fato na data informada
+    try:
+        resp_leg = requests.get(diario_leg_page, timeout=30)
+        resp_leg.raise_for_status()
+        st.session_state["leg_pdf_bytes"] = resp_leg.content
+        st.session_state["leg_filename"] = f"L{yyyymmdd_check}.pdf"
+    except Exception:
+        st.error("Não há Diário do Legislativo na data informada.")
+        st.stop()
+
+    # busca o Diário do Executivo existe de fato na data informada
     try:
         pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
             data_publicacao_yyyy_mm_dd=data_pub_exe,
@@ -416,18 +426,10 @@ if rodar:
         st.session_state.pop("exec_pdf_bytes", None)
         st.session_state.pop("exec_filename", None)
         st.warning("Não há Diário do Executivo na data informada.")
+        if erro_dl:
+            st.error("Não há Diário do Legislativo na data informada.")
 
     status_text.empty()
-
-        # valida se o Diário do Legislativo existe de fato na data informada
-    try:
-        resp_leg = requests.get(diario_leg_page, timeout=30)
-        resp_leg.raise_for_status()
-        st.session_state["leg_pdf_bytes"] = resp_leg.content
-        st.session_state["leg_filename"] = f"L{yyyymmdd_check}.pdf"
-    except Exception:
-        st.error("Não há Diário do Legislativo na data informada.")
-        st.stop()
 
     # EXIBE ANTES DO PROCESSAMENTO
     open_icon = "https://www.almg.gov.br/favicon.ico"
