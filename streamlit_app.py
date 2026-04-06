@@ -393,6 +393,10 @@ if rodar:
 
     diario_leg_page = f"https://diariolegislativo.almg.gov.br/{yyyymmdd_check[:4]}/L{yyyymmdd_check}.pdf"
 
+        if not url_base:
+            st.error("Não há Diário do Legislativo na data informada.")
+            st.stop()
+
     reuniao_plenario = (
         f"https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/"
         f"?pesquisou=true&q=&tipo=&dataInicio={data_reuniao}&dataFim={data_reuniao}"
@@ -406,15 +410,13 @@ if rodar:
 
     # valida se o Diário do Legislativo existe de fato na data informada
     try:
-        resp_leg = requests.get(diario_leg_page, timeout=30)
-        resp_leg.raise_for_status()
-        st.session_state["leg_pdf_bytes"] = resp_leg.content
-        st.session_state["leg_filename"] = f"L{yyyymmdd_check}.pdf"
+        resp_leg_check = requests.get(diario_leg_page, timeout=30)
+        resp_leg_check.raise_for_status()
     except Exception:
-        st.error("Não há Diário do Legislativo na data informada.")
+        st.error("Não há publicação para a data informada. Informe uma data válida.")
         st.stop()
 
-    # busca o Diário do Executivo existe de fato na data informada
+    # busca o Diário do Executivo
     try:
         pdf_bytes_exec, filename_exec = fetch_diario_executivo_pdf_bytes(
             data_publicacao_yyyy_mm_dd=data_pub_exe,
@@ -426,8 +428,6 @@ if rodar:
         st.session_state.pop("exec_pdf_bytes", None)
         st.session_state.pop("exec_filename", None)
         st.warning("Não há Diário do Executivo na data informada.")
-    if erro_dl:
-        st.error("Não há Diário do Legislativo na data informada.")
 
     status_text.empty()
 
@@ -670,10 +670,6 @@ if rodar:
         url_base = result["url"]
         gid = result["gid"]
 
-        if not url_base or gid is None:
-            st.error("Não há Diário do Legislativo na data informada.")
-            st.stop()
-
         if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
 
@@ -698,6 +694,11 @@ if rodar:
         """,
             unsafe_allow_html=True
         )
+
+        if not result["url"] or result["gid"] is None:
+            st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
+            st.write("Retorno:", result)
+            st.stop()
 
         #st.write("")
 
