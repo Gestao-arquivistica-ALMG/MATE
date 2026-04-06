@@ -671,6 +671,7 @@ if rodar:
             st.stop()
 
         if "/edit" not in url_base:
+            url_base = url_base.rstrip("/") + "/edit"
 
         url_com_aba = f"{url_base}#gid={gid}"
 
