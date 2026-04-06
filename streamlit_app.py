@@ -668,6 +668,10 @@ if rodar:
         url_base = result["url"]
         gid = result["gid"]
 
+        if not url_base or gid is None:
+            st.error("Não há Diário do Legislativo na data informada.")
+            st.stop()
+
         if "/edit" not in url_base:
             url_base = url_base.rstrip("/") + "/edit"
 
@@ -692,11 +696,6 @@ if rodar:
         """,
             unsafe_allow_html=True
         )
-
-        if not result["url"] or result["gid"] is None:
-            st.warning("Processo concluído, mas não foi possível montar o link da planilha.")
-            st.write("Retorno:", result)
-            st.stop()
 
         #st.write("")
 
