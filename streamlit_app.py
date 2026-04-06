@@ -423,7 +423,7 @@ if rodar:
     except Exception as e:
         st.session_state.pop("exec_pdf_bytes", None)
         st.session_state.pop("exec_filename", None)
-        st.error("Não há Diário do Executivo na data informada.")
+        st.warning("Não há Diário do Executivo na data informada.")
 
     status_text.empty()
 
@@ -667,7 +667,7 @@ if rodar:
         gid = result["gid"]
 
         if not url_base:
-            st.error("Não há Diário do Legislativo na data informada.")
+            st.warning("Não há Diário do Legislativo na data informada.")
             st.stop()
 
         if "/edit" not in url_base:
