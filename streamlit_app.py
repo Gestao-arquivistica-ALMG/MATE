@@ -425,17 +425,6 @@ if rodar:
         st.session_state.pop("exec_filename", None)
         st.warning(f"Falha ao obter Diário do Executivo: {e}")
 
-    # busca o Diário do Legislativo
-    try:
-        resp_leg = requests.get(diario_leg_page, timeout=30)
-        resp_leg.raise_for_status()
-        st.session_state["leg_pdf_bytes"] = resp_leg.content
-        st.session_state["leg_filename"] = f"L{yyyymmdd_check}.pdf"
-    except Exception as e:
-        st.session_state.pop("leg_pdf_bytes", None)
-        st.session_state.pop("leg_filename", None)
-        st.warning(f"Falha ao obter Diário do Legislativo: {e}")
-
     status_text.empty()
 
     # EXIBE ANTES DO PROCESSAMENTO
