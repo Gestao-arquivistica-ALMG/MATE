@@ -296,7 +296,7 @@ height:24px;
             
 # ================= HEADER =================
 st.markdown(
-    '<div class="title" style="font-size:24px; font-weight:2000; font-height:100;">GERÊNCIA-GERAL DE ARQUIVO</div>',
+    '<div class="title" style="font-size:24px; font-weight:2000; font-height:100;">GERÊNCIA DE GESTÃO ARQUIVÍSTICA</div>',
     unsafe_allow_html=True
 )
 
