@@ -60,7 +60,7 @@ div[data-testid="stForm"]{
   padding:30px !important;
   border-radius:18px !important;
   box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
-  max-width:100% !important;
+  max-width:560px !important;
   margin:0 auto !important;
 }
 
@@ -84,7 +84,7 @@ div[data-testid="stForm"] li{
 }
 
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:320px !important;
+  max-width:100% !important;
   margin:12px 0 0 40px !important;
   flex-wrap:nowrap !important;
   gap:8px !important;
