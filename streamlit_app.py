@@ -60,7 +60,7 @@ div[data-testid="stForm"]{
   padding:30px !important;
   border-radius:18px !important;
   box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
-  max-width:800px !important;
+  max-width:100% !important;
   margin:0 auto !important;
 }
 
