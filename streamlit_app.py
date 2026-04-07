@@ -308,7 +308,7 @@ st.markdown(
 # ================= CARD =================
 
 with st.form("form_mate", clear_on_submit=False):
-    entrada = st.text_input(
+    entrada = st.date_input(
         "Informe uma data de publicação válida",
         placeholder="Ex.: 24/02/2026 ou dia...",
     )
@@ -333,7 +333,7 @@ if limpar:
     st.rerun()
 
 if rodar:
-    entrada_clean = (entrada or "").strip()
+    entrada_clean = data.strftime("%d/%m/%Y")
     if not entrada_clean:
         st.warning("Informe uma data válida.")
         st.stop()
