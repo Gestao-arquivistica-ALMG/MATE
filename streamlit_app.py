@@ -309,7 +309,7 @@ st.markdown(
 
 with st.form("form_mate", clear_on_submit=False):
 
-    col1, col2 = st.columns([9,4], vertical_alignment="bottom")
+    col1, col2 = st.columns([12,3], vertical_alignment="bottom")
 
     with col1:
         st.markdown(
