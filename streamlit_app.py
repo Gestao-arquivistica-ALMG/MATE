@@ -310,7 +310,7 @@ st.markdown(
 st.markdown("""
 <style>
 label[data-testid="stWidgetLabel"] {
-    font-size: 8px !important;
+    font-size: 2px !important;
     line-height: 1.2 !important;
 }
 </style>
