@@ -312,15 +312,15 @@ with st.form("form_mate", clear_on_submit=False):
     col1, col2 = st.columns([9,4], vertical_alignment="bottom")
 
     with col1:
+        st.markdown(
+            "<div style='font-size:13px; white-space:nowrap;'>Informe uma data de publicação válida</div>",
+            unsafe_allow_html=True
+        )
+        
         entrada = st.text_input(
             "Informe uma data de publicação válida",
             placeholder="Ex.: 24/02/2026 ou dia...",
             label_visibility="collapsed"
-        )
-
-        st.markdown(
-            "<div style='font-size:13px; white-space:nowrap;'>Informe uma data de publicação válida</div>",
-            unsafe_allow_html=True
         )
 
     with col2:  
