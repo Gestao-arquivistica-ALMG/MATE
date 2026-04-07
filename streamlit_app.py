@@ -276,7 +276,7 @@ st.markdown(
 
 with st.form("form_mate", clear_on_submit=False):
 
-    col1, col2 = st.columns([20,1], vertical_alignment="bottom")
+    col1, col2 = st.columns([5,15], vertical_alignment="bottom")
 
     with col2:
         st.markdown(
