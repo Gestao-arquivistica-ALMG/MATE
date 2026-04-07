@@ -72,7 +72,7 @@ div[data-testid="stTextInput"] > div{
 /* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
 div[data-testid="stForm"] > div{
   max-width:320px;
-  margin:0 auto;
+  margin:0;
 }
 
 /* Conteúdo legível: alinhamento à esquerda */
@@ -260,39 +260,6 @@ height:24px;
 </style>""",
     unsafe_allow_html=True,
 )
-
-# ================= MENU (OVERLAY NO CORPO) =================
-#if st.session_state.get("menu_open", False):
-#
-#   # 2) drawer (menu) por cima do overlay
-#    st.markdown("""
-#    <div id="almg_menu_drawer" style="
-#      display: block !important;
-#      z-index: 2147483647 !important;
-#      position: fixed;
-#      left: 0;
-#      top: 0;
-#      bottom: 0;
-#      width: 260px;
-#      background: white;
-#      padding: 20px;
-#      box-shadow: 3px 0 12px rgba(0,0,0,0.2);
-#    ">
-#    
-#      <div style="display:flex; align-items:center; justify-content:space-between;">
-#        <div style="font-family:Montserrat; font-weight:700; font-size:16px;">MENU</div>
-#      </div>
-
-#      <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px; font-family:Montserrat;">
-#        <a href="https://www.almg.gov.br/" target="_blank" style="text-decoration:none; color:#111;">ALMG</a>
-#        <a href="https://www.jornalminasgerais.mg.gov.br/?dataJornal=" target="_blank" style="text-decoration:none; color:#111;">Diário do Executivo</a>
-#        <a href="https://www.almg.gov.br/transparencia/diario-do-legislativo/index.html" target="_blank" style="text-decoration:none; color:#111;">Diário do Legislativo</a>
-#        <a href="https://www.almg.gov.br/atividade-parlamentar/plenario/agenda/" target="_blank" style="text-decoration:none; color:#111;">Reuniões de Plenário</a>
-#        <a href="https://www.almg.gov.br/atividade-parlamentar/comissoes/agenda/" target="_blank" style="text-decoration:none; color:#111;">Reuniões de Comissões</a>
-#        <a href="https://silegis.almg.gov.br/silegismg/login/login.jsp#/processos" target="_blank" style="text-decoration:none; color:#111;">Silegis</a>
-#        <a href="https://webmail.almg.gov.br/" target="_blank" style="text-decoration:none; color:#111;">Webmail</a>
-#      </div>
-#    """, unsafe_allow_html=True)
             
 # ================= HEADER =================
 st.markdown(
