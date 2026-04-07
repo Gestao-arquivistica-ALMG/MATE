@@ -309,8 +309,6 @@ st.markdown(
 
 with st.form("form_mate", clear_on_submit=False):
 
-    st.markdown("Informe uma data de publicação válida")
-
     col1, col2 = st.columns([9,4], vertical_alignment="bottom")
 
     with col1:
