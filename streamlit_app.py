@@ -296,6 +296,8 @@ with st.form("form_mate", clear_on_submit=False):
 
     with col2:  
         data_picker = st.date_input(" ", label_visibility="collapsed")
+        if data_picker:
+            data_formatada = data_picker.strftime("%d/%m/%Y")
 
     st.caption(
         "- 24022026 ou 240226 ou 24/02/2026\n"
