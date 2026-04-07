@@ -317,7 +317,7 @@ with st.form("form_mate", clear_on_submit=False):
             placeholder="Ex.: 24/02/2026 ou dia..."
         )
 
-    with col2:
+    with col2:  
         data_picker = st.date_input(" ", label_visibility="collapsed")
 
     st.caption(
