@@ -60,7 +60,7 @@ div[data-testid="stForm"]{
   padding:30px !important;
   border-radius:18px !important;
   box-shadow:0 10px 30px rgba(0,0,0,0.25) !important;
-  max-width:100% !important;
+  max-width:560px !important;
   margin:0 auto !important;
 }
 
@@ -71,7 +71,7 @@ div[data-testid="stTextInput"] > div{
 
 /* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
 div[data-testid="stForm"] > div{
-  max-width:100%;
+  max-width:320px;
   margin:0 auto;
 }
 
