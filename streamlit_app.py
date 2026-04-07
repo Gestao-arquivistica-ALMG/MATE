@@ -309,9 +309,10 @@ st.markdown(
 
 st.markdown("""
 <style>
-label[data-testid="stWidgetLabel"] {
-    font-size: 3px !important;
-    line-height: 1.2 !important;
+/* label do text_input */
+div[data-testid="stTextInput"] label {
+    font-size: 13px !important;
+    line-height: 1.1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
