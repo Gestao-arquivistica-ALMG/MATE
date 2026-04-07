@@ -308,7 +308,7 @@ st.markdown(
 # ================= CARD =================
 
 with st.form("form_mate", clear_on_submit=False):
-    col1, col2 = st.columns([6,2])
+    col1, col2 = st.columns([6,4])
 
     with col1:
         entrada = st.text_input(
