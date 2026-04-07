@@ -296,10 +296,10 @@ with st.form("form_mate", clear_on_submit=False):
 
     with col2:  
         st.markdown(
-            "<div style='font-size:13px; white-space:nowrap;'>Data</div>",
+            "<div style='font-size:13px; white-space:nowrap;'>Publicação</div>",
             unsafe_allow_html=True
         )
-        data_picker = st.date_input(" ", label_visibility="collapsed")
+        data_picker = st.date_input(" ", format="DD/MM/YYYY", label_visibility="collapsed")
         if data_picker:
             data_formatada = data_picker.strftime("%d/%m/%Y")
 
