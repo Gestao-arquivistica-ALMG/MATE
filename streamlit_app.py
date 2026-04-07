@@ -72,7 +72,7 @@ div[data-testid="stTextInput"] > div{
 /* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
 div[data-testid="stForm"] > div{
   max-width:430px;
-  margin:0 auto;
+  margin:0;
 }
 
 /* Conteúdo legível: alinhamento à esquerda */
