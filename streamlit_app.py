@@ -309,9 +309,7 @@ st.markdown(
 
 with st.form("form_mate", clear_on_submit=False):
     entrada = st.date_input(
-        "Informe uma data de publicação válida",
-        placeholder="Ex.: 24/02/2026 ou dia...",
-    )
+        "Informe uma data de publicação válida")
 
     st.caption(
         "- 24022026 ou 240226 ou 24/02/2026\n"
