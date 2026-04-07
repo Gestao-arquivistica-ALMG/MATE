@@ -73,7 +73,7 @@ div[data-testid="stTextInput"] > div{
 div[data-testid="stForm"] > div{
   max-width:320px;
   margin:0;
-  margin-left: 300px;
+  margin-left: 100px;
 }
 
 /* Conteúdo legível: alinhamento à esquerda */
