@@ -313,7 +313,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     with col1:
         st.markdown(
-            "<div style='font-size:13px; margin-bottom:0px;'>Informe uma data de publicação válida</div>",
+            "<div style='font-size:13px; margin-bottom:-6px;'>Informe uma data de publicação válida</div>",
             unsafe_allow_html=True
         )
 
