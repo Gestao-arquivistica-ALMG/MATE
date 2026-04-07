@@ -340,7 +340,9 @@ if limpar:
 
 if rodar:
     entrada_clean = (entrada or "").strip()
-    if not entrada_clean:
+
+    if not entrada_clean and data_picker:
+        entrada_clean = data_picker.strftime("%d/%m/%Y")
         st.warning("Informe uma data válida.")
         st.stop()
 
