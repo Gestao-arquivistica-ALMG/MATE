@@ -84,7 +84,7 @@ div[data-testid="stForm"] li{
 }
 
 div[data-testid="stForm"] ul{
-  padding-left: 20px;
+  padding-left: 40px;
 }
 
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
