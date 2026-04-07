@@ -4008,7 +4008,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             {"range": f"{tab_name}!W3", "values": [['=IFERROR(QUERY(C6:G13;"SELECT E WHERE C MATCHES \'.*DIÁRIO DO LEGISLATIVO - EDIÇÃO EXTRA.*\'";0);"SEM EXTRA")']]},
             {"range": f"{tab_name}!W4", "values": [['=IFERROR(TEXT(INDEX(B:B;MATCH("REQUERIMENTOS DE COMISSÕES"; C:C; 0));"'dd mm yyyy'");"")']]},
             {"range": f"{tab_name}!X3", "values": [['=IFERROR(TEXT(INDEX(B:B;MATCH("REQUERIMENTOS DE COMISSÕES"; C:C; 0));"'d m yyyy'");"")']]},
-            {"range": f"{tab_name}!X4", "values": [['=IFERROR(TEXT(INDEX(B:B;MATCH("REQUERIMENTOS DE COMISSÕES"; C:C; 0));;"dd/MM/yyyy");"")']]},
+            {"range": f"{tab_name}!X4", "values": [['=IFERROR(TEXT(INDEX(B:B;MATCH("REQUERIMENTOS DE COMISSÕES"; C:C; 0));"dd/MM/yyyy");"")']]},
             {"range": f"{tab_name}!Y2", "values": [["REUNIÃO"]]},
             {"range": f"{tab_name}!Y3", "values": [["EXTRA"]]},
             {"range": f"{tab_name}!Y4", "values": [["RQC"]]},
