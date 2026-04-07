@@ -71,7 +71,7 @@ div[data-testid="stTextInput"] > div{
 
 /* Conteúdo do form inteiro em uma coluna central (label+input+lista+botões) */
 div[data-testid="stForm"] > div{
-  max-width:100%;
+  max-width:320px;
   margin:0 auto;
 }
 
@@ -84,7 +84,7 @@ div[data-testid="stForm"] li{
 }
 
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
-  max-width:100% !important;
+  max-width:320px !important;
   margin:12px 0 0 40px !important;
   flex-wrap:nowrap !important;
   gap:8px !important;
