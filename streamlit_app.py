@@ -307,6 +307,15 @@ st.markdown(
 
 # ================= CARD =================
 
+st.markdown("""
+<style>
+label[data-testid="stWidgetLabel"] {
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 with st.form("form_mate", clear_on_submit=False):
 
     col1, col2 = st.columns([9,4], vertical_alignment="bottom")
