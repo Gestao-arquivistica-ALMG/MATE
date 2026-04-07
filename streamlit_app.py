@@ -278,7 +278,7 @@ with st.form("form_mate", clear_on_submit=False):
 
     col1, col2 = st.columns([20,1], vertical_alignment="bottom")
 
-    with col1:
+    with col2:
         st.markdown(
             "<div style='font-size:13px; white-space:nowrap;'>Informe uma data de publicação válida</div>",
             unsafe_allow_html=True
@@ -290,7 +290,7 @@ with st.form("form_mate", clear_on_submit=False):
             label_visibility="collapsed"
         )
 
-    with col2:  
+    with col1:  
         data_picker = st.date_input(" ", label_visibility="collapsed")
 
     st.caption(
