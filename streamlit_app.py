@@ -311,7 +311,7 @@ st.markdown("""
 <style>
 /* label do text_input */
 div[data-testid="stTextInput"] label {
-    font-size: 8px !important;
+    font-size: 3px !important;
     line-height: 1.1 !important;
 }
 </style>
