@@ -83,6 +83,10 @@ div[data-testid="stForm"] li{
   text-align:left !important;
 }
 
+div[data-testid="stForm"] ul{
+  padding-left: 20px;
+}
+
 div[data-testid="stForm"] div[data-testid="stHorizontalBlock"]:last-of-type{
   max-width:100% !important;
   margin:12px 0 0 40px !important;
