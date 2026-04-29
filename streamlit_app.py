@@ -327,6 +327,8 @@ if rodar:
 
     if not entrada_clean and data_picker:
         entrada_clean = data_picker.strftime("%d/%m/%Y")
+
+    if not entrada_clean:
         st.warning("Informe uma data válida.")
         st.stop()
 
