@@ -2211,7 +2211,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             r = start_extra_row + i
 
             if c == "DROPDOWN_2":
-                reqs.append(_dv_req(2, r, LISTA_DROPDOWN_2))
+                reqs.append(_dv_req(2, r, LISTA_DROPDOWN_2, strict=False))
                 reqs.append(_cf_req(2, r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
                 reqs.append(_cf_left_of_c_req(r, bg_hex="#e6cff2", fg_hex="#5a3286", index=0))
 
