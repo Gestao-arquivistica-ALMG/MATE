@@ -2054,7 +2054,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             "PREJUDICADOS",
         ]
 
-        def _dv_req(col0: int, row1: int, values_list: list[str], strict: bool = True):
+        def _dv_req(col0: int, row1: int, values_list: list[str], strict: bool = False):
             return {
                 "setDataValidation": {
                     "range": {
