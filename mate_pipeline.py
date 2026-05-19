@@ -687,7 +687,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
         return bool(s) and s == s.upper()
 
     for i, page in enumerate(reader.pages):
-        texto = page.extract_text() or ""
+        texto = page.extract_text(extraction_mode="layout") or page.extract_text() or ""
         linhas = [limpa_linha(x) for x in texto.splitlines() if limpa_linha(x)]
         pag_num = primeira_pagina_num(linhas, i + 1)
 
