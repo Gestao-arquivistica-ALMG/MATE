@@ -638,13 +638,15 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     )
 
     COMISSAO_SIGLA = {
-        "PARTICIPAÇÃO POPULAR": "PPO",
-        "TRANSPORTE, COMUNICAÇÃO E OBRAS PÚBLICAS": "TPA",
         "ADMINISTRAÇÃO PÚBLICA": "APU",
-        "MINAS E ENERGIA": "MEN",
-        "SAÚDE": "SAU",
         "CONSTITUIÇÃO E JUSTIÇA": "CCJ",
+        "MEIO AMBIENTE E DESENVOLVIMENTO SUSTENTÁVEL": "MAD",
+        "MINAS E ENERGIA": "MEN",
+        "PARTICIPAÇÃO POPULAR": "PPO",
+        "PREVENÇÃO E COMBATE AO USO DE CRACK E OUTRAS DROGAS": "PCU",
+        "SAÚDE": "SAU",
         "SEGURANÇA PÚBLICA": "SPU",
+        "TRANSPORTE, COMUNICAÇÃO E OBRAS PÚBLICAS": "TPA",
     }
 
     def normaliza_data_curta(d: str, m: str, a: str) -> str:
