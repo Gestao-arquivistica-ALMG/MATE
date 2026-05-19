@@ -733,9 +733,14 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # CUTs reais
-            if c in CUT_KEYS:
+            cut_real = next(
+                (k for k in CUT_KEYS if c == k or c.startswith(k)),
+                None
+            )
+
+            if cut_real:
                 ordem += 1
-                eventos.append((pag_num, ordem, "CUT", c, True, top_flag))
+                eventos.append((pag_num, ordem, "CUT", cut_real, True, top_flag))
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
