@@ -1048,8 +1048,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     def keep_dup_out(label_out: str) -> bool:
         if label_out in KEEP_DUP_OUT:
             return True
-        if isinstance(label_out, str) and label_out.startswith("REQUERIMENTOS DE COMISSÃO:"):
-            return True
         return False
 
     _last_idx = {}
