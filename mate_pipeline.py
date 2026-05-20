@@ -790,10 +790,14 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             # ---------------------------
             if c == C_CORRESP_CAB:
                 viu_corresp_cab = True
+                in_tramitacao = False
+                sub_tramitacao = None
+                apresentacao_ativa = False
+                sub_apresentacao = None
                 continue
 
             # OUT contextual: CORRESPONDÊNCIA: OFÍCIOS
-            if viu_corresp_cab and c == C_OFICIOS and not in_tramitacao:
+            if viu_corresp_cab and c == C_OFICIOS
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
                 viu_corresp_cab = False
