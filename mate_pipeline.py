@@ -788,7 +788,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             # ---------------------------
             # Contexto: CORRESPONDÊNCIA DESPACHADA PELO 1º-SECRETÁRIO
             # ---------------------------
-            if c == C_CORRESP_CAB:
+            corresp_cab = any(
+                C_CORRESP_CAB in kk
+                for kk in (c, k1, k2, k3)
+            )
+
+            if corresp_cab:
                 viu_corresp_cab = True
                 in_tramitacao = False
                 sub_tramitacao = None
@@ -797,7 +802,12 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # OUT contextual: CORRESPONDÊNCIA: OFÍCIOS
-            if viu_corresp_cab and c == C_OFICIOS
+            oficios_corresp = (
+                viu_corresp_cab
+                and any(kk == C_OFICIOS or kk.startswith(C_OFICIOS) for kk in (c, k1, k2, k3))
+            )
+
+            if oficios_corresp:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
                 viu_corresp_cab = False
