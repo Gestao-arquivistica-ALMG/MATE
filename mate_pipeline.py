@@ -737,13 +737,10 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 continue
 
             # CUTs reais
-            cut_real = None
-
-            for kk in (c, k1, k2, k3):
-                achado = next((x for x in CUT_KEYS if kk == x or kk.startswith(x)), None)
-                if achado:
-                    cut_real = achado
-                    break
+            cut_real = next(
+                (k for k in CUT_KEYS if c == k or c.startswith(k)),
+                None
+            )
 
             if cut_real:
                 ordem += 1
