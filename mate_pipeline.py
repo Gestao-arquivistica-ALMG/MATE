@@ -788,9 +788,13 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             # ---------------------------
             # Contexto: CORRESPONDÊNCIA DESPACHADA PELO 1º-SECRETÁRIO
             # ---------------------------
-            corresp_cab = any(
-                C_CORRESP_CAB in kk
-                for kk in (c, k1, k2, k3)
+            corresp_cab = next(
+                (
+                    kk for kk in (c, k1, k2, k3)
+                    if kk.startswith(C_CORRESP_CAB)
+                    or C_CORRESP_CAB.startswith(kk)
+                ),
+                None
             )
 
             if corresp_cab:
