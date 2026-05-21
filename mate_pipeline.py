@@ -579,6 +579,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
     MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
     REQ_APROV_KEYS = {C_REQ_APROV, C_REQS_APROV}
+    CORRESP_KEYS = {C_CORRESP_CAB}
 
     # CUTS REAIS
     C_ATA = "ATA"
@@ -958,6 +959,17 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             if c in REQ_APROV_KEYS:
                 ordem += 1
                 eventos.append((pag_num, ordem, "OUT", "REQUERIMENTOS APROVADOS", True, top_flag))
+                in_tramitacao = False
+                sub_tramitacao = None
+                apresentacao_ativa = False
+                sub_apresentacao = None
+                viu_corresp_cab = False
+                continue
+
+            # CORRESPONDÊNCIA
+            if c in CORRESP_KEYS:
+                ordem += 1
+                eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
