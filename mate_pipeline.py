@@ -798,7 +798,9 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             )
 
             if corresp_cab:
-                viu_corresp_cab = True
+                ordem += 1
+                eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
+                viu_corresp_cab = False
                 in_tramitacao = False
                 sub_tramitacao = None
                 apresentacao_ativa = False
