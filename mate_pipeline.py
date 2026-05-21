@@ -579,7 +579,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     ERRATA_KEYS = {C_ERRATA, C_ERRATAS}
     MANIF_KEYS = {C_MANIFESTACAO, C_MANIFESTACOES}
     REQ_APROV_KEYS = {C_REQ_APROV, C_REQS_APROV}
-    CORRESP_KEYS = {C_CORRESP_CAB}
 
     # CUTS REAIS
     C_ATA = "ATA"
@@ -621,7 +620,8 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
     # CONTEXTO ESPECIAL
     C_CORRESP_CAB = "CORRESPONDENCIADESPACHADAPELO1SECRETARIO"
     C_OFICIOS = "OFICIOS"
-
+    CORRESP_KEYS = {C_CORRESP_CAB}
+        
     # GATILHOS (dependem de contexto)
     C_PEC = "PROPOSTADEEMENDAACONSTITUICAO"
     C_PROJETO_DE_LEI = "PROJETODELEI"
