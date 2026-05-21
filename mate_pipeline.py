@@ -787,44 +787,6 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 sub_apresentacao = None
 
             # ---------------------------
-            # Contexto: CORRESPONDÊNCIA DESPACHADA PELO 1º-SECRETÁRIO
-            # ---------------------------
-            corresp_cab = next(
-                (
-                    kk for kk in (c, k1, k2, k3)
-                    if kk.startswith(C_CORRESP_CAB)
-                    or C_CORRESP_CAB.startswith(kk)
-                ),
-                None
-            )
-
-            if corresp_cab:
-                ordem += 1
-                eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
-                viu_corresp_cab = False
-                in_tramitacao = False
-                sub_tramitacao = None
-                apresentacao_ativa = False
-                sub_apresentacao = None
-                continue
-
-            # OUT contextual: CORRESPONDÊNCIA: OFÍCIOS
-            oficios_corresp = (
-                viu_corresp_cab
-                and any(kk == C_OFICIOS or kk.startswith(C_OFICIOS) for kk in (c, k1, k2, k3))
-            )
-
-            if oficios_corresp:
-                ordem += 1
-                eventos.append((pag_num, ordem, "OUT", "CORRESPONDÊNCIA: OFÍCIOS", True, top_flag))
-                viu_corresp_cab = False
-                in_tramitacao = False
-                sub_tramitacao = None
-                apresentacao_ativa = False
-                sub_apresentacao = None
-                continue
-
-            # ---------------------------
             # APRESENTAÇÃO / TRAMITAÇÃO -> subdivisão material
             # somente quando o título estiver em MAIÚSCULAS
             # ---------------------------
