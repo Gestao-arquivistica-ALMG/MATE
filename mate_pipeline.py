@@ -2009,6 +2009,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             "CTG",
             "CIP",
             "RED",
+            "MAS",
             "SGM",
         ]
 
