@@ -901,7 +901,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
                 pegou_leis = True
                 in_tramitacao = False
                 sub_tramitacao = None
-                apresentacao_ativa = False
+                apresentacao_ativa = False  
                 sub_apresentacao = None
                 viu_corresp_cab = False
                 continue
@@ -2041,6 +2041,7 @@ def main(entrada_override=None, spreadsheet_url_or_id=None, auth_mode="colab", s
             "OFI",
             "IND",
             "VET",
+            "RQC",
             "REL",
         ]
 
